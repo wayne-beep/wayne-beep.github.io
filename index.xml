@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Wayne&#39;s Blog</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on Wayne&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 04 Aug 2020 07:44:20 +0800</lastBuildDate>
+    
+	<atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About</title>
+      <link>http://localhost:1313/about/</link>
+      <pubDate>Sun, 20 Aug 2017 21:38:52 +0800</pubDate>
+      
+      <guid>http://localhost:1313/about/</guid>
+      <description>Hugo is a static site engine written in Go.
+It makes use of a variety of open source projects including:
+ Cobra Viper J Walter Weatherman Cast  Learn more and contribute on GitHub.</description>
+    </item>
+    
+    <item>
+      <title>Rabbitmq技术总结</title>
+      <link>http://localhost:1313/post/2020-08-04-rabbitmq%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Tue, 04 Aug 2020 07:44:20 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/2020-08-04-rabbitmq%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/</guid>
+      <description>题纲 RABBITMQ介绍 RABBITMQ重要概念 传输信道CHANNEL，交换机，队列，虚拟机 RABBITMQ权限 RABBITMQ分布式介绍 RABBITMQ</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes知识积累</title>
+      <link>http://localhost:1313/post/2020-07-31-kubernetes%E7%9F%A5%E8%AF%86%E7%A7%AF%E7%B4%AF/</link>
+      <pubDate>Fri, 31 Jul 2020 18:06:45 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/2020-07-31-kubernetes%E7%9F%A5%E8%AF%86%E7%A7%AF%E7%B4%AF/</guid>
+      <description>1. Kubernetes各个组件的功能 1.1. kube-apiserver master组件kube-apiserver负责将kubernetes资源组、资源版本、资源已res</description>
+    </item>
+    
+    <item>
+      <title>TCP/IP学习笔记</title>
+      <link>http://localhost:1313/post/2020-07-31-tcpip%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Fri, 31 Jul 2020 15:44:45 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/2020-07-31-tcpip%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
+      <description>1. 概念 1.1. TCP/IP协议簇的四个层次 链路层-网络层-运输层-应用层 每一层负责不通的功能： 链路层：也被称为数据链路层或网络接口层，通常包括操作</description>
+    </item>
+    
+    <item>
+      <title>Jenkins结合Nexus实现CICD分离</title>
+      <link>http://localhost:1313/post/2020-07-31-jenkins-cicd/</link>
+      <pubDate>Fri, 31 Jul 2020 13:10:17 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/2020-07-31-jenkins-cicd/</guid>
+      <description>CICD for Jenkins use Pipeline Nexus and Ansible 部署流程： CI：nexus建立好存储包仓库，jenkinsfile调用nexusArtifactUploader模块上传ja</description>
+    </item>
+    
+  </channel>
+</rss>

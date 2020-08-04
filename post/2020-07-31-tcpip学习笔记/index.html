@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>TCP/IP学习笔记 - Wayne&#39;s Blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Wayne" /><meta name="description" content="1. 概念 1.1. TCP/IP协议簇的四个层次 链路层-网络层-运输层-应用层 每一层负责不通的功能： 链路层：也被称为数据链路层或网络接口层，通常包括操作" /><meta name="keywords" content="theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.59.0 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/2020-07-31-tcpip%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.6eb09ed45a88bd339269c14515d2a11f2e0afdadbdd763d83f9b5c797166b081.css" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+<meta property="og:title" content="TCP/IP学习笔记" />
+<meta property="og:description" content="1. 概念 1.1. TCP/IP协议簇的四个层次 链路层-网络层-运输层-应用层 每一层负责不通的功能： 链路层：也被称为数据链路层或网络接口层，通常包括操作" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/2020-07-31-tcpip%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" />
+<meta property="article:published_time" content="2020-07-31T15:44:45+08:00" />
+<meta property="article:modified_time" content="2020-07-31T15:44:45+08:00" />
+<meta itemprop="name" content="TCP/IP学习笔记">
+<meta itemprop="description" content="1. 概念 1.1. TCP/IP协议簇的四个层次 链路层-网络层-运输层-应用层 每一层负责不通的功能： 链路层：也被称为数据链路层或网络接口层，通常包括操作">
+
+
+<meta itemprop="datePublished" content="2020-07-31T15:44:45&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-31T15:44:45&#43;08:00" />
+<meta itemprop="wordCount" content="5056">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="TCP/IP学习笔记"/>
+<meta name="twitter:description" content="1. 概念 1.1. TCP/IP协议簇的四个层次 链路层-网络层-运输层-应用层 每一层负责不通的功能： 链路层：也被称为数据链路层或网络接口层，通常包括操作"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Wayne</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Wayne</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">TCP/IP学习笔记</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-07-31 </span>
+        
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-概念">1. 概念</a>
+<ul>
+<li><a href="#1-1-tcp-ip协议簇的四个层次">1.1. TCP/IP协议簇的四个层次</a></li>
+<li><a href="#1-2-运输层和网络层的区别">1.2. 运输层和网络层的区别</a></li>
+<li><a href="#1-3-封装">1.3. 封装</a></li>
+</ul></li>
+<li><a href="#2-链路层">2. 链路层</a>
+<ul>
+<li><a href="#2-1-路径mtu">2.1. 路径MTU</a>
+<ul>
+<li><a href="#大包问题">大包问题：</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#3-ip-网际协议">3. IP：网际协议</a>
+<ul>
+<li><a href="#3-1-ip首部">3.1. IP首部</a></li>
+</ul></li>
+<li><a href="#4-arp-地址解析协议">4. ARP: 地址解析协议</a>
+<ul>
+<li><a href="#4-1-arp高速缓存超时设置">4.1. ARP高速缓存超时设置</a></li>
+<li><a href="#4-2-arp代理">4.2. ARP代理</a></li>
+</ul></li>
+<li><a href="#5-rarp-逆地址解析协议">5. RARP：逆地址解析协议</a>
+<ul>
+<li><a href="#报文类型">报文类型</a></li>
+<li><a href="#ping">Ping</a></li>
+<li><a href="#traceroute">TraceRoute</a></li>
+</ul></li>
+<li><a href="#7-ip选路">7. IP选路</a></li>
+<li><a href="#8-udp协议">8. UDP协议</a>
+<ul>
+<li><a href="#8-1-udp首部">8.1. UDP首部</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="1-概念">1. 概念</h2>
+
+<h3 id="1-1-tcp-ip协议簇的四个层次">1.1. TCP/IP协议簇的四个层次</h3>
+
+<p>链路层-网络层-运输层-应用层</p>
+
+<p>每一层负责不通的功能：</p>
+
+<ol>
+<li><p>链路层：也被称为数据链路层或网络接口层，通常包括操作系统中设备驱动程序和计算机对应的网络接口卡，他们一起处理与电缆（或其他传输媒介）的物理接口细节</p></li>
+
+<li><p>网络层：有时也称作互联网层，处理分组在网络中的活动，例如分组的选路。在TCP/IP协议簇中，网络层包含IP协议，ICMP协议（Internet互联网通知报文协议），IGMP协议（Internet组管理协议）</p></li>
+
+<li><p>运输层：主要为两台主机上的应用程序提供端到端的通信。在TCP/IP协议簇中，有两个互不相同的传输协议：TCP（传输控制协议）和UDP（用户数据报协议）。</p>
+
+<ul>
+<li><strong>TCP全称是传输控制协议，是面向连接的协议，为两台主机提供高可靠的数据通信。在收发数据之前，必须和对方建立可靠的连接，通过三次握手建立连接，四次挥手关闭连接。它所做的工作把应用程序交给它的数据分成合适的小块交给下面的网络层，确认接收到的分组，设置发送最后确认分组超时时钟等。使用TCP协议传输的服务包括FTP、HTTP、TELNET等</strong>。</li>
+<li><strong>UDP全称是用户数据报协议，在网络中与TCP一样工作在第四层运输层，用于处理数据包。是一种无连接的协议，不提供数据包分组、组装和不能对数据包进行排序，也就是说，当报文发送之后，是无法得知其是否安全完整到达的。UDP的信息包标题很短，只有8个字节，相对于TCP的20字节信息包的开销要小很多。使用UDP协议传输的服务包括DNS、NFS、DHCP等</strong></li>
+</ul></li>
+</ol>
+
+<p>这两种传输层协议分别在不通应用程序中有不同的用途。</p>
+
+<ol>
+<li><p>应用层：负责处理特定的应用程序细节。几乎各种不同的TCP/IP 实现都会提供下面这些通用的应用程序：</p>
+
+<ul>
+<li>Telnet远程登录</li>
+<li>FTP文件传输写意思</li>
+<li>SMTP简单邮件传输协议</li>
+<li>SNMP简单网络管理协议</li>
+</ul></li>
+</ol>
+
+<p>应用层层序通常是一个用户进程，下三层一半在操作系统内核中执行。应用层与其他三层还有另一个关键的不同之处，应用层关心的是应用程序的细节，而不是数据在网络中的传输活动。下三层对应用程序一无所知，但他们要处理所有的通信细节。</p>
+
+<p>例如：FTP是应用层协议，TCP是一种运输层协议，IP是一种网络层协议，以太网协议是链路层协议。<strong>TCP/IP协议簇是一组不同的协议组合在一起构成的协议簇</strong>。尽管通常称该协议簇为TCP/IP，但是TCP和IP只是其中两种协议而已（该协议簇的另一个名称是Internet协议簇（Internet Protocol Suite））。</p>
+
+<h3 id="1-2-运输层和网络层的区别">1.2. 运输层和网络层的区别</h3>
+
+<p><strong>在TCP/IP 协议簇中，网络层IP提供的是不可靠的服务。也就是说，它只是尽可能快的把分组从源结点送到目的结点，但是并不提供任何可靠性保证。另一方面，TCP在不可靠的IP层上采用了超时重传、发送和接收端到端的确认分组机制来提供了一个可靠的传输层</strong>。由此可见，运输层和网络层分别负责不同的功能。</p>
+
+<h3 id="1-3-封装">1.3. 封装</h3>
+
+<p>当应用程序用TCP传输数据时，数据被送入协议栈中，然后逐个通过每一层直到被当做一串比特流送入网络。其中每一层对收到的数据都要增加一些首部信息（有时还要增加尾部信息）</p>
+
+<p><img src="images/tcpip_baowenfengzhuang.jpg" alt="头部封装过程" /></p>
+
+<p><strong>TCP传给IP的数据单元称作TCP报文段或简称为TCP段(TCP segment)。IP传给网络接口层的数据单元称作IP数据报(IP datagram)。通过以太 网传输的比特流称作帧(Frame)。UDP数据与TCP数据基本一致。唯一不同的是UDP传给IP的信息单元称作UDP数据报，而且UDP的首部长度为8字节</strong>。许多应用程序都可以使用UDP或TCP来传输数据。运输层协议在生成报文首部时要存入一个应用程序的标识符。TCP或UDP都用一个16bit的端口号来表示不同的应用程序。TCP和UDP把源端口号和目标端口号分别存入报文首部中。</p>
+
+<p>Unix系统有保留端口号的概念，只有具有超级用户特权的进程才允许给它自己分配一个保留端口号。这些端口号介于1-1023之间，一些应用程序将它作呕为客户与服务器直接身份认证的一部分。</p>
+
+<h2 id="2-链路层">2. 链路层</h2>
+
+<p>在TCP/IP协议簇中，链路层有三个主要目的：</p>
+
+<ol>
+<li>为IP模块发送和接收ip数据报</li>
+<li>为ARP模块发送APP请求和接收ARP应答</li>
+<li>为RARP模块发送RARP请求和接收RARP应答</li>
+</ol>
+
+<h3 id="2-1-路径mtu">2.1. 路径MTU</h3>
+
+<p>最大传输单元MUT。网络中两台主机之间通信，经过的网络链路层可能有多种不同的MTU，重要的是两台通信主机路径中最小MTU。它被称作路径MTU。</p>
+
+<p>两台主机之间的路径MTU不是一个常数。它取决于当时所选择的陆游与。而选路不一定是对称的（从A到B的路由可能与从B到A不同），因此路径MTU在两个方向上不一定是一致的。</p>
+
+<h4 id="大包问题">大包问题：</h4>
+
+<p>使用Ping命令模拟大包传输结合wireshark进行抓包分析，通过ping 百度地址来进行测试</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ ping www.baidu.com
+PING www.a.shifen.com <span class="o">(</span><span class="m">61</span>.135.169.121<span class="o">)</span>: <span class="m">56</span> data bytes
+<span class="m">64</span> bytes from <span class="m">61</span>.135.169.121: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">0</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">57</span> <span class="nv">time</span><span class="o">=</span><span class="m">3</span>.590 ms
+<span class="m">64</span> bytes from <span class="m">61</span>.135.169.121: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">57</span> <span class="nv">time</span><span class="o">=</span><span class="m">4</span>.581 ms</code></pre></td></tr></table>
+</div>
+</div>
+<p>可以正常获取返回值，抓包分析</p>
+
+<p><img src="/images/posts/wireshark-ping001.png" alt="抓包分析1" /></p>
+
+<p>使用ping的-s参数指定包体长度。由于 MTU 是整个 IP 包的最大长度，那么 ICMP 包的最大 payload 就是 MTU - 20 (IP header) - 8 (ICMP header)，因此能 ping 通且不分片的最大参数值是 MTU - 28。标准 MTU 为 1500bytes，那么 ping 命令的长度参数最大可指定为 1472bytes</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ ping www.baidu.com -s <span class="m">1472</span>
+PING www.a.shifen.com <span class="o">(</span><span class="m">220</span>.181.38.149<span class="o">)</span> <span class="m">1472</span><span class="o">(</span><span class="m">1500</span><span class="o">)</span> bytes of data.
+<span class="m">1480</span> bytes from <span class="m">220</span>.181.38.149: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">53</span> <span class="nv">time</span><span class="o">=</span><span class="m">3</span>.41 ms
+<span class="m">1480</span> bytes from <span class="m">220</span>.181.38.149: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">53</span> <span class="nv">time</span><span class="o">=</span><span class="m">3</span>.44 ms
+<span class="m">1480</span> bytes from <span class="m">220</span>.181.38.149: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">3</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">53</span> <span class="nv">time</span><span class="o">=</span><span class="m">3</span>.44 ms
+<span class="m">1480</span> bytes from <span class="m">220</span>.181.38.149: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">4</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">53</span> <span class="nv">time</span><span class="o">=</span><span class="m">3</span>.44 ms</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="/images/posts/wireshark-ping002.png" alt="抓包分析1" /></p>
+
+<p>那么当指定包体长度超过1472，就会发现包无法发送出去。</p>
+
+<p>分片会加重路由器的负担，因此只要条件允许，我们都不希望路由器对IP数据包进行分片处理。另外，如果一个分片丢失，整个IP数据报都会作废，因为网络层没有重传机制，只能由上层协议实现。</p>
+
+<p>解决以上问题的技术是“路径MTU发现”。主机会首先获取整个路径中所有数据链路的最小MTU，并按照整个大小将数据分片。因此传输过程中的任何一个路由器都不用进行分片工作。</p>
+
+<p>为了找到路径MTU，主机首先发送整个数据包，通过抓包分析IP层将数据分段（frag）传输过程中，前两次通过将DF标志位（Don&rsquo;t Fragment）设置为1，这样路由器在遇到需要分片的数据时不会执行分片操作，而是丢弃数据报，然后通过ICMP协议将整个不可达的信息返回，主机将返回的MTU值设置为当前的MTU，根据这个MTU进行分片后再次发包出去，循环执行前一次的操作调整自身的MTU值直到不再接收到ICMP的通知为止，此时的MTU就是路径最小MTU，IP层开始按照这个MTU进行分片传输，并且将DF值设置为0。每30s将DF设置为1，以查看路径MTU是否增大了。</p>
+
+<h2 id="3-ip-网际协议">3. IP：网际协议</h2>
+
+<p>IP是TCP/IP协议簇中最为核心的协议。所有的TCP、UDP、ICMP以及IGMP数据都以IP数据报格式传输。IP协议有以下特性：</p>
+
+<ol>
+<li>不可靠，它不能保证IP数据报能成功的到达目的地。IP仅提供最好的传输服务。如果发生某种错误时，如果某个路由器暂时用完了缓冲区，IP有一个简单那的错误处理算法：丢弃该数据报，然后发送ICMP消息给信源端。任何要求的可靠性必须由上层提供（例如TCP）</li>
+<li>无连接，IP协议并不维护任何关于后续数据报的状态信息。每个数据报的处理是相互独立的。这说明，IP数据报可以不按发送顺序接收。如果以信源向相同的信宿发送两个连续的数据报（先发送A，后发送B），每个数据报都是独立的进行路由选择，可能选择不同的路线，因此B可能比A线到达。</li>
+</ol>
+
+<h3 id="3-1-ip首部">3.1. IP首部</h3>
+
+<p>普通IP首部长度为20字节，除非含有选项字段</p>
+
+<p><img src="./images/ip_shujubaowen.jpeg" alt="ip数据格式" /></p>
+
+<h2 id="4-arp-地址解析协议">4. ARP: 地址解析协议</h2>
+
+<p>当一台主机把以太网数据发送到位于同一局域网上的另一台主机时，是根据48bit的以太网地址来确定目的地址。</p>
+
+<p>ARP为 IP地址到对应的硬件地址之间提供动态映射。我们之所以用动态这个词是因为这个过程是自动完成的，一般应用程序用户或系统管理员不必关心。</p>
+
+<p>RARP是被那些没有磁盘驱动器的系统使用（一般是无盘或工作站或X终端），它需要系统管理员手动设置。</p>
+
+<h3 id="4-1-arp高速缓存超时设置">4.1. ARP高速缓存超时设置</h3>
+
+<p>在ARP高速缓存的表项一般都要设置超市实战，从伯克利系统演变而来的系统跟一般对完整表项设置超时值为20分钟，而对不完整表项设置超时值位3分钟。当这些表项再次使用时，这些实现一般都把超时值重新设为20分钟。</p>
+
+<h3 id="4-2-arp代理">4.2. ARP代理</h3>
+
+<p><strong>如果ARP请求是从一个网络的主机发往另一个网络上的主机，那么连接这两个网络的路由器就可以回答请求，这个过程称作委托ARP或ARP代理</strong>。这样可以欺骗发起ARP请求的发送端，是它误以为路由器就是目的主机，而事实上目的主机在路由器的另一边。</p>
+
+<h2 id="5-rarp-逆地址解析协议">5. RARP：逆地址解析协议</h2>
+
+<p>具有本地磁盘的系统引导时，一般是从磁盘上的配置文件读取IP地址。但是无盘机则需要采用其他方法获得IP地址。网络上每个系统都具有唯一的硬件地址，它是由接口厂家配置的。无盘系统的RARP实现过程是从接口卡上读取唯一的硬件地址，然后发送一份RARP请求（一帧在网络上广播的数据），请求某个主机响应该无盘系统的IP地址。</p>
+
+<p>##　６. ICMP： Internet控制报文协议</p>
+
+<p>ICMP经常被认为是 IP层的一个组成部分。它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层（TCP或UDP）使用。一些icmp报文把差错报文返回给用户进程。</p>
+
+<p>ICMP报文是在IP数据内部被传输的</p>
+
+<p>| IP首部（20字节）| ICMP报文|</p>
+
+<h3 id="报文类型">报文类型</h3>
+
+<p>不会导致差错报文的情况：</p>
+
+<ol>
+<li>ICMP差错报文（但是，ICMP查询报文可能会产生差错报文）</li>
+<li>目的地址是广播地址或多播地址的IP数据报</li>
+<li>作为链路层广播的数据报</li>
+<li>不作为IP分配的第一片</li>
+<li>原地址不是单个主机的数据报。这就是说源地址不能为零地址、环回地址、广播或多播地址</li>
+</ol>
+
+<h3 id="ping">Ping</h3>
+
+<p>发送回显请求的ping程序为客户，而称被ping的主机为服务器。大多数TCP/IP实现都在内核中直接支持Ping服务器（这是一种服务器而不是一个用户进程）。</p>
+
+<p>Ping程序通过在ICMP报文数据中存放发送请求的时间值来计算往返时间。当应答返回时，用当前时间减去存放在ICMP报文中的时间值，既往返时间。</p>
+
+<h3 id="traceroute">TraceRoute</h3>
+
+<p>IP源站选路选项：</p>
+
+<ul>
+<li>宽松的源站选路。发送端指明了数据报经过的IP地址清单，但是数据报在清单上知名的任意两个地址之间可以通过其他路由器</li>
+<li>严格的源站路由选择。发送端指明IP数据报所采用的确切路由。如果偶一个路由发现源路由地址的下一跳路由不在其直接连接的网络上，那么它就返回一个“源站路由失败”的ICMP差错报文。</li>
+</ul>
+
+<p>源站陆游与选项的实际称呼为“源站及记录路由”，这是因为数据报在路由发送过程中，对IP地址清单进行了更新，下面是运行你过程：</p>
+
+<ol>
+<li>发送你主机应用程序接受源站路由清单，将第一个表项去掉（它是数据报的最终目的地址），将剩余的项移动到第一个项中，并将原来的目的地址作为清单的最后一项。指针仍然指向清单的第一项</li>
+<li>每个处理数据报的路由检查其是否为数据报的最终地址。如果不是，则正常转发数据报（在这种情况下必须指明宽松路由，否则就不能接收到该数据报）。</li>
+<li>如果该路由器是最终目的，且指针不大于路径长度，那么（1）有ptr所指定的清单中的下一个地址就是数据报的最终地址；（2）由外出接口相对应的IP地址取代刚才使用的源地址；（3）指针加4；？？？？？？？</li>
+</ol>
+
+<h2 id="7-ip选路">7. IP选路</h2>
+
+<p>使用netstat命令显示路由表</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-sh" data-lang="sh"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># netstat -rn</span>
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+<span class="m">0</span>.0.0.0         <span class="m">10</span>.40.11.253    <span class="m">0</span>.0.0.0         UG        <span class="m">0</span> <span class="m">0</span>          <span class="m">0</span> eth0
+<span class="m">10</span>.40.8.0       <span class="m">0</span>.0.0.0         <span class="m">255</span>.255.252.0   U         <span class="m">0</span> <span class="m">0</span>          <span class="m">0</span> eth0
+<span class="m">192</span>.168.177.0   <span class="m">0</span>.0.0.0         <span class="m">255</span>.255.255.0   U         <span class="m">0</span> <span class="m">0</span>          <span class="m">0</span> docker0
+<span class="m">192</span>.168.178.0   <span class="m">0</span>.0.0.0         <span class="m">255</span>.255.255.0   U         <span class="m">0</span> <span class="m">0</span>          <span class="m">0</span> br-1e0a10ee86cf
+<span class="m">192</span>.168.179.0   <span class="m">0</span>.0.0.0         <span class="m">255</span>.255.255.0   U         <span class="m">0</span> <span class="m">0</span>          <span class="m">0</span> br-d3b067fb8885
+<span class="m">192</span>.168.180.0   <span class="m">0</span>.0.0.0         <span class="m">255</span>.255.255.0   U         <span class="m">0</span> <span class="m">0</span>          <span class="m">0</span> br-25bafbfffd08</code></pre></td></tr></table>
+</div>
+</div>
+<p>第4行说明目标日志如果是0.0.0.0（任意地址），那么网关（路由器）将把分组转发给10.40.11.253 。</p>
+
+<p>对于一个给定路由器，可以打印出5中不同标志flag：</p>
+
+<ol>
+<li>U 该路由可用</li>
+<li>G 该路由到一个网关路由器。如果没有该标志，说明目的是直接相连的</li>
+<li>H 该路由到一个主机，也就是说目的地址是一个完整的主机地址。如果没有该标志，说明该路由是到一个网络，而目的地址是一个网络地址：一个网络号，或者网络号与子网的组合</li>
+<li>D 该路由是重定向报文创建的</li>
+<li>M 该路由已被重定向报文修改</li>
+</ol>
+
+<p>标志G是非常重要的，因为由它区分了间接路由和直接路由(对于直接路由来说是不设置标志G的)。其区别在于：发往直接路由的分组中不但具有指明目的端的IP地址，还具有其链路层MAC地址。当分组被发往一个间接路由时，IP地址指明的是最终的目的地，但是链路层MAC地址指明的是网关(即下一站路由器)。</p>
+
+<h2 id="8-udp协议">8. UDP协议</h2>
+
+<h3 id="8-1-udp首部">8.1. UDP首部</h3>
+
+<table>
+<thead>
+<tr>
+<th>0-15</th>
+<th>16-31</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>16位源端口号</td>
+<td>16位目的端口号</td>
+</tr>
+
+<tr>
+<td>16位UDP长度</td>
+<td>16位UDP校验和</td>
+</tr>
+
+<tr>
+<td>数据</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<p>端口号表示发送进程和接收进程。TCP和UDP用目的端口号来分用来自IP层的数据的过程。由于IP层已经把IP数据分配给TCP和UDP（根据IP首部的协议字段值），因此TCP端口号有TCP查看，UDP端口号由UDP查看，是相互独立的。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Wayne</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-07-31
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/2020-07-31-kubernetes%E7%9F%A5%E8%AF%86%E7%A7%AF%E7%B4%AF/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Kubernetes知识积累</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/2020-07-31-jenkins-cicd/">
+            <span class="next-text nav-default">Jenkins结合Nexus实现CICD分离</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="wayne.one.wang@outlook.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-stack-overflow" title="stack-overflow"></a>
+      <a href="http://localhost:1313" class="iconfont icon-google" title="google"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Wayne</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.d7b7ada643c9c1a983026e177f141f7363b4640d619caf01d8831a6718cd44ea.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

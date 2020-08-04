@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Kubernetes知识积累 - Wayne&#39;s Blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Wayne" /><meta name="description" content="1. Kubernetes各个组件的功能 1.1. kube-apiserver master组件kube-apiserver负责将kubernetes资源组、资源版本、资源已res" /><meta name="keywords" content="theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.59.0 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/2020-07-31-kubernetes%E7%9F%A5%E8%AF%86%E7%A7%AF%E7%B4%AF/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.6eb09ed45a88bd339269c14515d2a11f2e0afdadbdd763d83f9b5c797166b081.css" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+<meta property="og:title" content="Kubernetes知识积累" />
+<meta property="og:description" content="1. Kubernetes各个组件的功能 1.1. kube-apiserver master组件kube-apiserver负责将kubernetes资源组、资源版本、资源已res" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/2020-07-31-kubernetes%E7%9F%A5%E8%AF%86%E7%A7%AF%E7%B4%AF/" />
+<meta property="article:published_time" content="2020-07-31T18:06:45+08:00" />
+<meta property="article:modified_time" content="2020-07-31T18:06:45+08:00" />
+<meta itemprop="name" content="Kubernetes知识积累">
+<meta itemprop="description" content="1. Kubernetes各个组件的功能 1.1. kube-apiserver master组件kube-apiserver负责将kubernetes资源组、资源版本、资源已res">
+
+
+<meta itemprop="datePublished" content="2020-07-31T18:06:45&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-31T18:06:45&#43;08:00" />
+<meta itemprop="wordCount" content="2577">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Kubernetes知识积累"/>
+<meta name="twitter:description" content="1. Kubernetes各个组件的功能 1.1. kube-apiserver master组件kube-apiserver负责将kubernetes资源组、资源版本、资源已res"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Wayne</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Wayne</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Kubernetes知识积累</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-07-31 </span>
+        
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-kubernetes各个组件的功能">1. Kubernetes各个组件的功能</a>
+<ul>
+<li><a href="#1-1-kube-apiserver">1.1. kube-apiserver</a></li>
+<li><a href="#1-2-kube-controller-manager">1.2. kube-controller-manager</a></li>
+<li><a href="#1-3-kube-scheduler">1.3. kube-scheduler</a>
+<ul>
+<li><a href="#1-3-1-预选">1.3.1. 预选</a></li>
+<li><a href="#1-3-2-优选">1.3.2. 优选</a></li>
+<li><a href="#1-3-3-选举">1.3.3. 选举</a></li>
+</ul></li>
+<li><a href="#1-4-kubelet">1.4. kubelet</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="1-kubernetes各个组件的功能">1. Kubernetes各个组件的功能</h2>
+
+<h3 id="1-1-kube-apiserver">1.1. kube-apiserver</h3>
+
+<p>master组件kube-apiserver负责将kubernetes资源组、资源版本、资源已restful形式对外暴露并且提供服务。kubernetes集群中所有的组件都是通过它来操作资源对象。kube-apiserver也是唯一与ETCD集群进行交互的核心组件，kube-apiserver是无状态组件。例如kubectl创建一个deployment资源通过请求api-server的HTTP接口将资源对象存储在ETCD中。kubernetes将所有的数据存储在ETCD集群中前缀为/registry目录下。</p>
+
+<p>kube-apiserver的特性：</p>
+
+<ol>
+<li>将kubernetes系统中的所有资源对象都封装成RESTFUl风格的API接口进行管理</li>
+<li>可以进行集群状态和数据管理，是唯一与ETCD交互的组件</li>
+<li>拥有丰富的机器安全访问机制，以及认证、授权、准入控制</li>
+<li>体用里集群个组件的通信和交互功能</li>
+</ol>
+
+<h3 id="1-2-kube-controller-manager">1.2. kube-controller-manager</h3>
+
+<p>master组件kube-controller-manager，被称为管理控制器，负责管理kubernetes集群中的节点Node、Pod副本、Service、Endpoint、namespace、ServiceAccount、ResourceQuta等。</p>
+
+<p>Controller Manager负责确保kubernetes系统的实际状态维护，默认提供了一些控制器比如：Deployment Controller、StatefulSet Controller、Namespace Controller、PersistentVolume Controller、Service Controller、Endpoint Controller等等。每个控制器都通过api-server组件提供的接口试试监控整个集群每个资源对象的状态，当系统更新或者发生各种故障而导致系统状态出现变化时，会尝试将系统修复到期望状态。</p>
+
+<p>总结kube-controller-manager的功能就是：<strong>及时发现并执行自动化修复流程，确保集群始终处于预期的工作状态</strong>。</p>
+
+<p>kube-controller-manager是可实现高可用的，通过基于ETCD分布式锁实现leader选举。多实例运行时，通过api-server提供的资源锁进行竞争，抢先获取锁的实例称为Leader节点，并且运行kube-controller-manager组件的主逻辑，而未获取锁的实例被称为Candidate候选节点，处于阻塞状态，主节点因某些原因退出后，候选节点通过选举机制参与竞选，称为Leader的节点继续工作。</p>
+
+<h3 id="1-3-kube-scheduler">1.3. kube-scheduler</h3>
+
+<p>Kube-scheduler组件被称为调度器，<strong>负责在kubernetes集群中为一个pod资源对象找到合适的节点并在该节点上运行。调度器每次只调度一个pod资源对象，为每一个pod资源对象寻找合适节点的过程是一个调度期</strong>。</p>
+
+<p>kube-scheduler组件监控整个集群的pod资源对象和node资源对象，当监控到新的pod资源对象时，会通过调度算法为其选择最优节点。调度算法有两种，分别为节点预选和节点优选。除调度策略外，kubernetes还支持优先级调度、抢占机制和亲和性调度功能。</p>
+
+<h4 id="1-3-1-预选">1.3.1. 预选</h4>
+
+<p>根据配置的PredicatesPolicies（默认为DefaultProvider中定义的default predicates policies集合）过滤掉那些不满足这些Policies 的 Node，预选的输出作为优选的输入；</p>
+
+<p><strong>预选阶段算法</strong></p>
+
+<p><strong>NoDiskConflict</strong>：评估是否存在volume冲突。如果该 volume 已经 mount 过了，k8s可能会不允许重复mount(取决于volume类型)；</p>
+
+<p><strong>NoVolumeZoneConflict</strong>：评估该节点上是否存在 Pod 请求的 volume；</p>
+
+<p><strong>PodFitsResources</strong>：检查节点剩余资源(CPU、内存)是否能满足 Pod 的需求。剩余资源=总容量-所有 Pod 请求的资源；</p>
+
+<p><strong>MatchNodeSelector</strong>：判断是否满足 Pod 设置的 NodeSelector；</p>
+
+<p><strong>CheckNodeMemoryPressure</strong>：检查 Pod 是否可以调度到存在内存压力的节点；</p>
+
+<p><strong>CheckNodeDiskPressure</strong>：检查 Pod 是否可以调度到存在硬盘压力的节点；</p>
+
+<h4 id="1-3-2-优选">1.3.2. 优选</h4>
+
+<p>根据配置的PrioritiesPolicies给预选后的 Node 进行打分排名，得分最高的 Node 即作为最适合的 Node ，该 Pod 就绑定（Bind）到这个 Node 。</p>
+
+<p><strong>注：</strong>如果经过优选将 Node 打分排名后，有多个 Node 并列得分最高，那么kube-scheduler将使用RR机制从中选择一个 Node 作为目标 Node 。</p>
+
+<p><strong>优选阶段算法</strong></p>
+
+<p>依次计算该 Pod 运行在每一个 Node 上的得分。主要算法有：</p>
+
+<p><strong>LeastRequestedPriority</strong>：最低请求优先级，即 Node 使用率越低，得分越高；</p>
+
+<p><strong>BalancedResourceAllocation</strong>：资源平衡分配，即CPU/内存配比合适的 Node 得分更高；</p>
+
+<p><strong>SelectorSpreadPriority</strong>：尽量将同一 RC/Replica 的多个 Pod 分配到不同的 Node 上；</p>
+
+<p><strong>CalculateAntiAffinityPriority</strong>：尽量将同一 Service 下的多个相同 Label 的 Pod 分配到不同的 Node；</p>
+
+<p><strong>ImageLocalityPriority</strong>：Image本地优先，Node 上如果已经存在 Pod 需要的镜像，并且镜像越大，得分越高，从而减少 Pod 拉取镜像的开销(时间)；</p>
+
+<p><strong>NodeAffinityPriority</strong>：根据亲和性标签进行选择；</p>
+
+<h4 id="1-3-3-选举">1.3.3. 选举</h4>
+
+<p>kube-scheduler的选举机制与kube-controller-manager相同</p>
+
+<h3 id="1-4-kubelet">1.4. kubelet</h3>
+
+<p>kubelet组件用于管理节点，接收、处理、上报api-server组件下发的任务。kubelet会像api-server注册节点自身信息。它主要负责所在节点上的pod资源对象的管理，例如pod资源对象的创建、修改、删除、驱逐及pod生命周期管理。</p>
+
+<p>kubelet会定期监控所在节点的资源使用状态并上报给api-server，这些资源数据帮助kube-scheduler调度器为pod资源对象预选节点。kubelet也会对所在节点的镜像和容器做清理工作，保证节点上的镜像不会沾满磁盘空间、删除的容器释放相关资源。</p>
+
+<p>kubelet组件提供了三个开发接口：</p>
+
+<ul>
+<li>Container Runtime Interface：简称CRI（容器运行时接口），提供容器运行时通用插件接口服务。CRI定义了如果您器镜像服务的接口。</li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Wayne</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-07-31
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/2020-08-04-rabbitmq%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Rabbitmq技术总结</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/2020-07-31-tcpip%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+            <span class="next-text nav-default">TCP/IP学习笔记</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="wayne.one.wang@outlook.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-stack-overflow" title="stack-overflow"></a>
+      <a href="http://localhost:1313" class="iconfont icon-google" title="google"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Wayne</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.d7b7ada643c9c1a983026e177f141f7363b4640d619caf01d8831a6718cd44ea.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

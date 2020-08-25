@@ -2,10 +2,10 @@
 ## SFTP配置过程
 1. 连接用户根据用户需求添加系统用户配置密码
 
-   ```bash
-   $ useradd sftp_test
-   $ passwd sftp_test
-   ```
+```bash
+$ useradd sftp_test
+$ passwd sftp_test
+```
 
 2. 将用户加入sftp-group组（已预先添加）
 

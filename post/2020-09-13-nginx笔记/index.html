@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Nginx笔记 - Wayne&#39;s Blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Wayne" /><meta name="description" content="1. Nginx架构 1.1. Nginx处理流程 Nginx使用Epoll的非租塞事件驱动模型，内部有三种状态机： 传输层状态机，接收四层请求 HTTP状态机" /><meta name="keywords" content="theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.59.0 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/2020-09-13-nginx%E7%AC%94%E8%AE%B0/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<link href="/sass/main.min.6eb09ed45a88bd339269c14515d2a11f2e0afdadbdd763d83f9b5c797166b081.css" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+<meta property="og:title" content="Nginx笔记" />
+<meta property="og:description" content="1. Nginx架构 1.1. Nginx处理流程 Nginx使用Epoll的非租塞事件驱动模型，内部有三种状态机： 传输层状态机，接收四层请求 HTTP状态机" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/2020-09-13-nginx%E7%AC%94%E8%AE%B0/" />
+<meta property="article:published_time" content="2020-09-13T20:38:26+08:00" />
+<meta property="article:modified_time" content="2020-09-13T20:38:26+08:00" />
+<meta itemprop="name" content="Nginx笔记">
+<meta itemprop="description" content="1. Nginx架构 1.1. Nginx处理流程 Nginx使用Epoll的非租塞事件驱动模型，内部有三种状态机： 传输层状态机，接收四层请求 HTTP状态机">
+
+
+<meta itemprop="datePublished" content="2020-09-13T20:38:26&#43;08:00" />
+<meta itemprop="dateModified" content="2020-09-13T20:38:26&#43;08:00" />
+<meta itemprop="wordCount" content="2863">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Nginx笔记"/>
+<meta name="twitter:description" content="1. Nginx架构 1.1. Nginx处理流程 Nginx使用Epoll的非租塞事件驱动模型，内部有三种状态机： 传输层状态机，接收四层请求 HTTP状态机"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Wayne</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Wayne</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Nginx笔记</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-09-13 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-nginx架构">1. Nginx架构</a>
+<ul>
+<li><a href="#1-1-nginx处理流程">1.1. Nginx处理流程</a></li>
+<li><a href="#1-2-nginx进程结构">1.2. Nginx进程结构</a></li>
+<li><a href="#1-3-使用信号管理进程">1.3. 使用信号管理进程</a></li>
+<li><a href="#1-4-reload的过程">1.4. reload的过程</a></li>
+<li><a href="#1-5-热升级以及回滚">1.5. 热升级以及回滚</a></li>
+<li><a href="#1-6-优雅关闭worker进程">1.6. 优雅关闭worker进程</a></li>
+<li><a href="#1-7-nginx事件驱动模型epoll">1.7. Nginx事件驱动模型Epoll</a></li>
+<li><a href="#1-8-同步-异步-阻塞-非租塞的区别">1.8. 同步&amp;异步、阻塞&amp;非租塞的区别</a>
+<ul>
+<li><a href="#阻塞调用">阻塞调用</a></li>
+<li><a href="#非租塞调用">非租塞调用</a></li>
+</ul></li>
+<li><a href="#1-9-nginx的模块">1.9. Nginx的模块</a></li>
+<li><a href="#1-11-worker进程间的协同工作">1.11. worker进程间的协同工作</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="1-nginx架构">1. Nginx架构</h2>
+
+<h3 id="1-1-nginx处理流程">1.1. Nginx处理流程</h3>
+
+<p>Nginx使用Epoll的非租塞事件驱动模型，内部有三种状态机：</p>
+
+<ol>
+<li>传输层状态机，接收四层请求</li>
+<li>HTTP状态机，处理七层事件</li>
+<li>Mail状态机，处理邮件</li>
+</ol>
+
+<p>基于状态机，在nginx接收请求处理静态资源的时候，在静态目录找到静态资源，如果做反向代理的时候，从磁盘中缓存取，当nginx内存不足以缓存文件和信息的时候，sendfile活AIO会退化成阻塞的IO调用，因此需要一个线程池来处理调用。对于处理完成的请求会记录access和error日志。当进行反向代理的时候，可以通过协议或应用层代理到后端服务器。</p>
+
+<h3 id="1-2-nginx进程结构">1.2. Nginx进程结构</h3>
+
+<p>Nginx采用多进程而不是多线程模型的原因是进程之间是独立内存空间的，而多线程是共享内存地址空间的，如果某个线程出现内存问题，会导致整个nginx进程挂掉，而多进程则不会出现这样的问题。</p>
+
+<p>Nginx进程包含一个Master的父进程和多个子进程，子进程包含worker进程和cache进程。master进程的目的是管理worker进程，所有的worker进程是处理真正的请求，master进程监控worker进程的运行，是不是需要载入新的配置文件、是不是要进行热部署。</p>
+
+<p>缓存是不仅要在多个worker进程之间共享，而且也要被cache manager和cache loader进程使用，cache manager和cache load也是为反向代理时，后端发来的动态请求做缓存使用的。cache loader做缓存的载入，manager做缓存的管理。</p>
+
+<p>进程之间的通信是使用共享内存来解决的。worker进程很多的原因是nginx采用事件驱动模型以后，希望nginx每个nginx进程都占用一颗CPU，所以不仅nginx一般配置进程数等于CPU核心数，而且最好为每个进程分配固定的CPU核更有效的利用CPU上的缓存来减少缓存失效降低命中率。</p>
+
+<p>Tip：nginx reload和kill -SIGHUP pid是一样的</p>
+
+<h3 id="1-3-使用信号管理进程">1.3. 使用信号管理进程</h3>
+
+<ol>
+<li><p>Master进程：</p>
+
+<ul>
+<li>监控worker进程CHLD信号，如果worker进程终止，会发送CHLD信号给master，如果worker进程意外终止，master可以立刻通过CHLD发现worker进程异常，会立刻拉起worker进程</li>
+<li>管理worker进程</li>
+<li>接收信号：
+
+<ul>
+<li>TERM，INT立刻停止进程</li>
+<li>、QUIT优雅停止，保证不会对用户发reset报文</li>
+<li>HUP重载配置</li>
+<li>USR1重新打开日志文件，对日志文件切割</li>
+<li>USR2平滑升级</li>
+<li>WINCH优雅关闭旧的进程(配合USR2来进行升级)</li>
+</ul></li>
+</ul></li>
+
+<li><p>Worker进程</p></li>
+</ol>
+
+<p>接收信号：TERM、INT、QUIT、USR1、WINCH，虽然worker也可以接收信号，但是通常不这么操作，都是有master来管理的</p>
+
+<ol>
+<li><p>Nginx命令行</p>
+
+<ul>
+<li>reload：HUP</li>
+<li>reopen：USER1</li>
+<li>stop：TERM</li>
+<li>quit：QUIT</li>
+</ul></li>
+</ol>
+
+<p>nginx接收命令和使用kill+信号处理的效果是一样的</p>
+
+<h3 id="1-4-reload的过程">1.4. reload的过程</h3>
+
+<p>在配置文件变更后，执行nginx -s reload会将新的配置文件应用，reload的流程：</p>
+
+<ol>
+<li>想master进程发送HUP信号（reload指令）</li>
+<li>master进程校验配置语法是否正确（不一定非要执行-t指令校验）</li>
+<li>master进程打开可能引入的新的监听端口</li>
+<li>master进程用新的配置文件启动新的worker子进程</li>
+<li>master进程向老的worker子进程发送QUIT信号优雅关闭。为了保证nginx的平滑，关闭老进程之前一定要保证新进程启动</li>
+<li>老worker进程收到QUIT信号后，关闭监听句柄，处理完当前连接后结束进程。正常情况下老的worker进程都会正常退出。但是在一些特殊情况，比如连接出了问题，客户端长时间没有处理，导致老worker进程一直存在，新版的nginx通过参数<strong>worker_shutdown_timeout</strong>来释放异常超时的worker进程连接</li>
+</ol>
+
+<h3 id="1-5-热升级以及回滚">1.5. 热升级以及回滚</h3>
+
+<ol>
+<li>将旧的Nginx二进制文件替换成新的二进制文件（注意备份；替换时，由于文件被进程使用，所以用cp -f参数强制替换）</li>
+<li>想master进程发送USER2信号</li>
+<li>master进程修改pid文件名，加后缀.oldbin</li>
+<li>用新Nginx文件启动新的master进程</li>
+<li>想老的master进程发送WINCH信号（从第三部的备份pid文件找到进程号，或者ps查看），关闭老的worker进程</li>
+<li>回滚：向老master发送HUP信号，向新master发送QUIT</li>
+</ol>
+
+<h3 id="1-6-优雅关闭worker进程">1.6. 优雅关闭worker进程</h3>
+
+<p>如果直接关闭worker进程，会导致正在连接的用户收到异常信息，优雅的关闭是指worker进程可以识别出当前的连接没有处理请求，然后把进程关闭。优雅关闭只针对HTTP请求</p>
+
+<ol>
+<li>设置定时器work_shutdown_timeout</li>
+<li>关闭监听句柄</li>
+<li>关闭空闲连接</li>
+<li>在循环中等待全部链接关闭，这个等待时间可能会比较长，可能会超过work_shutdown_timeout设置时间，当达到work_shutdown_timeout时间，就会被强制关闭</li>
+<li>退出进程</li>
+</ol>
+
+<h3 id="1-7-nginx事件驱动模型epoll">1.7. Nginx事件驱动模型Epoll</h3>
+
+<p>在建立了百万并发的连接时，同时活跃的连接可能只有几百个，只需要处理着几百个请求，而select或poll每次取操作系统事件时，会把这百万连接都交给操作系统，由操作系统判断哪些连接有请求进来。Epoll就是用了前者。</p>
+
+<p>Epoll的实现：Epoll维护了eventpoll，它通过两个数据结构将两个事件分开，nginx每次取活跃连接的时候，会遍历一个链表，这个链表里只有活跃的连接，从内核态读取到用户态，这样效率就很高。</p>
+
+<p>通常可以将worker进程的优先级调高（比如-19），这样CPU会给worker进程分配的时间片比较大，避免进程切换，一个县城仅处理一个连接，不做连接切换，依赖OS的进程调度实现并发。一线程同时处理多连接，在用户态代码完成连接切换，尽量减少OS进程切换。</p>
+
+<h3 id="1-8-同步-异步-阻塞-非租塞的区别">1.8. 同步&amp;异步、阻塞&amp;非租塞的区别</h3>
+
+<p>以Accept为例：</p>
+
+<h4 id="阻塞调用">阻塞调用</h4>
+
+<p>阻塞Accept请求，调用Accept，正常Accept不为空会立即返回；但是如果Accept队列为空时，操作系统会等待新的三次握手的连接到达内核中去唤醒Accept调用。这个过程会导致进程的切换，对于nginx是不能容忍进程切换的。</p>
+
+<h4 id="非租塞调用">非租塞调用</h4>
+
+<p>调用Accept时，监听套接字设置为非租塞，如果Accept队列为空，则不等待，立刻返回EAGAIN错误，代码会进行处理。所以，这里由代码决定是否切换新任务。</p>
+
+<h3 id="1-9-nginx的模块">1.9. Nginx的模块</h3>
+
+<ul>
+<li>前提编译进nginx</li>
+<li>提供哪些配置项</li>
+<li>模块何时被使用（编译即使用还是显示配置）</li>
+<li>提供哪些变量</li>
+</ul>
+
+<p>### 1.10. Nginx如何通过连接池处理网络请求</p>
+
+<p>syntax: worker_connections |default 512 | context events</p>
+
+<p>配置一个worker进程最大同时建立连接数，该连接数用于客户端与nginx、nginx与上游服务器的连接，因此，一个客户端的请求需要消耗两个连接。每个连接对应一个读事件和写事件。</p>
+
+<p>内存池配置：</p>
+
+<p>Syntax: connection_pool_size</p>
+
+<h3 id="1-11-worker进程间的协同工作">1.11. worker进程间的协同工作</h3>
+
+<p>Nginx进程间的通信方式</p>
+
+<ol>
+<li>信号</li>
+<li>共享内存，多个进程可以同时使用，避免竞争问题需要加锁</li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Wayne</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-09-13
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/2020-08-25-sftp%E7%9A%84%E9%85%8D%E7%BD%AE/">
+            <span class="next-text nav-default">Sftp的配置</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="wayne.one.wang@outlook.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Wayne One Wang</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.d7b7ada643c9c1a983026e177f141f7363b4640d619caf01d8831a6718cd44ea.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

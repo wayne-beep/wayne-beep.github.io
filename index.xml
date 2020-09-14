@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>Wayne One Wang</copyright>
-    <lastBuildDate>Tue, 25 Aug 2020 13:38:26 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 13 Sep 2020 20:38:26 +0800</lastBuildDate>
     
 	<atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     
@@ -21,6 +21,15 @@
       <description>Hugo is a static site engine written in Go.
 It makes use of a variety of open source projects including:
  Cobra Viper J Walter Weatherman Cast  Learn more and contribute on GitHub.</description>
+    </item>
+    
+    <item>
+      <title>Nginx笔记</title>
+      <link>http://localhost:1313/post/2020-09-13-nginx%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Sun, 13 Sep 2020 20:38:26 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/2020-09-13-nginx%E7%AC%94%E8%AE%B0/</guid>
+      <description>1. Nginx架构 1.1. Nginx处理流程 Nginx使用Epoll的非租塞事件驱动模型，内部有三种状态机： 传输层状态机，接收四层请求 HTTP状态机</description>
     </item>
     
     <item>
@@ -39,6 +48,15 @@ It makes use of a variety of open source projects including:
       
       <guid>http://localhost:1313/post/2020-08-04-rabbitmq%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/</guid>
       <description>题纲 RABBITMQ介绍 RABBITMQ重要概念 传输信道CHANNEL，交换机，队列，虚拟机 RABBITMQ权限 RABBITMQ分布式介绍 RABBITMQ</description>
+    </item>
+    
+    <item>
+      <title>ELK概念总结</title>
+      <link>http://localhost:1313/post/2020-09-04-elk%E6%A6%82%E5%BF%B5%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Fri, 31 Jul 2020 18:06:45 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/2020-09-04-elk%E6%A6%82%E5%BF%B5%E6%80%BB%E7%BB%93/</guid>
+      <description>Search查询 1. 搜索 查询索引 1 2 3 4 GET /_search #查询所有索引信息 GET /index1/_search #查询指定索引信息 GET /index1,index2/_search #同时查询多个索引 GET /index*/_search #通配符匹配索引 2. URI查询 1 2</description>
     </item>
     
     <item>

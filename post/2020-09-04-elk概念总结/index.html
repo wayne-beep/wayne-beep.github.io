@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>ELK概念总结 - Wayne&#39;s Blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Wayne" /><meta name="description" content="Search查询 1. 搜索 查询索引 1 2 3 4 GET /_search #查询所有索引信息 GET /index1/_search #查询指定索引信息 GET /index1,index2/_search #同时查询多个索引 GET /index*/_search #通配符匹配索引 2. URI查询 1 2" /><meta name="keywords" content="theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.59.0 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/2020-09-04-elk%E6%A6%82%E5%BF%B5%E6%80%BB%E7%BB%93/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<link href="/sass/main.min.6eb09ed45a88bd339269c14515d2a11f2e0afdadbdd763d83f9b5c797166b081.css" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+<meta property="og:title" content="ELK概念总结" />
+<meta property="og:description" content="Search查询 1. 搜索 查询索引 1 2 3 4 GET /_search #查询所有索引信息 GET /index1/_search #查询指定索引信息 GET /index1,index2/_search #同时查询多个索引 GET /index*/_search #通配符匹配索引 2. URI查询 1 2" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/2020-09-04-elk%E6%A6%82%E5%BF%B5%E6%80%BB%E7%BB%93/" />
+<meta property="article:published_time" content="2020-07-31T18:06:45+08:00" />
+<meta property="article:modified_time" content="2020-07-31T18:06:45+08:00" />
+<meta itemprop="name" content="ELK概念总结">
+<meta itemprop="description" content="Search查询 1. 搜索 查询索引 1 2 3 4 GET /_search #查询所有索引信息 GET /index1/_search #查询指定索引信息 GET /index1,index2/_search #同时查询多个索引 GET /index*/_search #通配符匹配索引 2. URI查询 1 2">
+
+
+<meta itemprop="datePublished" content="2020-07-31T18:06:45&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-31T18:06:45&#43;08:00" />
+<meta itemprop="wordCount" content="8168">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ELK概念总结"/>
+<meta name="twitter:description" content="Search查询 1. 搜索 查询索引 1 2 3 4 GET /_search #查询所有索引信息 GET /index1/_search #查询指定索引信息 GET /index1,index2/_search #同时查询多个索引 GET /index*/_search #通配符匹配索引 2. URI查询 1 2"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Wayne</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Wayne</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">ELK概念总结</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-07-31 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#search查询">Search查询</a>
+<ul>
+<li><a href="#1-搜索">1. 搜索</a></li>
+<li><a href="#2-uri查询">2. URI查询</a>
+<ul>
+<li><a href="#query-string-syntax">Query String Syntax</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#mapping-dynamic-mapping">Mapping &amp; Dynamic Mapping</a>
+<ul>
+<li><a href="#什么是mapping">什么是Mapping？</a>
+<ul>
+<li>
+<ul>
+<li><a href="#字段的数据类型">字段的数据类型</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#dynamic-mapping">Dynamic Mapping</a>
+<ul>
+<li>
+<ul>
+<li><a href="#能否更改mapping的字段类型">能否更改Mapping的字段类型</a></li>
+<li><a href="#控制dynamic-mappings">控制Dynamic Mappings</a></li>
+<li><a href="#精确值-exact-values-vs-全文本-full-text">精确值（Exact Values）VS 全文本（Full Text）</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#index-template-和-dynamic-template">Index Template 和 Dynamic Template</a>
+<ul>
+<li><a href="#index-template">Index Template</a>
+<ul>
+<li><a href="#index-template的工作方式">Index Template的工作方式</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#elasticsearch聚合aggregation">Elasticsearch聚合Aggregation</a>
+<ul>
+<li><a href="#集合的分类">集合的分类</a>
+<ul>
+<li><a href="#bucket-metric">Bucket &amp; Metric</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li><a href="#运维">运维</a>
+<ul>
+<li><a href="#集群身份认证与用户鉴权">集群身份认证与用户鉴权</a>
+<ul>
+<li><a href="#es信息出现泄漏的原因分析">ES信息出现泄漏的原因分析</a></li>
+<li><a href="#数据安全性的基本需求">数据安全性的基本需求</a>
+<ul>
+<li><a href="#免费的安全方案">免费的安全方案</a></li>
+</ul></li>
+<li><a href="#authentication-身份认证">Authentication 身份认证</a>
+<ul>
+<li><a href="#认证体系的几种类型">认证体系的几种类型</a></li>
+<li><a href="#realms-x-pack中的认证服务">Realms：X-Pack中的认证服务</a></li>
+</ul></li>
+<li><a href="#rbac-用户鉴权">RBAC 用户鉴权</a>
+<ul>
+<li><a href="#集群内部传输加密">集群内部传输加密</a></li>
+<li><a href="#集群与外部安全加密">集群与外部安全加密</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#部署方式">部署方式</a>
+<ul>
+<li>
+<ul>
+<li><a href="#节点参数配置">节点参数配置</a></li>
+<li><a href="#单一角色职责分离的好处">单一角色职责分离的好处</a></li>
+<li><a href="#增加节点-水平扩展">增加节点，水平扩展</a></li>
+<li><a href="#读写分离">读写分离</a></li>
+<li><a href="#部署kibana">部署kibana</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#hot-warm架构与shard-filtering">Hot &amp; Warm架构与Shard Filtering</a>
+<ul>
+<li>
+<ul>
+<li><a href="#标记节点">标记节点</a></li>
+<li><a href="#新索引分配到hot节点">新索引分配到Hot节点</a></li>
+<li><a href="#就索引分配到warm节点">就索引分配到warm节点</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#多机架部署rack-awareness">多机架部署Rack Awareness</a></li>
+<li><a href="#分配设定与管理">分配设定与管理</a>
+<ul>
+<li><a href="#如何设计分片数">如何设计分片数</a>
+<ul>
+<li><a href="#如何确定分片数">如何确定分片数</a></li>
+<li><a href="#如何确定副本分片数">如何确定副本分片数</a></li>
+<li><a href="#集群容量规划">集群容量规划</a></li>
+<li><a href="#评估业务的性能要求">评估业务的性能要求</a></li>
+<li><a href="#写入时间序列的数据-基于date-math的方式">写入时间序列的数据：基于Date Math的方式</a></li>
+<li><a href="#集群扩容">集群扩容</a></li>
+<li><a href="#jvm设定">JVM设定</a></li>
+<li><a href="#集群配置的api设定">集群配置的API设定</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#最佳实践">最佳实践</a>
+<ul>
+<li>
+<ul>
+<li><a href="#内存设定计算实例">内存设定计算实例</a></li>
+<li><a href="#存储">存储</a></li>
+<li><a href="#集群设置-关闭dynamic-indexes">集群设置：关闭Dynamic Indexes</a></li>
+<li><a href="#集群安全">集群安全</a></li>
+<li><a href="#集群监控">集群监控</a></li>
+<li><a href="#添加watcher监控报警">添加watcher监控报警</a></li>
+<li><a href="#数据写入过程">数据写入过程</a></li>
+<li><a href="#分片的设定">分片的设定</a></li>
+<li><a href="#查询性能优化">查询性能优化</a></li>
+<li><a href="#压力测试">压力测试</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="search查询">Search查询</h1>
+
+<h2 id="1-搜索">1. 搜索</h2>
+
+<ol>
+<li><p>查询索引</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">GET /_search  <span class="c1">#查询所有索引信息</span>
+GET /index1/_search <span class="c1">#查询指定索引信息</span>
+GET /index1,index2/_search <span class="c1">#同时查询多个索引</span>
+GET /index*/_search <span class="c1">#通配符匹配索引</span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+
+<h2 id="2-uri查询">2. URI查询</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">GET /movies/_search?q<span class="o">=</span><span class="m">2012</span><span class="p">&amp;</span><span class="nv">df</span><span class="o">=</span>title<span class="p">&amp;</span><span class="nv">sort</span><span class="o">=</span>year:desc<span class="p">&amp;</span><span class="nv">from</span><span class="o">=</span><span class="m">0</span><span class="p">&amp;</span><span class="nv">size</span><span class="o">=</span><span class="m">10</span><span class="p">&amp;</span><span class="nv">timeout</span><span class="o">=</span>1s
+<span class="o">{</span>
+		<span class="s2">&#34;profile&#34;</span>: <span class="s2">&#34;true&#34;</span>
+<span class="o">}</span> </code></pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li>q 指定查询语句，使用Query String Syntax</li>
+<li>df 默认字段，不指定会对所有字段进行查询，这样查询效率低</li>
+<li>sort 排序</li>
+<li>from、size 用于分页</li>
+<li>profile 可以查看查询是如何被执行的</li>
+</ul>
+
+<h3 id="query-string-syntax">Query String Syntax</h3>
+
+<ol>
+<li>指定字段 VS 泛查询</li>
+</ol>
+
+<p>q=title:2012 VS q=2012</p>
+
+<ol>
+<li><p>Term查询 VS Phrase查询</p>
+
+<ul>
+<li><p>Beautiful Mind 等效于Beautiful OR Mind</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">GET /movies/_search?q<span class="o">=</span>title: <span class="s2">&#34;Beautiful Mind&#34;</span>
+<span class="o">{</span>
+<span class="s2">&#34;profile&#34;</span>: <span class="s2">&#34;true&#34;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div></li>
+
+<li><p>”Beautiful Mind“，等效于 Beautiful AND Mind。Phrase查询还要求前后顺序保持一致</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">GET /movies/_search?q<span class="o">=</span>title: <span class="s2">&#34;Beautiful Mind&#34;</span>
+<span class="o">{</span>
+<span class="s2">&#34;profile&#34;</span>: <span class="s2">&#34;true&#34;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul></li>
+
+<li><p>分组与引号查询</p>
+
+<ul>
+<li>title:(Beautiful AND Mind)</li>
+<li>title=&ldquo;Beautiful Mind&rdquo;</li>
+</ul></li>
+</ol>
+
+<h1 id="mapping-dynamic-mapping">Mapping &amp; Dynamic Mapping</h1>
+
+<h2 id="什么是mapping">什么是Mapping？</h2>
+
+<ul>
+<li>Mapping类似数据库中的schema的定义，作用如下
+
+<ul>
+<li>定义索引中的字段的名称</li>
+<li>定义字段的数据类型，例如字符串、数字、布尔……</li>
+<li>字段，倒排索引的相关位置（Analyzed or Not Analyzed, Analyzer)</li>
+</ul></li>
+<li>Mapping会把JSON文档映射成Lucene所需要的扁平格式</li>
+<li>一个Mapping属于一个索引的Type
+
+<ul>
+<li>每个文档都属于一个Type</li>
+<li>一个Type有一个Mapping定义</li>
+<li>7.0开始，不需要在Mapping定义中指定Type信息</li>
+</ul></li>
+</ul>
+
+<h4 id="字段的数据类型">字段的数据类型</h4>
+
+<ul>
+<li>简单类型
+
+<ol>
+<li>Text / Keyword</li>
+<li>Date</li>
+<li>Integer / Floating</li>
+<li>Boolean</li>
+<li>IPv4 &amp; IPv6</li>
+</ol></li>
+<li>复杂类型 - 对象和嵌套对象
+
+<ul>
+<li>对象类型 嵌套类型</li>
+</ul></li>
+<li>特殊类型
+
+<ul>
+<li>geo_point &amp; geo_shape / percolator</li>
+</ul></li>
+</ul>
+
+<h2 id="dynamic-mapping">Dynamic Mapping</h2>
+
+<p>在写入文档的时候，如果索引不存在，会自动创建索引，Dynamic Mapping的机制使得我们无需手动定义Mappings。Elasticsearch会根据文档信息推算出字段的类型。但是有的时候推算的不准确，例如地理位置信息</p>
+
+<table>
+<thead>
+<tr>
+<th>JSON类型</th>
+<th>elasticsearch类型</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>字符串</td>
+<td>1. 匹配日期格式，设置成Date<br>2. 配置数字设置为float或者long，该选项默认关闭<br>3. 设置为Text，并且增加keyword子字段</td>
+</tr>
+
+<tr>
+<td>布尔值</td>
+<td>boolean</td>
+</tr>
+
+<tr>
+<td>浮点数</td>
+<td>float</td>
+</tr>
+
+<tr>
+<td>整数</td>
+<td>long</td>
+</tr>
+
+<tr>
+<td>对象</td>
+<td>Object</td>
+</tr>
+
+<tr>
+<td>数组</td>
+<td>由第一个非空数值的类型所定义</td>
+</tr>
+
+<tr>
+<td>空值</td>
+<td>忽略</td>
+</tr>
+</tbody>
+</table>
+
+<p>例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">#</span> <span class="err">kibana</span> <span class="err">dev</span> <span class="err">tool</span>
+<span class="err">PUT</span> <span class="err">mapping_test/_doc/</span><span class="mi">1</span>
+<span class="p">{</span>
+  <span class="nt">&#34;uid&#34;</span><span class="p">:</span> <span class="s2">&#34;123&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;isVip&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="nt">&#34;isAdmin&#34;</span><span class="p">:</span> <span class="s2">&#34;true&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
+  <span class="nt">&#34;loginDate&#34;</span><span class="p">:</span> <span class="s2">&#34;2020-07-24T10:29:48.103Z&#34;</span>
+<span class="p">}</span>
+<span class="err">#</span> <span class="err">返回</span>
+<span class="p">{</span>
+  <span class="nt">&#34;_index&#34;</span> <span class="p">:</span> <span class="s2">&#34;mapping_test&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;_type&#34;</span> <span class="p">:</span> <span class="s2">&#34;_doc&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;_id&#34;</span> <span class="p">:</span> <span class="s2">&#34;1&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;_version&#34;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nt">&#34;result&#34;</span> <span class="p">:</span> <span class="s2">&#34;created&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;_shards&#34;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;total&#34;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nt">&#34;successful&#34;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;failed&#34;</span> <span class="p">:</span> <span class="mi">0</span>
+  <span class="p">},</span>
+  <span class="nt">&#34;_seq_no&#34;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="nt">&#34;_primary_term&#34;</span> <span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+
+<span class="err">GET</span> <span class="err">mapping_test/_mapping</span>
+<span class="p">{</span>
+  <span class="nt">&#34;mapping_test&#34;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;mappings&#34;</span> <span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;properties&#34;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;age&#34;</span> <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;type&#34;</span> <span class="p">:</span> <span class="s2">&#34;long&#34;</span>   <span class="err">#年龄匹配成整型</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;firstName&#34;</span> <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;type&#34;</span> <span class="p">:</span> <span class="s2">&#34;text&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;fields&#34;</span> <span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;keyword&#34;</span> <span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&#34;type&#34;</span> <span class="p">:</span> <span class="s2">&#34;keyword&#34;</span><span class="p">,</span>
+              <span class="nt">&#34;ignore_above&#34;</span> <span class="p">:</span> <span class="mi">256</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;isAdmin&#34;</span> <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;type&#34;</span> <span class="p">:</span> <span class="s2">&#34;text&#34;</span><span class="p">,</span>  <span class="err">#由于true包含双引号，因此匹配成text类型，同时加上了keyword</span>
+          <span class="nt">&#34;fields&#34;</span> <span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;keyword&#34;</span> <span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&#34;type&#34;</span> <span class="p">:</span> <span class="s2">&#34;keyword&#34;</span><span class="p">,</span>
+              <span class="nt">&#34;ignore_above&#34;</span> <span class="p">:</span> <span class="mi">256</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;isVip&#34;</span> <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;type&#34;</span> <span class="p">:</span> <span class="s2">&#34;boolean&#34;</span>  <span class="err">#</span> <span class="err">false匹配成布尔值</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;lastName&#34;</span> <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;type&#34;</span> <span class="p">:</span> <span class="s2">&#34;text&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;fields&#34;</span> <span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;keyword&#34;</span> <span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&#34;type&#34;</span> <span class="p">:</span> <span class="s2">&#34;keyword&#34;</span><span class="p">,</span>
+              <span class="nt">&#34;ignore_above&#34;</span> <span class="p">:</span> <span class="mi">256</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;loginDate&#34;</span> <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;type&#34;</span> <span class="p">:</span> <span class="s2">&#34;date&#34;</span>  <span class="err">#日期格式匹配成date</span> 
+        <span class="p">},</span>
+        <span class="nt">&#34;uid&#34;</span> <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;type&#34;</span> <span class="p">:</span> <span class="s2">&#34;text&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;fields&#34;</span> <span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;keyword&#34;</span> <span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&#34;type&#34;</span> <span class="p">:</span> <span class="s2">&#34;keyword&#34;</span><span class="p">,</span>
+              <span class="nt">&#34;ignore_above&#34;</span> <span class="p">:</span> <span class="mi">256</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="能否更改mapping的字段类型">能否更改Mapping的字段类型</h4>
+
+<ol>
+<li>新增字段
+
+<ul>
+<li>Dynamic设置为true时，一旦有新增的文档写入，Mapping也同时被更新</li>
+<li>Dynamic设置为false时，Mapping不会被更新，新增字段的数据无法被索引，但信息会出现在_source中</li>
+<li>Dynamic设置为Strict，文档写入失败</li>
+</ul></li>
+<li>对已有字段，一旦已经有数据写入，就不再支持修改字段定义
+Lucene实现的倒排索引，一旦生成后，就不允许修改，如果希望改变字段类型，必须Reindex API重建索引，或者索引在每日轮转后生成新的所有名而生效。</li>
+</ol>
+
+<p>原因</p>
+
+<ul>
+<li>如果修改了字段的数据类型，会导致已经被索引的属于无法被搜索</li>
+<li>如果是增加新的字段就不会有这样的影响</li>
+</ul>
+
+<h4 id="控制dynamic-mappings">控制Dynamic Mappings</h4>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>true</th>
+<th>false</th>
+<th>strict</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>文档可索引</td>
+<td>Y</td>
+<td>Y</td>
+<td>N</td>
+</tr>
+
+<tr>
+<td>新增字段可索引</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+</tr>
+
+<tr>
+<td>Mapping被更新</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">PUT</span> <span class="err">movies</span>
+<span class="p">{</span>
+  <span class="nt">&#34;mappings&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;_docs&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;dynamic&#34;</span><span class="p">:</span> <span class="s2">&#34;false&#34;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="精确值-exact-values-vs-全文本-full-text">精确值（Exact Values）VS 全文本（Full Text）</h4>
+
+<ul>
+<li>Exact Values精确值包括数字、日期、具体一个字符串（elasticsearch中的keyword），不会被分词</li>
+<li>全文本，非结构化的文本数据（elasticsearch中的text）可以分词
+
+<br /></li>
+</ul>
+
+<h2 id="index-template-和-dynamic-template">Index Template 和 Dynamic Template</h2>
+
+<h3 id="index-template">Index Template</h3>
+
+<p>index template帮助我们设定Mappings和Settings ，并按照一定的规则，自动匹配到新创建的索引之上</p>
+
+<ul>
+<li>模板仅在一个索引被创建时才会产生作用。修改模板不会影响已创建的索引</li>
+<li>可以设定多个索引模板，这些设置可以merge在一起</li>
+<li>可以指定“order”的数值来控制merge的过程</li>
+</ul>
+
+<h4 id="index-template的工作方式">Index Template的工作方式</h4>
+
+<p>当一个索引被创建时</p>
+
+<ul>
+<li>应用Elasticsearch默认的settings和Mappings</li>
+<li>应用order数值低的index template中的设定</li>
+<li>应用order高的index template中的设定，之前的设定会被覆盖</li>
+<li>应用创建索引时，用户所指定的Settings和Mappings，并覆盖之前模板中的设定</li>
+</ul>
+
+<h2 id="elasticsearch聚合aggregation">Elasticsearch聚合Aggregation</h2>
+
+<ol>
+<li>Elasticsearch除了搜索以外，提供针对ES数据进行统计分析的功能</li>
+<li>通过聚合，我们会得到一个数据的概览，是分析总结全套的数据，而不是寻找单个文档</li>
+<li>高性能，只需要一条语句，就可以从Elasticsearch得到分析结果，无需在客户端自己去实现分析逻辑</li>
+</ol>
+
+<h3 id="集合的分类">集合的分类</h3>
+
+<ul>
+<li>Bucket Aggregation 一些列满足特定条件的文档的集合</li>
+<li>Metric Aggregation 一些数学运算，可以对文档字段进行统计分析</li>
+<li>Pipeline Aggregation 对其他的聚合结果进行二次聚合</li>
+<li>Matrix Aggregation支持对多个字段的操作并提供一个结果的矩阵</li>
+</ul>
+
+<h4 id="bucket-metric">Bucket &amp; Metric</h4>
+
+<ul>
+<li>bucket 一组满足条件的文档，相当于mysql的 select count(bound)</li>
+<li>metric 一些系列的统计方法，相当于mysql的group by brand</li>
+</ul>
+
+<p>## 测试题</p>
+
+<ol>
+<li>ES支持使用HTTP PUT写入新文档，并通过ES生成文档ID</li>
+</ol>
+
+<p>答：错，只能用POST方式写入</p>
+
+<ol>
+<li>Update一个文档，需要使用HTTP PUT</li>
+</ol>
+
+<p>答：错，使用POST方式，PUT只能进行index和create</p>
+
+<ol>
+<li>ES中的analyzer有哪几部分组成的</li>
+</ol>
+
+<p>答：character Filter + Tokenizer + Token Filter</p>
+
+<ol>
+<li>描述match和match_phrase的区别</li>
+</ol>
+
+<p>答：match 中的terms直接的or关系，Match Phrase的terms之间是and关系，并且term之间的位置关系也影响到搜索的结果</p>
+
+<ol>
+<li>如果你希望match_phrase匹配到更多的结果，应该配置查询中的什么参数</li>
+</ol>
+
+<p>答：slop参数</p>
+
+<ol>
+<li>判断：可以把一个字段类型从integer改成long，因为两个类型是兼容的</li>
+</ol>
+
+<p>错，字段类型的修改，在有数据进来之后，是需要重新index的</p>
+
+<ol>
+<li>判断：可以在Mapping文件中为index和searching指定不通的analyzer</li>
+</ol>
+
+<p>对</p>
+
+<ol>
+<li>判断： 字段类型为Text的字段一定可以被全文搜索</li>
+</ol>
+
+<p>错，可以通过为text类型的字段类型指定为Not Indexed，使其无法被搜索</p>
+
+<h1 id="运维">运维</h1>
+
+<h2 id="集群身份认证与用户鉴权">集群身份认证与用户鉴权</h2>
+
+<h3 id="es信息出现泄漏的原因分析">ES信息出现泄漏的原因分析</h3>
+
+<ul>
+<li><p>Elasticsearch在默认安装后，不提供任何形式的安全防护</p></li>
+
+<li><p>错误的配置信息导致公网可以访问ES集群</p></li>
+</ul>
+
+<p>例如server.host被错误的配置成0.0.0.0</p>
+
+<h3 id="数据安全性的基本需求">数据安全性的基本需求</h3>
+
+<ol>
+<li>身份认证</li>
+</ol>
+
+<p>鉴定用户是否合法</p>
+
+<ol>
+<li>用户鉴权</li>
+</ol>
+
+<p>指定哪个用户可以访问哪个索引</p>
+
+<ol>
+<li><p>传输加密</p></li>
+
+<li><p>日志审计</p></li>
+</ol>
+
+<h4 id="免费的安全方案">免费的安全方案</h4>
+
+<ol>
+<li>设置nginx反向代理</li>
+<li>安装免费的Security插件</li>
+<li>x-pack</li>
+</ol>
+
+<h3 id="authentication-身份认证">Authentication 身份认证</h3>
+
+<h4 id="认证体系的几种类型">认证体系的几种类型</h4>
+
+<ol>
+<li>提供用户名密码</li>
+<li>提供秘钥或Kerberos票据</li>
+</ol>
+
+<h4 id="realms-x-pack中的认证服务">Realms：X-Pack中的认证服务</h4>
+
+<ol>
+<li>内置Realms（免费）</li>
+</ol>
+
+<p>File/Native（用户名密码保存在ES）</p>
+
+<ol>
+<li>外部Realms（收费）</li>
+</ol>
+
+<p>Ldap/AD/PKI/SAML/Kerberos</p>
+
+<h3 id="rbac-用户鉴权">RBAC 用户鉴权</h3>
+
+<p>什么是RBAC：Role Based Access Control ，定义一个角色并分配一组权限。权限包括索引级，字段级，集群级的不同操作。然后通过将角色分配给用户，使得用户拥有这些权限。</p>
+
+<h4 id="集群内部传输加密">集群内部传输加密</h4>
+
+<p>为节点创建证书</p>
+
+<p>TLS：TLS协议要求Trust Certificate Authority（CA）签发的X.509的证书</p>
+
+<p>证书认证的不同级别</p>
+
+<ol>
+<li>Certificate 节点加入需要使用相同CA签发的证书</li>
+<li>Full Verfication 节点加入集群需要相同CA签发的证书，还需要Host name 活IP地址</li>
+<li>No Verfication 任何节点都可以加入，开发环境中用于诊断目的</li>
+</ol>
+
+<h4 id="集群与外部安全加密">集群与外部安全加密</h4>
+
+<p>对外传输加密使用https的方式</p>
+
+<ol>
+<li><p>配置Elasticsearch集群直接的https，ES集群每个节点开启如下参数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">xpack.security.http.ssl.enabled<span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w"></span>xpack.security.http.ssl.keystore.path<span class="p">:</span><span class="w"> </span>/etc/elasticsearch/certs/elastic-certificates.p12<span class="w"> </span><span class="c"># 之前生成的证书</span><span class="w">
+</span><span class="w"></span>xpack.security.http.ssl.truststore.path<span class="p">:</span><span class="w"> </span>/etc/elasticsearch/certs/elastic-certificates.p12</code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+
+<p>然后重启集群</p>
+
+<ol>
+<li>配置kibana连接ES</li>
+</ol>
+
+<p>ES集群使用https访问方式后，kibana也需要进行设置</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">   </span>elasticsearch.hosts<span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;https://10.40.98.100:9200&#34;</span><span class="p">]</span><span class="w">  </span><span class="c"># 这里由http改成https</span><span class="w">
+</span><span class="w">   </span>elasticsearch.ssl.certificateAuthorities<span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&#34;/etc/kibana/certs/elastic-ca.pem&#34;</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="c">#这个证书需要单独生成</span><span class="w">
+</span><span class="w">   </span>elasticsearch.ssl.verificationMode<span class="p">:</span><span class="w"> </span>certificate</code></pre></td></tr></table>
+</div>
+</div>
+<p>由于kibana的certificateAuthorities证书不能直接使用Elasticsearch的elastic-certificates.p12，要使用pem格式证书，，因此需要使用openssl工具将elastic-certificates.p12导出证书<code>openssl pkcs12 -in elastic-certificates.p12 -cacerts -nokeys -out elastic-ca.pem</code></p>
+
+<p>修改完成后重启kibana</p>
+
+<h2 id="部署方式">部署方式</h2>
+
+<h4 id="节点参数配置">节点参数配置</h4>
+
+<table>
+<thead>
+<tr>
+<th>节点类型</th>
+<th>配置参数</th>
+<th>默认值</th>
+<th>配置</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>master eligible</td>
+<td>node.master</td>
+<td>true</td>
+<td>n\ode.master: true<br>node.ingest: false<br>node.data: false</td>
+</tr>
+
+<tr>
+<td>data</td>
+<td>node.data</td>
+<td>true</td>
+<td>node.master: false<br/>node.ingest: false<br/>node.data: true</td>
+</tr>
+
+<tr>
+<td>ingest</td>
+<td>node.ingest</td>
+<td>true</td>
+<td>node.master: false<br/>node.ingest: true<br/>node.data: false</td>
+</tr>
+
+<tr>
+<td>coordinating only</td>
+<td>-</td>
+<td>设置上面三个参数全部false</td>
+<td>node.master: false<br/>node.ingest: false<br/>node.data: false</td>
+</tr>
+
+<tr>
+<td>machine learning</td>
+<td>node.ml</td>
+<td>True(需要enable x-pack)</td>
+<td>node.master: false<br/>node.ingest: false<br/>node.data: false<br>node.ml: true</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="单一角色职责分离的好处">单一角色职责分离的好处</h4>
+
+<ul>
+<li>Dedicated master eligible nodes: 负责集群状态的管理，使用低配的CPU、RAM和磁盘即可</li>
+<li>Dedicated data nodes: 负责数据存储及处理客户端请求，使用高配置的CPU、RAM和磁盘</li>
+<li>Dedicated ingest nodes: 负责数据处理，使用高配置CPU、中等配置RAM、低配置的磁盘</li>
+<li>Dedicated coordinating only nodes (client noly): 中高CPU、中高RAM、低磁盘</li>
+</ul>
+
+<p>生产环境中、建议为一些大的集群配置Coordinating Only Nodes，它们可以扮演LB，降低master和data node的负载。负责搜索结果的聚合、分解。有时候无法预知客户端会发送怎么样的请求，大量的占用内存的结合操作，一个深度的聚合可能引发OOM。</p>
+
+<h4 id="增加节点-水平扩展">增加节点，水平扩展</h4>
+
+<p>当磁盘容量无法满足需求时，可以增加数据节点，磁盘读压力大时，增加数据节点。当系统中有大量的复杂查询及聚合的时候，增加Coordinating节点，增加查询的性能。</p>
+
+<h4 id="读写分离">读写分离</h4>
+
+<p>读使用Coordinating node，写可以通过增加ingest node，当写性能不足，可以扩展ingest node节点。</p>
+
+<h4 id="部署kibana">部署kibana</h4>
+
+<p>官方建议，可以将kibana部署在Coordinating node上，前端也通过LB进行代理</p>
+
+<h2 id="hot-warm架构与shard-filtering">Hot &amp; Warm架构与Shard Filtering</h2>
+
+<p>数据通常不会有Update操作，适用于Time based索引数据（生命周期管理），同时数据量比较大的场景，引入warm节点，低配置大容量的机器存放老数据以降低部署成本。</p>
+
+<ul>
+<li>Hot节点（通常使用SSD) ：索引不断新文档写入。通常使用SSD</li>
+<li>Warm节点（通常使用HDD）：索引不存在新数据的写入；同时也不存在大量的数据查询</li>
+</ul>
+
+<h4 id="标记节点">标记节点</h4>
+
+<p>需要通过“node.attr”来标记一个节点，节点的attribute可以是任何的key/value，例如elasticsearch.yaml中配置node.attr.box_type=hot  node.attr.box_type=warm。通过接口查看节点key value对<code>GET /_cat/nodeattrs?v</code></p>
+
+<h4 id="新索引分配到hot节点">新索引分配到Hot节点</h4>
+
+<p>当新建索引的时候，可以通过索引模板的settings块内加入新索引配置分配到的节点</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json">	
+	<span class="s2">&#34;index&#34;</span><span class="err">:</span> <span class="p">{</span>
+      <span class="nt">&#34;routing&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;allocation&#34;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;include&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;box_type&#34;</span><span class="p">:</span> <span class="s2">&#34;hot&#34;</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="就索引分配到warm节点">就索引分配到warm节点</h4>
+
+<p>Index.routing.allocation是一个索引级的Dynamic setting，可以通过API后期进行设定</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">PUT</span> <span class="err">logstash</span><span class="mi">-2020-09-05</span><span class="err">/_settings</span>
+<span class="p">{</span>
+  <span class="nt">&#34;index.routing.allocation.require.box_type&#34;</span><span class="p">:</span> <span class="s2">&#34;warm&#34;</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Elasticsearch会自动将索引reallocate到warm节点当中去</p>
+
+<h2 id="多机架部署rack-awareness">多机架部署Rack Awareness</h2>
+
+<p>ES节点可能分配在不同的机架</p>
+
+<ul>
+<li>当一个机架断电，可能会同时丢失几个节点</li>
+<li>如果一个索引相同的主分片和副本分片同时在这个机架上，就有可能丢失数据</li>
+<li>通过Rack Awareness机制，就可以尽可能避免将同一个索引的副本分片同时分配在一个机架的节点上</li>
+</ul>
+
+<p>通过在配置文件中设置<code>node.attr.rack_id=rack1</code>来标记</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">PUT</span> <span class="err">_cluster/settings/</span>
+<span class="p">{</span>
+  <span class="nt">&#34;persistent&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;cluster.routing.allocation.awareness.attributes&#34;</span><span class="p">:</span> <span class="s2">&#34;rack_id&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;cluster.routing.allocation.awareness.force.zone.values&#34;</span><span class="p">:</span> <span class="s2">&#34;rack1,rack2&#34;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="err">PUT</span> <span class="err">my_index</span><span class="mi">1</span>
+<span class="p">{</span>
+  <span class="nt">&#34;settings&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;number_of_replicas&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;number_of_shards&#34;</span><span class="p">:</span> <span class="mi">2</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="err">PUT</span> <span class="err">my_index</span><span class="mi">1</span><span class="err">/_doc/</span><span class="mi">1</span>
+<span class="p">{</span>
+  <span class="nt">&#34;key&#34;</span><span class="p">:</span> <span class="s2">&#34;value&#34;</span>
+<span class="p">}</span>
+
+<span class="err">GET</span> <span class="err">_cat/shards?v</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="分配设定与管理">分配设定与管理</h2>
+
+<p>分片Shared是ES集群实现集群水平扩展的最小单位。从7.0开始，新创建索引默认只有一个主分片，单个分片，查询算分聚合不准的问题都可以避免。单个索引单个分片的时候，集群无法实现水平扩展，即使增加节点。</p>
+
+<h3 id="如何设计分片数">如何设计分片数</h3>
+
+<ol>
+<li>当分片数 &gt; 节点数，一旦集群中有新节点加入，分片就可以自动进行分配，分片在重新分配时，系统不会有downtime</li>
+<li>多分片的好处是一个索引分片如果分布在不同的节点，多个节点可以并行执行查询、写入</li>
+<li>每个分片是一个Lucene的索引，会使用机器的资源。过多的分配数会带来一些潜在的问题
+
+<ul>
+<li>Lucene Indices / File descriptors / RAM / CPU</li>
+<li>每次搜索的请求，需要从每个分片上获取数据</li>
+<li>分片的meta信息由master节点维护，过多会增加管理负担</li>
+</ul></li>
+</ol>
+
+<h4 id="如何确定分片数">如何确定分片数</h4>
+
+<p>从存储的物理角度看</p>
+
+<ol>
+<li>日之类应用，单个分配不超过50G，我们是15G</li>
+<li>搜索类应用，单个分片不超过20G</li>
+</ol>
+
+<p>控制分片存储大小的好处</p>
+
+<ol>
+<li>提高update性能</li>
+<li>Merge时，减少所需的资源</li>
+<li>丢失节点后，具备更快的恢复速度</li>
+<li>便于在集群内Rebalancing</li>
+</ol>
+
+<h4 id="如何确定副本分片数">如何确定副本分片数</h4>
+
+<p>副本是主分片的拷贝</p>
+
+<ul>
+<li>提高系统可用性：处理相应查询请求，防止数据丢失</li>
+<li>需要占用和主分片一样的资源</li>
+</ul>
+
+<p>对性能的影响：</p>
+
+<ul>
+<li>副本会降低数据索引的速度，有几份副本就会有几倍的CPU资源消耗在索引上</li>
+<li>会减缓对主分片查询的压力，但是会消耗同样的内存资源。如果机器资源充足，提高副本数可以提高整体的QPS</li>
+</ul>
+
+<h4 id="集群容量规划">集群容量规划</h4>
+
+<p>一个集群有多少节点，一个索引需要多少分片？规划上要保持一定的冗余量，当负载出现波动，节点出现丢失时还能正常运行。</p>
+
+<p>做容量规划需要考虑的因素</p>
+
+<ul>
+<li>机器的软硬件配置</li>
+<li>单条文档的尺寸、文档的总数据量、索引的总数据量（time base数据保留时间）、副本分片数</li>
+<li>文档是如何写入的（Bulk尺寸）</li>
+<li>文档的复杂度，文档是如何进行读取的（怎么样的查询和聚合）</li>
+</ul>
+
+<h4 id="评估业务的性能要求">评估业务的性能要求</h4>
+
+<ol>
+<li>数据吞吐及性能要求
+
+<ul>
+<li>数据写入的吞吐量，每秒要求写入多少数据</li>
+<li>查询的吞吐量</li>
+<li>单条查询可接受的最大返回时间</li>
+</ul></li>
+<li>了解你的数据
+
+<ul>
+<li>数据的格式和数据的Mapping</li>
+<li>实际的查询和聚合长的是什么样的</li>
+</ul></li>
+</ol>
+
+<h4 id="写入时间序列的数据-基于date-math的方式">写入时间序列的数据：基于Date Math的方式</h4>
+
+<ol>
+<li>容易使用</li>
+<li>如果时间发生变化，需要重新部署代码</li>
+</ol>
+
+<table>
+<thead>
+<tr>
+<th>设定</th>
+<th>结果</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><logs-{now/d}></td>
+<td>Logs-2020-09-07</td>
+</tr>
+
+<tr>
+<td><logs-{now{YYYY.MM}}></td>
+<td>Logs-2020-09</td>
+</tr>
+
+<tr>
+<td>&lt;logs-{now/w}</td>
+<td>Logs-2019.7.29 #星期开始</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="集群扩容">集群扩容</h4>
+
+<p>如果查询聚合性能低，可以扩展Coordinating、Ingest Node</p>
+
+<p>增加数据节点：解决存储问题；避免分片不均匀问题，提前监控磁盘空间，提前清理数据或增加节点（70%）</p>
+
+<h4 id="jvm设定">JVM设定</h4>
+
+<p>从ES6开始，只支持64位的JVM，配置文件 config/jvm.options</p>
+
+<ol>
+<li><p>将Xms和Xmx设置成一样，避免Heap resize时引发停顿</p></li>
+
+<li><p>Xmx设置不要超过物理内存的50%，剩下的50%加入Lucene，增加全文检索功能；单个节点上，最大内存不要超过32G</p></li>
+</ol>
+
+<blockquote>
+<p><a href="https://www.elastic.io/blog/a-heap-of-trouble">https://www.elastic.io/blog/a-heap-of-trouble</a></p>
+</blockquote>
+
+<ol>
+<li><p>生产环境JVM必须使用Server模式</p></li>
+
+<li><p>关闭JVM Swapping</p></li>
+</ol>
+
+<h4 id="集群配置的api设定">集群配置的API设定</h4>
+
+<p>elasticsearch集群的设置分为静态和动态</p>
+
+<ol>
+<li><p>静态方式，通过elasticsearch.yml配置文件中写入参数的方式。静态配置文件尽量简洁，尽量只写入必备的参数，静态方式修改需要重启节点</p></li>
+
+<li><p>动态方式，动态方式可以使用API动态进行设定。动态设定会覆盖elasticsearch.yml的配置，有两种模式：</p>
+
+<ol>
+<li>Transient： 在集群重启后会丢失</li>
+
+<li><p>Persistent：在集群重启后不会丢失</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+<span class="nt">&#34;persistent&#34;</span><span class="p">:{},</span>
+<span class="nt">&#34;transient&#34;</span><span class="p">:{</span>
+<span class="nt">&#34;indices.recovery.max_bytes_per_sec&#34;</span><span class="p">:</span> <span class="s2">&#34;20mb&#34;</span>
+<span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol></li>
+</ol>
+
+<p>优先级</p>
+
+<table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>设置</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>1</td>
+<td>Transient Settings</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>Persistent Settings</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>Command-line Settings</td>
+</tr>
+
+<tr>
+<td>4</td>
+<td>Config file Settings</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="最佳实践">最佳实践</h2>
+
+<h4 id="内存设定计算实例">内存设定计算实例</h4>
+
+<p>内存大小要根据Node需要存储的数据来计算，内存磁盘配比如下：</p>
+
+<ul>
+<li>搜索类比例建议1：16</li>
+<li>日志类：1：48-96之间</li>
+</ul>
+
+<p>总数据量1T，设置一个副本=2T总数据量</p>
+
+<ul>
+<li>如果搜索类的项目，每个节点磁盘31G(内存)*16=496G，加上预留空间。所以每个节点最多400G数据，至少要5个数据节点</li>
+<li>如果哦是日志累项目，每个节点磁盘31G(内存)*50 = 1550GB，2个数据节点即可</li>
+</ul>
+
+<h4 id="存储">存储</h4>
+
+<ul>
+<li>推荐使用SSD，使用本地存储，避免使用网络存储</li>
+<li>可以在本地使用多个path.data以支持使用多块磁盘</li>
+<li>ES本身提供了很好的HA机制，无需使用RAID</li>
+<li>可以是warm节点使用Spinning Disk，但是需要关闭Concurrent Merges：<code>index.merge.scheduler.max_thread_count:1</code></li>
+<li>Trim你的SSD <code>https://www.elastic.io/blog/is-your-elasticsearch-trimmed</code></li>
+</ul>
+
+<h4 id="集群设置-关闭dynamic-indexes">集群设置：关闭Dynamic Indexes</h4>
+
+<p>动态模板会导致大量的字段引入而影响性能，因此考虑关闭Dynamic Indexes功能</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">PUT</span> <span class="err">_cluster/settings</span>
+<span class="p">{</span>
+  <span class="nt">&#34;persistent&#34;</span><span class="p">:{</span>
+    <span class="nt">&#34;action.auto_create_index&#34;</span><span class="p">:</span> <span class="kc">false</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>或者通过模板设定白名单，指定哪些索引可以自动创建</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">PUT</span> <span class="err">_cluster/settings</span>
+<span class="p">{</span>
+  <span class="nt">&#34;persistent&#34;</span><span class="p">:{</span>
+    <span class="nt">&#34;action.auto_create_index&#34;</span><span class="p">:</span> <span class="s2">&#34;logstash-*,kibana-*&#34;</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="集群安全">集群安全</h4>
+
+<p>为Elasticsearch和kibana配置安全功能</p>
+
+<ul>
+<li>打开authorization &amp; authorization</li>
+<li>实现索引和字段级的安全控制</li>
+</ul>
+
+<p>节点通信加密</p>
+
+<p>Enable HTTPS</p>
+
+<p>Audit logs</p>
+
+<h4 id="集群监控">集群监控</h4>
+
+<p>EastICsearch Stats 相关API</p>
+
+<ul>
+<li>Node stats： _nodes/status</li>
+<li>Cluster stats: _cluster/stats</li>
+<li>Index stats: index_name/<em>stats</em></li>
+<li>task： _cluster/pending_tasks,</li>
+</ul>
+
+<blockquote>
+<p>监控工具：<a href="https://github.com/elastic/support-diagnostics">https://github.com/elastic/support-diagnostics</a></p>
+</blockquote>
+
+<p>/usr/bin/curator &ndash;config /etc/curator/curator.yml /etc/curator/action-delete-snapshot.yml</p>
+
+<p>GET _cluster/allocation/explain 返回未分配shard的原因</p>
+
+<h4 id="添加watcher监控报警">添加watcher监控报警</h4>
+
+<p>模板</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;trigger&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;schedule&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;interval&#34;</span><span class="p">:</span> <span class="s2">&#34;10m&#34;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&#34;input&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;search&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;request&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;search_type&#34;</span><span class="p">:</span> <span class="s2">&#34;query_then_fetch&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;indices&#34;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="s2">&#34;logstash-monix-sms-prod-*&#34;</span>
+        <span class="p">],</span>
+        <span class="nt">&#34;rest_total_hits_as_int&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&#34;body&#34;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;size&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="nt">&#34;query&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;bool&#34;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&#34;must&#34;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                  <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&#34;level&#34;</span><span class="p">:</span> <span class="s2">&#34;ERROR&#34;</span>
+                  <span class="p">}</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                  <span class="nt">&#34;range&#34;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&#34;@timestamp&#34;</span><span class="p">:</span> <span class="p">{</span>
+                      <span class="nt">&#34;gt&#34;</span><span class="p">:</span> <span class="s2">&#34;now-10m&#34;</span><span class="p">,</span>
+                      <span class="nt">&#34;lte&#34;</span><span class="p">:</span> <span class="s2">&#34;now&#34;</span>
+                    <span class="p">}</span>
+                  <span class="p">}</span>
+                <span class="p">}</span>
+              <span class="p">]</span>
+            <span class="p">}</span>
+          <span class="p">},</span>
+          <span class="nt">&#34;aggs&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;app_aggs&#34;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&#34;terms&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;field&#34;</span><span class="p">:</span> <span class="s2">&#34;type&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;size&#34;</span><span class="p">:</span> <span class="mi">20</span>
+              <span class="p">}</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&#34;condition&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;compare&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;ctx.payload.hits.total&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;gt&#34;</span><span class="p">:</span> <span class="mi">10</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&#34;actions&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;send_email&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;email&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;profile&#34;</span><span class="p">:</span> <span class="s2">&#34;standard&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;to&#34;</span><span class="p">:</span> <span class="p">[</span>
+          	<span class="s2">&#34;yangyuzhuo@wecash.net&#34;</span><span class="p">,</span>
+            <span class="s2">&#34;mayixin@wecash.net&#34;</span><span class="p">,</span>
+            <span class="s2">&#34;kongdewen@wecash.net&#34;</span><span class="p">,</span>
+            <span class="s2">&#34;fangpengfei@wecash.net&#34;</span><span class="p">,</span>
+          	<span class="s2">&#34;wangxingmin@wecash.net&#34;</span>
+        <span class="p">],</span>
+        <span class="nt">&#34;subject&#34;</span><span class="p">:</span> <span class="s2">&#34;Monix SMS Error Watcher&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;body&#34;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;text&#34;</span><span class="p">:</span> <span class="s2">&#34;本次检查触发时间: (UTC){{ ctx.execution_time }}\n在最近十分钟内发现以下错误:\n\n共计:{{ ctx.payload.hits.total }}条,本邮件最多展示报错最多的前10个type\n\n{{#ctx.payload.aggregations.app_aggs.buckets}}type: {{key}}\ncount: {{doc_count}}\n\n{{/ctx.payload.aggregations.app_aggs.buckets}}&#34;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="数据写入过程">数据写入过程</h4>
+
+<ul>
+<li>Refresh： 将文档先保存在Index buffer中，以refresh_interval为间隔时间（默认1s），定期清空buffer，生成segment，借助文件系统缓存的特性，将segment放在文件系统缓存中，并开放查询，艺体生搜索的实时性。增加refresh_interval数值可避免过于频繁的refresh而生成过多的segment文件，但是会降低搜索的实时性。增大敬佩配置参数indices.memory.index_buffer_size（默认10%），会强制refresh</li>
+<li>Translog：Segment没有写入磁盘，即便发生了宕机，重启后，数据也能恢复，ES6.0以后，默认配置每次请求都会落盘。可降低写磁盘的频率，但是会降低容灾能力：
+
+<ul>
+<li>index.translog.durability：默认是request，每个请求都落盘。设置成async，异步写入</li>
+<li>index.translog.sync_interval：设置为60s，每分钟执行一次</li>
+<li>index.translog.flush_threshod_size：默认是512mb，可以适当增大，当translog超过该值，会触发flush</li>
+</ul></li>
+<li>Flush：删除旧的translog，生产Segment并写入磁盘，更新commint point并写入磁盘。ES自动完成</li>
+</ul>
+
+<h4 id="分片的设定">分片的设定</h4>
+
+<ol>
+<li>副本在写入时设为0，完成后再增加</li>
+<li>合理设置主分片数，确保均匀分配在所有的数据节点上
+
+<ul>
+<li>index.routing.allocation.total_share_per_node：限定每个索引在每个节点上可分配的主分片数。5个节点的集群，索引有5个分片，1个副本，应该如何设置：（5+5）/ 5 = 2。生产环境要调大这个数字，避免节点下线分片无法正常迁移</li>
+</ul></li>
+</ol>
+
+<h4 id="查询性能优化">查询性能优化</h4>
+
+<ol>
+<li>查询时避免开头使用正则，这样性能会非常不好</li>
+<li>优化分片
+
+<ul>
+<li>避免over sharding：一个查询需要访问每一个分片，分片过多，会导致不必要的查询开销</li>
+<li>结合应用场景，控制单个分片的尺寸：search: 20G，logging 40G</li>
+</ul></li>
+</ol>
+
+<h4 id="压力测试">压力测试</h4>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Wayne</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-07-31
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/2020-08-04-rabbitmq%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Rabbitmq技术总结</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/2020-07-31-kubernetes%E7%9F%A5%E8%AF%86%E7%A7%AF%E7%B4%AF/">
+            <span class="next-text nav-default">Kubernetes知识积累</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="wayne.one.wang@outlook.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Wayne One Wang</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.d7b7ada643c9c1a983026e177f141f7363b4640d619caf01d8831a6718cd44ea.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

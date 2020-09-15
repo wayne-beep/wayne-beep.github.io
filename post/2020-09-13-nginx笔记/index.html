@@ -51,7 +51,7 @@
 
 <meta itemprop="datePublished" content="2020-09-13T20:38:26&#43;08:00" />
 <meta itemprop="dateModified" content="2020-09-13T20:38:26&#43;08:00" />
-<meta itemprop="wordCount" content="2863">
+<meta itemprop="wordCount" content="3337">
 
 
 
@@ -157,6 +157,17 @@
 </ul></li>
 <li><a href="#1-9-nginx的模块">1.9. Nginx的模块</a></li>
 <li><a href="#1-11-worker进程间的协同工作">1.11. worker进程间的协同工作</a></li>
+</ul></li>
+<li><a href="#2-http模块">2. HTTP模块</a>
+<ul>
+<li><a href="#2-1-冲突的配置指令优先级">2.1. 冲突的配置指令优先级</a>
+<ul>
+<li><a href="#配置快的嵌套">配置快的嵌套</a></li>
+<li><a href="#指令的context">指令的Context</a></li>
+<li><a href="#指令的合并">指令的合并</a></li>
+</ul></li>
+<li><a href="#2-2-listen指令的用法">2.2. listen指令的用法</a></li>
+<li><a href="#2-3-正则表达式">2.3. 正则表达式</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -313,6 +324,191 @@
 <li>信号</li>
 <li>共享内存，多个进程可以同时使用，避免竞争问题需要加锁</li>
 </ol>
+
+<h2 id="2-http模块">2. HTTP模块</h2>
+
+<h3 id="2-1-冲突的配置指令优先级">2.1. 冲突的配置指令优先级</h3>
+
+<h4 id="配置快的嵌套">配置快的嵌套</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">main
+http{
+  upstream{}
+  split_client{}
+  map{}
+  geo{}
+  server{
+    if(){}
+    location{
+      limit_except{}
+    }
+    location {
+      location {     
+      }
+    }
+  }
+  server{}
+}</pre></td></tr></table>
+</div>
+</div>
+<h4 id="指令的context">指令的Context</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">Syntax<span class="p">:</span><span class="w"> </span>log_format<span class="w"> </span>name;<span class="w">
+</span><span class="w"></span>Default<span class="p">:</span><span class="w"> </span>log_format<span class="w"> </span>combined<span class="w"> </span><span class="s2">&#34;...&#34;</span>;<span class="w">
+</span><span class="w"></span>Context<span class="p">:</span><span class="w"> </span>http<span class="w">
+</span><span class="w">
+</span><span class="w"></span>Syntax<span class="p">:</span><span class="w"> </span>access_log<span class="w">
+</span><span class="w"></span>Default<span class="p">:</span><span class="w"> </span>access_log<span class="w"> </span>logs/access.log<span class="w"> </span>combined;<span class="w">
+</span><span class="w"></span>Context<span class="p">:</span><span class="w"> </span>http<span class="p">,</span>server<span class="p">,</span>location<span class="p">,</span>if<span class="w"> </span>in<span class="w"> </span>location<span class="p">,</span>limit_except</code></pre></td></tr></table>
+</div>
+</div>
+<p>log_format只能存在于http块，而access_log可以存在于很多模块内</p>
+
+<h4 id="指令的合并">指令的合并</h4>
+
+<ul>
+<li>直指令：存储配置项的值</li>
+</ul>
+
+<p>不同块下可以合并，存储值指令继承规则向上覆盖，子配置不存在，直接使用父配置；子配置存在则覆盖父配置。例如root；access_log；gzip。</p>
+
+<ul>
+<li>动作类指令：指定行为</li>
+</ul>
+
+<p>不同块下不可以合并，例如：rewrite，proxy_pass，当指令执行到这个位置时，必须立刻执行这种行为。生效阶段：server_rewrite阶段；rewrite阶段；content阶段</p>
+
+<h3 id="2-2-listen指令的用法">2.2. listen指令的用法</h3>
+
+<ul>
+<li>listen unix:/var/run/nginx.sock;</li>
+<li>listen 127.0.0.1:8080;</li>
+<li>listen 127.0.0.1;</li>
+<li>isten 8080;</li>
+<li>listen *:8080;</li>
+<li>listen localhost:8080 bind;</li>
+<li>listen [::]8080 ipv6only=on;</li>
+<li>listen[::1];</li>
+</ul>
+
+<h3 id="2-3-正则表达式">2.3. 正则表达式</h3>
+
+<table>
+<thead>
+<tr>
+<th align="center">代码</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">.</td>
+<td>匹配除换行符以外的任意字符</td>
+</tr>
+
+<tr>
+<td align="center">\w</td>
+<td>匹配字母或数字或下划线或汉字</td>
+</tr>
+
+<tr>
+<td align="center">\s</td>
+<td>匹配任意空白字符</td>
+</tr>
+
+<tr>
+<td align="center">\d</td>
+<td>匹配数字</td>
+</tr>
+
+<tr>
+<td align="center">\b</td>
+<td>匹配单词的开始或结束</td>
+</tr>
+
+<tr>
+<td align="center">^</td>
+<td>匹配字符串的开始</td>
+</tr>
+
+<tr>
+<td align="center">$</td>
+<td>匹配字符串结束</td>
+</tr>
+
+<tr>
+<td align="center">*</td>
+<td>重复0或更多次</td>
+</tr>
+
+<tr>
+<td align="center">+</td>
+<td>重复1或多次</td>
+</tr>
+
+<tr>
+<td align="center">？</td>
+<td>重复0或1次</td>
+</tr>
+
+<tr>
+<td align="center">{n}</td>
+<td>重复n次</td>
+</tr>
+
+<tr>
+<td align="center">{n,}</td>
+<td>重复n或多次</td>
+</tr>
+
+<tr>
+<td align="center">{n,m}</td>
+<td>重复n到m次</td>
+</tr>
+
+<tr>
+<td align="center"></td>
+<td>转译</td>
+</tr>
+
+<tr>
+<td align="center">（）</td>
+<td>分组</td>
+</tr>
+</tbody>
+</table>
 
     </div>
 

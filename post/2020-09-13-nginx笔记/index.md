@@ -124,5 +124,89 @@ Nginx进程间的通信方式
 1. 信号
 2. 共享内存，多个进程可以同时使用，避免竞争问题需要加锁 
 
+## 2. HTTP模块
 
+### 2.1. 冲突的配置指令优先级
+
+#### 配置快的嵌套
+
+```
+main
+http{
+  upstream{}
+  split_client{}
+  map{}
+  geo{}
+  server{
+    if(){}
+    location{
+      limit_except{}
+    }
+    location {
+      location {     
+      }
+    }
+  }
+  server{}
+}
+```
+
+#### 指令的Context
+
+```yaml
+Syntax: log_format name;
+Default: log_format combined "...";
+Context: http
+
+Syntax: access_log
+Default: access_log logs/access.log combined;
+Context: http,server,location,if in location,limit_except
+```
+
+log_format只能存在于http块，而access_log可以存在于很多模块内
+
+#### 指令的合并
+
+- 直指令：存储配置项的值
+
+  不同块下可以合并，存储值指令继承规则向上覆盖，子配置不存在，直接使用父配置；子配置存在则覆盖父配置。例如root；access_log；gzip。
+
+- 动作类指令：指定行为
+
+  不同块下不可以合并，例如：rewrite，proxy_pass，当指令执行到这个位置时，必须立刻执行这种行为。生效阶段：server_rewrite阶段；rewrite阶段；content阶段
+
+### 2.2. listen指令的用法
+
+- listen unix:/var/run/nginx.sock;
+- listen 127.0.0.1:8080;
+- listen 127.0.0.1;
+- isten 8080;
+- listen *:8080;
+- listen localhost:8080 bind;
+- listen [::]8080 ipv6only=on;
+- listen[::1];
+
+### 2.3. 正则表达式
+
+| 代码  | 说明                         |
+| :---: | ---------------------------- |
+|   .   | 匹配除换行符以外的任意字符   |
+|  \w   | 匹配字母或数字或下划线或汉字 |
+|  \s   | 匹配任意空白字符             |
+|  \d   | 匹配数字                     |
+|  \b   | 匹配单词的开始或结束         |
+|   ^   | 匹配字符串的开始             |
+|   $   | 匹配字符串结束               |
+|   *   | 重复0或更多次                |
+|   +   | 重复1或多次                  |
+|  ？   | 重复0或1次                   |
+|  {n}  | 重复n次                      |
+| {n,}  | 重复n或多次                  |
+| {n,m} | 重复n到m次                   |
+|   \   | 转译                         |
+| （）  | 分组                         |
+
+
+
+ 
 

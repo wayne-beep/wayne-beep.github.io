@@ -206,7 +206,116 @@ log_format只能存在于http块，而access_log可以存在于很多模块内
 |   \   | 转译                         |
 | （）  | 分组                         |
 
+### 2.4. server指令块查找
 
+#### server_name指令
 
- 
+-  *泛域名：仅支持最前或最后，例如：server_name *.example.com
 
+- 正则表达式：server_name www.example.com ~^www\d+\\.example.com，使用正则表达式，前面需要加上~^
+- .example.com 可以匹配 example.com  *.example.com
+- server_name 后面写 "_" 表示匹配所有域名
+
+指令后可以跟多个域名，第一个是主域名
+
+```
+Syntax server_name_in_redirect on|off
+Default server_name_in_redirect off
+Context http,server,location
+```
+
+在多域名的时候，当使用return指令开启重定向时，默认的请求返回的重定向地址就是请求的地址，当设置server_name_in_redirect为on时，请求任一域名都会重定向到主域名
+
+用正则表达式创建变量：用小()
+
+```
+server {
+	server_name ~^(www\.)?(.+)$;
+	location / {
+			root /sites/$2; # $2就是取的domain中的(.+)
+	}
+}
+```
+
+```
+server {
+		server_name ~^(www\.)?(?<domain>.+)$;  # 匿名变量?<domain>
+		location / {
+				root /sites/$domain;
+		}
+}
+```
+
+#### server匹配顺序
+
+1. 精确匹配
+2. *在前的域名
+3. *在后的域名
+4. 按文件中出现的顺序匹配正则表达式域名
+5. default server
+   - server块下第一个就是default server
+   - 可以在listen后加上default指定为default server
+
+### 2.5. HTTP请求的11个阶段
+
+当nginx接收完header时，就会按照这11个阶段来处理请求
+
+| Stage          | Module                         |
+| -------------- | ------------------------------ |
+| POST_READ      | realip                         |
+| SERVER_REWRITE | rewrite                        |
+| FIND_CONFIG    |                                |
+| REWRITE        | rewrite                        |
+| POST_REWRITE   |                                |
+| PREACCESS      | limit_conn,limit_req           |
+| ACCESS         | Auth_basic,access,auth_request |
+| POST_ACCESS    |                                |
+| PRECONTENT     | Try_files                      |
+| CONTENT        | Index,autoindex,concat         |
+| LOG            | Access_log                     |
+
+#### 11个阶段的处理顺序
+
+![](/images/posts/nginx_request_11stages.jpg)
+
+同一个阶段的各个模块也并不一定都会执行到，执行顺序和处理流程。
+
+#### 2.5.1 获取用户真实ip的realip模块
+
+如何拿到用户真实IP
+
+1. TCP连接四元组
+2. HTTP头部X-Forward-For用于传递IP
+3. HTTP头部X-Real-IP用于传递用户IP
+4. 网络中存在许多反向代理
+
+X-Forward-For与X-Real-IP的区别是，X-Forward-For会将用户真实ip地址与经过链路代理的IP地址全部记录下来传递给nginx，而X-Real-IP只能保存一个地址就是用户的真实IP地址。
+
+拿到用户真实IP后基于变量来使用，例如binary_remote_addr,remote_addr这样的变量的值就是真实IP。利用这两个变量来做连接限制才有意义，所以limit_conn模块一定要在PRE_ACCESS阶段而不能在POST_ACCESS阶段。
+
+realip模块默认是不会编译到nginx的，需要通过--with-http_realip_module启用功能。它的功能是修改客户端地址。它修改了原来的remote_addr和remote_port变量，因此如果还想使用原来的变量，需要使用realip_remote_addr和realip_remote_port两个变量。
+
+realip模块的指令：
+
+``` 
+set_real_ip_from
+real_ip_header X-Real-IP|X-Forward-For|proxy_protocol ,默认是X-Real-IP
+real_ip_recursive 环回地址，如果real_ip_header是X-Forward-For ，开启它会取X-Forward-For与客户端相同ip的上一个ip
+```
+
+### 2.5.2 rewrite阶段的rewrite指令和return
+
+rewrite模块执行后，后续的其他模块都无法执行
+
+1. return指令
+
+```
+Syntax: return code [text] | code URL | URL
+Context server,location,if
+```
+
+返回状态码：
+
+- nginx自定义 444：关闭连接
+- http1.1标准：
+  - 303：临时重定向

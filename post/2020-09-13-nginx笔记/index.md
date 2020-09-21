@@ -303,7 +303,7 @@ real_ip_header X-Real-IP|X-Forward-For|proxy_protocol ,默认是X-Real-IP
 real_ip_recursive 环回地址，如果real_ip_header是X-Forward-For ，开启它会取X-Forward-For与客户端相同ip的上一个ip
 ```
 
-### 2.5.2 rewrite阶段的rewrite指令和return
+#### 2.5.2 rewrite阶段的rewrite指令和return
 
 rewrite模块执行后，后续的其他模块都无法执行
 
@@ -317,5 +317,397 @@ Context server,location,if
 返回状态码：
 
 - nginx自定义 444：关闭连接
+- http1.0标准：
+  - 301：http1.0永久重定向
+  - 302：临时重定向，禁止被缓存
 - http1.1标准：
-  - 303：临时重定向
+  - 303：临时重定向，允许改变方法，禁止被缓存
+  - 307：临时重定向，不允许改变方法，禁止被缓存
+  - 308：永久重定向，不允许改变方法
+
+###### return与error_page
+
+```
+Syntax: error_page code ...[=[response]] uri;
+Default: -
+Context: http,server,location,if in location
+```
+
+error_page 收到返回码的时候可以重定向到其他返回码，也可以返回个页面
+
+```
+error_page 404 /404.html
+error_page 404 =200 /empty.gif;
+location / {
+		error_page 404 =@fallback
+}
+
+location @fallback {
+		proxy_pass http://backend;
+}
+error_page 403 http://example.com/forbidden.html
+error_page 404 =301 http://example.com/notfounnd.html
+```
+
+与return的区别
+
+例子：
+
+```
+server {
+		server_name return.example.com;
+		listen 80;
+		
+		root html/;
+		error_page 404 403.html;
+		return 403;
+		location / {
+				return 404 "not found";
+		}
+}
+```
+
+问题：
+
+- server与location下的return的关系？
+
+  当同时打开server下的return和locatiion下的return，会直接由高级别的server段的return返回，因为return是rewrite阶段的指令，又返回会直接跳出。
+
+- return与error_page指令的关系？
+
+  当同时打开location下的return和error_page，error_page不会执行，虽然error_page比return级别高，但是由于return处于最开始的rewrite阶段，所以还是优先执行return而直接返回。
+
+#### 2.5.3 rewrite重写url
+
+```
+Syntax: rewrite regex replicement [flag]
+Default: -
+Context: server,location,if
+```
+
+将regex指定的url替换成replacement的新url，可以使用正则表达式及变量提取。当replacement以http[s]://或$schema开头，则直接返回302重定向。替换后的url根据flag指定的方式进行处理：
+
+- --last：用replacement这个URL进行新的location匹配
+- --break：break指令停止当前脚本指令的执行，等价于独立的break指令
+- --redirect：返回302重定向
+- --permanent：返回301重定向
+
+示例：
+
+```
+server {
+		.....
+		root html/
+		location /first {
+				rewrite /first(.*) /second$1 last;
+				return 200 'first';
+		}
+		location /second {
+				rewrite /second(.*) /third$1 break;
+				return 200 'second';
+		}
+		location /third {
+				return 200 'third';
+		}
+		location /redirect1 {
+				rewrite /redirect1(.*) $1 permanent;
+		}
+		location /redirect2 {
+				rewrite /redirect2(.*) $1 redirect;
+		}
+		location /redirect3 {
+				rewrite /redirect3(.*) http://rewrite.example.com/$1;
+		}
+		location /redirect4 {
+				rewrite /redirect4(.*) http://rewrite.example.com/$1 permanent;
+		}
+}
+```
+
+问题：
+
+1. return和rewrite指令的顺序关系？
+2. 访问/firxt/3.txt、/second/3.txt、/third/3.txt分别返回的是什么？
+3. 如果不携带flag会怎么样？
+
+解答：
+
+1. rewrite指令在后面的标志不是break的时候，会和return指令形成一个集合按照顺序执行。当flag是break的时候，直接返回结果。
+2. 访问/firxt/3.txt、/second/3.txt都会返回'second'，因为first执行了last继续匹配到/second
+3. permanent返回301，redirect返回302，redirect3会返回302，redirect4会返回301.
+
+#### 2.5.4. 条件判断if
+
+```
+Syntax: if (condition) {……}
+Default：-
+Context：server，location
+```
+
+if指令条件表达式
+
+- 检查变量为空或者值是否为0
+- 将变量与字符串做匹配，使用=或者!=
+- 将变量与正则表达式做匹配
+  - 大小写敏感：~或者!~
+  - 大小写不敏感：~\*或者!~\*
+- 检查文件是否存在 -f 或者 !-f
+- 检查目录是否存在，使用-d或者!-d
+- 检查文件、目录、软连接是否存在使用-e或者!-e
+- 检查是否为可执行文件，使用-x或者!-x
+
+示例：
+
+```
+if ($http_user_agent ~ MSIE) {
+		rewrite ^(.*)$ /msie/$1 break;
+}
+if ($http_cookie ~* "id=([^;]+)(?:;|$)") {
+		sed $id $1;
+}
+if ($request_method = POST){
+		return 405;
+}
+if ($slow) {
+		limit_rate 10k;
+}
+if ($invalid_referer) {
+		return 403;
+}
+```
+
+#### 2.5.5. find_config找到处理请求的location
+
+location指令
+```
+Syntax: location [=|~|~*|^~] uri {……}
+				location @name {……}
+Default: -
+Context: server location
+
+# merge合并uri中连续 的"/" ,比如连续写了两个 / ,会合并成一个
+Syntax: merge_slashes on | off;  
+Default: merge_slashes on;
+Context: http，server
+```
+
+ location匹配规则：仅匹配URI忽略参数
+
+- = 精确匹配 ^~匹配上后则不再进行正则匹配
+- 正则表达式：~ 大小写敏感 ~* 忽略大小写
+- 用于内部调整的命名 @
+
+location匹配顺序
+
+![](/images/posts/nginx_location_order.png)
+
+#### 2.5.6. 对连接数限制的limit_conn
+
+在preaccess阶段有limit_req和limit_conn。限制每个客户端的并发连接数，ngx_http_limit_conn_module模块
+
+- 生效阶段：NGX_HTTP_PREACCESS_PHASE
+- 默认编译进nginx，通过--without-http_limit_conn_module禁用
+- 生小范围
+  - 全部worker进程，基于共享内存
+  - 进入preaccess阶段前不生效
+  - 限制的有效性取决于key的设计，依赖postread阶段的realip模块取到用户真实IP
+
+定义共享内存（包括大小）以及key关键字
+
+```
+Syntax: limit_conn_zone key zone=name:size
+Default: - 
+Context: http
+```
+
+ 限制并发连接数
+
+ ```
+Syntax: limit_conn zone number;
+Default: - 
+Context: http,server,location
+ ```
+
+限制发生时的日志级别
+
+```
+Syntax: limit_conn_log_level info|notice|warn|error;;
+Default: limit_conn_log_level error;
+Context: http,server,location
+```
+
+限制发生时向客户端返回的错误码
+
+```
+Syntax: limit_conn_status code;
+Default: limit_conn_status 503
+Context: http, server,location
+```
+
+#### 2.5.7. 对连接数限制的limit_req
+
+limit_req将用户的突发请求进行恒定请求速率，ngx_http_limit_req_module模块
+
+- 生效阶段：NGX_HTTP_PREACCESS_PHASE
+- 默认编译进nginx，通过--without-http_limit_req_module禁用
+- 生效算法：leaky bucket算法
+- 生小范围
+  - 全部worker进程，基于共享内存
+  - 进入preaccess阶段前不生效
+
+定义共享内存包括大小，以及key关键字和限制速率
+
+```
+Syntax: limit_req_zone key zone=name:size rate=rate;
+Default: - 
+Context: http
+# rate单位为r/s或者r/m
+```
+
+限制并发连接数
+
+```
+Syntax: limit_req zone=name [burst=number] [nodelay];
+Default: - 
+Context: http,server,location
+# burst默认为0
+# nodelay，对burst中的请求不再采用延时处理的做法，而是立刻处理
+```
+
+同时打开limit_conn和limit_req，会都生效，但是返回是limit_req的返回，因为req在conn之前
+
+#### 2.5.8. 对ip做限制的access模块
+
+access阶段控制请求是否可以继续向下访问
+
+```
+Syntax: allow address|CIDE|unix:|all
+Default: - 
+Context: http,server,location,limit_except
+
+Syntax: deny address|CIDE|unix:|all
+Default: - 
+Context: http,server,location,limit_except
+```
+
+当有多个语句设置的时候，会按照顺序向下匹配，当匹配到时就直接返回，不会继续执行了
+
+#### 2.5.9. precontent阶段的try_files模块
+
+模块ngx_http_try_files_module
+
+```
+Syntax: try_files file ..... uri|code;
+Default: - 
+Context: server,location
+```
+
+依次视图访问多个url对应的文件（由root或者alias指令指定），当文件存在时直接返回文件内存，如果所有文件都不存在，则按最后一个url或者code返回。
+
+```
+server {
+		server_name tryfiles.example.com;
+		root html/;
+		location /first {
+				try_files /a/a.html $uri $uri/index.html $uri.html @lasturl; # 依次寻找文件，$uri表示html/first文件
+		}
+		location @lasturl {
+				return 200 "lasturl!\n"
+		}
+		location /second {
+				try_files $uri $uri/index.htl =404;
+		}
+}
+```
+
+ #### 2.5.10. precontent阶段的mirror模块
+
+模块ngx_http_mirror_module默认编译进了nginx，处理请求时，生成自请求访问其他服务为，对子请求的返回值不做任何处理。对于多个环境处理用户流量很有帮助
+
+```
+Syntax: mirror uri|off;
+Default: mirror off;
+Context: http,server,location
+
+Syntax: mirror_request_body on|off;  # 是否将请求体发送到上游服务器
+Default:mirror_request_body on;
+Context: http,server,location
+```
+
+### 2.5.11. static模块的三个变量
+
+1. request_filename 待访问文件的完整路径
+2. document_root 由URI和root/alias规则生成的文件夹路径
+3. realpath_root 将document_root中的软连接等换成真实路径
+
+```
+location /realpath/ {
+		alias html/realpath;
+		return 200 "$request_filename:$document_root:$realpath_root"
+}
+
+realpath为first目录的软连接
+```
+
+返回结果： /usr/local/openresty/nginx/html/realpath/1.txt:/usr/local/openresty/nginx/html/realpath:/usr/local/openresty/nginx/html/first
+
+
+
+#### 2.5.12. static模块url后面斜杆问题
+
+static模块实现了root/alias功能时，发现访问目标是目录，但是URL末尾加上/时，会返回301重定向
+
+#### 2.5.13. access日志详细用法
+
+```
+Syntax: access_log path [format [buffer=size] [gzip [level] [flush=time] [if=condition] ];
+				access_log off;
+Default: access_log logs/access.log combined;
+Context: http,server,location,if in location,limit_expect;
+```
+
+- Path 路径可以包含变量：不打开cache时每记录一条日志都需要打开、关闭日志文件
+- if通过变量值控制请求日志是否记录
+- 日志缓存：
+  - 功能：批量将内存中的日志写入磁盘
+  - 写入磁盘的条件
+    - 所有待写入磁盘的日志超出缓存大小
+    - 达到flush指定过期时间
+    - worker进程执行reopen命令或者正在关闭
+- 日志压缩
+  - 功能：批量压缩内存中日志再写入磁盘
+  - buffer大小默认64KB
+  - 压缩级别默认1，最高9
+
+
+
+当日志文件名包含变量时，每次写入都会打开关闭文件，可以通过open_log_file_cache进行优化
+
+```
+Syntax: open_log_file_cache max=N [inactive=time] [min_uses=N] [valid=time]
+Default: open_log_file_cache off;
+Context: http,server,location
+```
+
+- Max: 缓存内的最大文件句柄数，超出后用LRU算法淘汰
+- Inactive：文件访问完后在这段时间内不会关闭。默认10s
+- min_uses: 在inactive时间内使用次数超过min_uses才会继续在内存中使用。默认1
+- valid：超出valid时间后，将对缓存的日志文件检查是否存在。默认60s
+- off：关闭缓存功能
+
+#### 2.5.14. HTTP过滤模块
+
+返回响应-加工响应内容。重点关注的4个模块
+
+- copy_filter：复制包体内容
+- Postpone_filter：处理子请求
+- header_filter：构造响应头部
+- write_filter：发送响应
+
+ 
+
+
+
+
+
+ 

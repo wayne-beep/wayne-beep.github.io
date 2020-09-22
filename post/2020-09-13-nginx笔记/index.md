@@ -634,7 +634,7 @@ Default:mirror_request_body on;
 Context: http,server,location
 ```
 
-### 2.5.11. static模块的三个变量
+#### 2.5.11. static模块的三个变量
 
 1. request_filename 待访问文件的完整路径
 2. document_root 由URI和root/alias规则生成的文件夹路径
@@ -704,7 +704,195 @@ Context: http,server,location
 - header_filter：构造响应头部
 - write_filter：发送响应
 
- 
+ ##### 替换响应中的字符串：sub模块
+
+功能：将响应中指定的字符串替换成新的字符串
+
+模块：ngx_http_sub_filter_module模块，默认未编译进nginx，通过--with-http_sub_filter_module启用
+
+```
+# 指定字符串string和替换的字符串replacement
+Syntax: sub_filter string replacemnt;
+Default: -
+Context: http,server,location
+
+# 决定是否在响应头部显示last_modified
+Syntax: sub_filter_last_modified on|off;
+Default: sub_filter_last_modified off
+Context: http,server,location
+
+# 是否只替换一次
+Syntax: sub_filter_once on|off;
+Default: sub_filter_once on
+Context: http,server,location
+
+# 指定替换的文本类型
+Syntax: sub_filter_types mime-type .......;
+Default: sub_filter_types text/html;
+Context: http,server,location
+```
+
+##### 在响应的前后添加内容：addition模块
+
+功能：在响应前或者响应后增加内容，儿增加的方式是铜鼓哦新增子请求的响应完成
+
+模块：ngx_http_addition_filter_module 默认未编译进nginx，通过--with-http_addition_filter_module启用
+
+```
+Syntax: add_before_body uri;
+Default: -
+Context: http,server,location
+
+Syntax: add_after_body uri;
+Default: -
+Context: http,server,location
+
+Syntax: addition_types minie-types;
+Default: addition_types text/html; # * 对所有文件类型产生效果
+Context: http,server,location
+```
+
+
+
+#### 2.5.15. 使用变量进行防盗链
+
+简单有效的防盗链手段：referer模块
+
+> 盗链：某网站通过URL引用了一个页面，当用户在浏览器上点击了url时，http请求的头部会通过referer头部，将该网站当前页面的url带上来告诉这个页面的服务器请求是由某网站发起的。盗链就是使用非正常的网站请求我们的站点资源
+
+防止盗链：通过referer模块，用invalid_referer变量根据配置判断referer头部是否合法。该模块默认编译进了nginx，通过--without-http_referer_module禁用
+
+```
+Syntax: valid_referers none|blocked|server_names|string……;
+Default: -
+Context: server,location
+
+Syntax: referer_hash_bucket_size size;
+Default: referer_hash_bucket_size 64;
+Context: server,location
+
+Syntax: referer_hash_max_size size;
+Default: referer_hash_max_size 2048;
+Context: server,location
+```
+
+Valid_referers指令可以同时携带多个参数，表示多个referer头部都生效，参数值：
+
+- none：允许确实referer头部的请求访问
+- block：允许referer头部没有对应的值的请求访问
+- server_names：若referer中站点域名与server_name中本机域名某个匹配，允许改请求访问
+- 表示域名及URL的字符串，对域名可在前缀或者后缀中含有*通配符：若referer头部的值匹配字符串后，则允许访问
+- 正则表达式：若referer头部的值匹配正则表达式后，则允许访问
+
+invalid_referer变量
+
+- 允许访问时变量值为空
+- 不允许访问时变量值为1
+
+例子：
+
+```
+location / {
+		valid_regerers none blocked server_names *.example.com www.xxxx.com/api ~\.google\.;
+		if ($invalid_referer){
+				return 403;
+		}
+		return 200;
+}
+```
+
+#### 2.5.16. 对客户端使用keepalive提升效率
+
+对客户端keepalive行为控制指令。多个HTTP通过复用TCP连接实现了以下功能：
+
+- 减少握手次数
+- 通过减少并发连接数减少了服务器资源消耗
+- 降低TCP拥塞控制的影响
+
+Connection头部取值为close或者keepalive，close表示请求处理完即关闭连接，keepalive表示复用连接处理下一条请求
+
+Keep-Alive头部：其值为timeout=n，后面的数字n单位为秒，告诉客户端连接至少保留n秒
+
+```
+Syntax: keepalive_disable none|browser; #对某些浏览器不进行keepalive
+Default: keepalive_disable msie6;
+Context: http,server,location
+
+Syntax: keepalive_request number; # 每个保持会话的连接最大请求次数
+Default: keepalive_request 100;
+Context: http,server,location
+
+Syntax: keepalive_timeout timeout [header_timeout]; # 设置用户请求完成以后，最多经过timeout时间还是没有新请求进来就关闭连接。header_timeout表示nginx同过Keep-Alive头部向浏览器表示这个连接应该保留多少秒
+Default: keepalive_timeout 75;
+Context: http,server,location
+```
+
+
+
+ ## 3. 反向代理与负载均衡
+
+### 3.1. 加权round-roubin负载均衡算法
+
+在加权轮询的方式访问server指令指定的上游服务，集成在nginx的upstream框架中，指令：
+
+- weight：服务访问的权重，默认是1
+- max_conns：server的最大并发连接数，仅作用于单worker进程，默认是0，表示没有限制
+- max_fails：在fail_timeout时间段内，最大的失败次数。当达到最大失败时，会在fail_timeout秒内这台server不允许再次被选择
+- fail_timeout：单位为秒，默认为10s，指定一段时间内，最大失败次数。到达max_fails后，该server不能访问的时间
+
+### 3.2. 对上游服务使用keepalive长连接
+
+功能：通过复用连接，降低nginx与上游服务器建立、关闭连接的消耗，提升吞吐量的同时降低时延
+
+模块：ngx_http_upstream_keepalive_module默认编译进nginx
+
+对上游连接http头部设定：
+
+```
+proxy_http_version: 1.1;  # http 1.0是不支持长连接的
+proxy_set_header Connection "";
+```
+
+```
+Syntax: keepalive connections; # 指定nginx与一组上游服务器最多保持多少空闲连接用于keepalive请求
+Default: -;
+Context: upstream
+```
+
+当上游服务使用域名的时候，指定上游服务域名解析的resolver指令（可以防止上游服务器域名解析变更带来的问题）
+
+```
+Syntax: resolver address …… [valid=time][ipv6=on|off] # 指定dns服务地址
+Default: -;
+Context: http,server,location
+
+Syntax: resolver_timeout time;
+Default: resolver_timeout 30s;
+Context: http,server,location
+```
+
+### 3.3.   upstream变量
+
+upstream模块提供的变量（不含cache）
+
+- upstream_addr：上游服务器的IP地址，格式为可读的字符串
+- upstream_connect_time：与上游服务器建立连接消耗的时间，单位为秒，精确到毫秒
+- upstream_header_time：接收上游服务发挥响应中http头部所消耗的时间，单位为秒，精确到毫秒
+- upstream_response_time：接收完整上游服务响应所消耗的时间，单位为秒，精确到毫秒
+- upstream_http_名称：从上游服务返回响应头部的值
+
+### 3.4. 反向代理模块
+
+#### HTTP反向代理流程
+
+![](/images/posts/nginx_proxy_stream.png)
+
+nginx的反向代理过程在11个阶段的content阶段执行，指令为proxy_pass。当一个客户发起请求时，nginx会检查是否存在响应缓存cache，如果cache命中，则直接发送响应头部，如果未命中或者未开启cache，则根据指令生产发往上游头部及包体。当设置参数：
+
+- proxy_request_buffering on时，nginx先读取完整的包体，然后根据负载均衡策略选择上游服务器，根据参数连接上游服务器后发送请求给上游。
+- proxy_request_buffering off时，nginx
+
+
 
 
 

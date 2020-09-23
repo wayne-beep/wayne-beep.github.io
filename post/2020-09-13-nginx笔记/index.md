@@ -890,11 +890,103 @@ upstream模块提供的变量（不含cache）
 nginx的反向代理过程在11个阶段的content阶段执行，指令为proxy_pass。当一个客户发起请求时，nginx会检查是否存在响应缓存cache，如果cache命中，则直接发送响应头部，如果未命中或者未开启cache，则根据指令生产发往上游头部及包体。当设置参数：
 
 - proxy_request_buffering on时，nginx先读取完整的包体，然后根据负载均衡策略选择上游服务器，根据参数连接上游服务器后发送请求给上游。
-- proxy_request_buffering off时，nginx
+- proxy_request_buffering off时，nginx根据负载均衡策略选择上游服务器，根据参数连接上游服务器后边读包体边发送。
 
+上游服务器接收到nginx发送的响应头部后开始处理响应头部，当设置参数：
 
+- proxy_buffering on时接收完整的包体，然后后发送响应头部给nginx，随即发送响应包体给nginx
+- proxy_buffering off时，直接发送响应头部给nginx，随即边读宝体边发送
 
+当关闭cache时，关闭或复用连接，当打开cache时，包体加入缓存。
 
+#### 3.4.1. HTTP 反向代理模块：proxy模块
+
+功能：对上游服务使用http/https协议进行反向代理
+
+指令：ngx_http_proxy_module，默认编译进了nginx
+
+```
+Syntax: proxy_pass URL;
+Default: -
+Context: location,if in location,limit_except
+```
+
+URL参数规则：
+
+- URL必须以http://或https://开头，接下来是域名，ip，Unix socket地址或者upstream的名字，前两者可以在域名或者ip后加端口，最后是可选uri
+- 当URL参数中是否携带uri会导致发向上游请求的URL不同
+  - 不携带URI，则将客户端请求中的URL直接转发给上游，location中使用正则、@时应采用
+  - 携带URI，则对location参数中匹配上的一段替换为该URI
+- 该URL参数可以携带变量
+- 更复杂的URL替换可以在location内的配置添加rewrite break语句
+
+#### 3.4.2. 接收客户请求包体
+
+```
+Syntax: proxy_request_buffering on|off;
+Default: proxy_request_buffering on;
+Context: http,server,location
+```
+
+- on场景：客户端网速较慢。上游服务并发处理能力低。适用于高吞吐量场景
+- off场景：上游服务更及时的响应，降低nginx读写磁盘的消耗
+- 一旦开始发送内容，proxy_next_upstream功能失败
+
+```
+Syntax: proxy_request_buffering on|off;
+Default: proxy_request_buffering on;
+Context: http,server,location
+```
+
+#### 3.4.3. 与上游建立连接
+
+```
+Syntax: proxy_connect_timeout time;
+Default: proxy_connect_timeout 60s;
+Context: http,server,location
+```
+
+与上游建立连接的超时时间，超时后，会向客户端生成http响应，响应码为502。如果后端挂了或不存在，会直接返回502
+
+```
+Syntax: proxy_next_upstream http_502;
+Default: proxy_next_upstream error timeout;
+Context: http,server,location
+```
+
+当因为某种原因与上游服务器没有成功建立连接就再换一台重新建立连接
+
+```
+Syntax: keepalive connections;
+Default: -;
+Context: upstream
+
+Syntax: keepalive_requests number;
+Default: keepalive_requests 100;
+Context: upstream
+```
+
+与上游连接启用http keepalive连接数
+
+#### 3.4.4. 接收上游的响应头部
+
+```
+Syntax: proxy_buffer_size size;
+Default: proxy_buffer_size 4k|8k;
+Context: http,server,location
+```
+
+接收上游响应头部的最大值，当超过这个大小的时候，会在error.log中输出upstream sent too big header 
+
+```
+Syntax: proxy_read_timeout time;
+Default: proxy_read_timeout 60s;
+Context: http,server,location
+```
+
+两次读取操作之间最长60s超时
+
+ 
 
 
 

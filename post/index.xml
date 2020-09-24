@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>Wayne One Wang</copyright>
-    <lastBuildDate>Sun, 13 Sep 2020 20:38:26 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 23 Sep 2020 11:46:55 +0800</lastBuildDate>
     
 	<atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>openvpn</title>
+      <link>http://localhost:1313/post/2020-09-23-opevpn/</link>
+      <pubDate>Wed, 23 Sep 2020 11:46:55 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/2020-09-23-opevpn/</guid>
+      <description>OpenVPN部署 转载：https://www.digitalocean.com/community/tutorials/how-to-se</description>
+    </item>
     
     <item>
       <title>Nginx笔记</title>

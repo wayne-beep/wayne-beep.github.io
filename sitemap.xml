@@ -9,21 +9,49 @@
   </url>
   
   <url>
-    <loc>http://localhost:1313/post/2020-09-13-nginx%E7%AC%94%E8%AE%B0/</loc>
-    <lastmod>2020-09-13T20:38:26+08:00</lastmod>
+    <loc>http://localhost:1313/tags/cicd/</loc>
+    <lastmod>2020-09-23T11:46:55+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/tags/jenkins/</loc>
+    <lastmod>2020-09-23T11:46:55+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/post/2020-09-23-opevpn/</loc>
+    <lastmod>2020-09-23T11:46:55+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://localhost:1313/post/</loc>
-    <lastmod>2020-09-13T20:38:26+08:00</lastmod>
+    <lastmod>2020-09-23T11:46:55+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2020-09-23T11:46:55+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://localhost:1313/</loc>
+    <lastmod>2020-09-23T11:46:55+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/post/2020-09-13-nginx%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2020-09-13T20:38:26+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -65,28 +93,7 @@
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/cicd/</loc>
-    <lastmod>2020-07-31T13:10:17+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://localhost:1313/tags/jenkins/</loc>
-    <lastmod>2020-07-31T13:10:17+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>http://localhost:1313/post/2020-07-31-jenkins-cicd/</loc>
-    <lastmod>2020-07-31T13:10:17+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://localhost:1313/tags/</loc>
     <lastmod>2020-07-31T13:10:17+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

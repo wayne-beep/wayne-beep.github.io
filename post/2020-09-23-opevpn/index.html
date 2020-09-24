@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>openvpn - Wayne&#39;s Blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Wayne" /><meta name="description" content="OpenVPN部署 转载：https://www.digitalocean.com/community/tutorials/how-to-se" /><meta name="keywords" content="theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.59.0 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/2020-09-23-opevpn/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<link href="/sass/main.min.6eb09ed45a88bd339269c14515d2a11f2e0afdadbdd763d83f9b5c797166b081.css" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+<meta property="og:title" content="openvpn" />
+<meta property="og:description" content="OpenVPN部署 转载：https://www.digitalocean.com/community/tutorials/how-to-se" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/2020-09-23-opevpn/" />
+<meta property="article:published_time" content="2020-09-23T11:46:55+08:00" />
+<meta property="article:modified_time" content="2020-09-23T11:46:55+08:00" />
+<meta itemprop="name" content="openvpn">
+<meta itemprop="description" content="OpenVPN部署 转载：https://www.digitalocean.com/community/tutorials/how-to-se">
+
+
+<meta itemprop="datePublished" content="2020-09-23T11:46:55&#43;08:00" />
+<meta itemprop="dateModified" content="2020-09-23T11:46:55&#43;08:00" />
+<meta itemprop="wordCount" content="5761">
+
+
+
+<meta itemprop="keywords" content="Jenkins,cicd," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="openvpn"/>
+<meta name="twitter:description" content="OpenVPN部署 转载：https://www.digitalocean.com/community/tutorials/how-to-se"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Wayne</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Wayne</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">openvpn</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-09-23 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#openvpn部署">OpenVPN部署</a>
+<ul>
+<li>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+</ul></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#step-1-install-openvpn">Step 1: Install OpenVPN</a></li>
+<li><a href="#step-2-set-up-the-ca-directory">Step 2: Set Up the CA Directory</a></li>
+<li><a href="#step-3-configure-the-ca-variables">Step 3: Configure the CA Variables</a></li>
+<li><a href="#step-4-build-the-certificate-authority">Step 4: Build the Certificate Authority</a></li>
+<li><a href="#step-5-create-the-server-certificate-key-and-encryption-files">Step 5: Create the Server Certificate, Key, and Encryption Files</a></li>
+<li><a href="#step-6-generate-a-client-certificate-and-key-pair">Step 6: Generate a Client Certificate and Key Pair</a></li>
+<li><a href="#step-7-configure-the-openvpn-service">Step 7: Configure the OpenVPN Service</a>
+<ul>
+<li><a href="#copy-the-files-to-the-openvpn-directory">Copy the Files to the OpenVPN Directory</a></li>
+<li><a href="#adjust-the-openvpn-configuration">Adjust the OpenVPN Configuration</a>
+<ul>
+<li><a href="#basic-configuration">Basic Configuration</a></li>
+<li><a href="#optional-push-dns-changes-to-redirect-all-traffic-through-the-vpn">(Optional) Push DNS Changes to Redirect All Traffic Through the VPN</a></li>
+<li><a href="#optional-adjust-the-port-and-protocol">(Optional) Adjust the Port and Protocol</a></li>
+<li><a href="#optional-point-to-non-default-credentials">(Optional) Point to Non-Default Credentials</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#step-8-adjust-the-server-networking-configuration">Step 8: Adjust the Server Networking Configuration</a>
+<ul>
+<li><a href="#allow-ip-forwarding">Allow IP Forwarding</a></li>
+<li><a href="#adjust-the-ufw-rules-to-masquerade-client-connections">Adjust the UFW Rules to Masquerade Client Connections</a></li>
+<li><a href="#open-the-openvpn-port-and-enable-the-changes">Open the OpenVPN Port and Enable the Changes</a></li>
+</ul></li>
+<li><a href="#step-9-start-and-enable-the-openvpn-service">Step 9: Start and Enable the OpenVPN Service</a></li>
+<li><a href="#step-10-create-client-configuration-infrastructure">Step 10: Create Client Configuration Infrastructure</a>
+<ul>
+<li><a href="#creating-the-client-config-directory-structure">Creating the Client Config Directory Structure</a></li>
+<li><a href="#creating-a-base-configuration">Creating a Base Configuration</a></li>
+<li><a href="#creating-a-configuration-generation-script">Creating a Configuration Generation Script</a></li>
+</ul></li>
+<li><a href="#step-11-generate-client-configurations">Step 11: Generate Client Configurations</a>
+<ul>
+<li><a href="#transferring-configuration-to-client-devices">Transferring Configuration to Client Devices</a></li>
+</ul></li>
+<li><a href="#step-12-install-the-client-configuration">Step 12: Install the Client Configuration</a>
+<ul>
+<li><a href="#windows">Windows</a></li>
+<li><a href="#os-x">OS X</a></li>
+<li><a href="#linux">Linux</a>
+<ul>
+<li><a href="#installing">Installing</a></li>
+<li><a href="#configuring">Configuring</a></li>
+</ul></li>
+<li><a href="#ios">iOS</a></li>
+<li><a href="#android">Android</a></li>
+</ul></li>
+<li><a href="#step-13-test-your-vpn-connection">Step 13: Test Your VPN Connection</a></li>
+<li><a href="#step-14-revoking-client-certificates">Step 14: Revoking Client Certificates</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="openvpn部署">OpenVPN部署</h1>
+
+<blockquote>
+<p>转载：<code>https://www.digitalocean.com/community/tutorials/how-to-set-up-an-openvpn-server-on-ubuntu-16-04</code></p>
+</blockquote>
+
+<h3 id="introduction">Introduction</h3>
+
+<p>Want to access the Internet safely and securely from your smartphone or laptop when connected to an untrusted network such as the WiFi of a hotel or coffee shop? A <a href="https://en.wikipedia.org/wiki/Virtual_private_network">Virtual Private Network</a> (VPN) allows you to traverse untrusted networks privately and securely as if you were on a private network. The traffic emerges from the VPN server and continues its journey to the destination.</p>
+
+<p>When combined with <a href="https://en.wikipedia.org/wiki/HTTP_Secure">HTTPS connections</a>, this setup allows you to secure your wireless logins and transactions. You can circumvent geographical restrictions and censorship, and shield your location and any unencrypted HTTP traffic from the untrusted network.</p>
+
+<p><a href="https://openvpn.net/">OpenVPN</a> is a full-featured open source Secure Socket Layer (SSL) VPN solution that accommodates a wide range of configurations. In this tutorial, we’ll set up an OpenVPN server on a Droplet and then configure access to it from Windows, OS X, iOS and Android. This tutorial will keep the installation and configuration steps as simple as possible for these setups.</p>
+
+<p><strong>Note:</strong> If you plan to set up an OpenVPN server on a DigitalOcean Droplet, be aware that we, like many hosting providers, charge for bandwidth overages. For this reason, please be mindful of how much traffic your server is handling.See <a href="https://www.digitalocean.com/docs/accounts/billing/bandwidth/">this page</a> for more info.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>To complete this tutorial, you will need access to an Ubuntu 16.04 server.</p>
+
+<p>You will need to configure a non-root user with <code>sudo</code> privileges before you start this guide. You can follow our <a href="https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04">Ubuntu 16.04 initial server setup guide</a> to set up a user with appropriate permissions. The linked tutorial will also set up a <strong>firewall</strong>, which we will assume is in place during this guide.</p>
+
+<p>When you are ready to begin, log into your Ubuntu server as your <code>sudo</code> user and continue below.</p>
+
+<h2 id="step-1-install-openvpn">Step 1: Install OpenVPN</h2>
+
+<p>To start off, we will install OpenVPN onto our server. OpenVPN is available in Ubuntu’s default repositories, so we can use <code>apt</code> for the installation. We will also be installing the <code>easy-rsa</code> package, which will help us set up an internal CA (certificate authority) for use with our VPN.</p>
+
+<p>To update your server’s package index and install the necessary packages type:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo apt-get update
+sudo apt-get install openvpn easy-rsa</pre></td></tr></table>
+</div>
+</div>
+<p>The needed software is now on the server, ready to be configured.</p>
+
+<h2 id="step-2-set-up-the-ca-directory">Step 2: Set Up the CA Directory</h2>
+
+<p>OpenVPN is an TLS/SSL VPN. This means that it utilizes certificates in order to encrypt traffic between the server and clients. In order to issue trusted certificates, we will need to set up our own simple certificate authority (CA).</p>
+
+<p>To begin, we can copy the <code>easy-rsa</code> template directory into our home directory with the <code>make-cadir</code> command:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">make-cadir ~/openvpn-ca</pre></td></tr></table>
+</div>
+</div>
+<p>Move into the newly created directory to begin configuring the CA:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">cd ~/openvpn-ca</pre></td></tr></table>
+</div>
+</div>
+<h2 id="step-3-configure-the-ca-variables">Step 3: Configure the CA Variables</h2>
+
+<p>To configure the values our CA will use, we need to edit the <code>vars</code> file within the directory. Open that file now in your text editor:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">nano vars</pre></td></tr></table>
+</div>
+</div>
+<p>Inside, you will find some variables that can be adjusted to determine how your certificates will be created. We only need to worry about a few of these.</p>
+
+<p>Towards the bottom of the file, find the settings that set field defaults for new certificates. It should look something like this:</p>
+
+<p>~/openvpn-ca/vars</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">. . .
+
+export KEY_COUNTRY=&#34;US&#34;
+export KEY_PROVINCE=&#34;CA&#34;
+export KEY_CITY=&#34;SanFrancisco&#34;
+export KEY_ORG=&#34;Fort-Funston&#34;
+export KEY_EMAIL=&#34;me@myhost.mydomain&#34;
+export KEY_OU=&#34;MyOrganizationalUnit&#34;
+
+. . .</pre></td></tr></table>
+</div>
+</div>
+<p>Edit the values in red to whatever you’d prefer, but do not leave them blank:</p>
+
+<p>~/openvpn-ca/vars</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">. . .
+
+export KEY_COUNTRY=&#34;US&#34;
+export KEY_PROVINCE=&#34;NY&#34;
+export KEY_CITY=&#34;New York City&#34;
+export KEY_ORG=&#34;DigitalOcean&#34;
+export KEY_EMAIL=&#34;admin@example.com&#34;
+export KEY_OU=&#34;Community&#34;
+
+. . .</pre></td></tr></table>
+</div>
+</div>
+<p>While we are here, we will also edit the <code>KEY_NAME</code> value just below this section, which populates the subject field. To keep this simple, we’ll call it <code>server</code> in this guide:</p>
+
+<p>~/openvpn-ca/vars</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">export KEY_NAME=&#34;server&#34;</pre></td></tr></table>
+</div>
+</div>
+<p>When you are finished, save and close the file.</p>
+
+<h2 id="step-4-build-the-certificate-authority">Step 4: Build the Certificate Authority</h2>
+
+<p>Now, we can use the variables we set and the <code>easy-rsa</code> utilities to build our certificate authority.</p>
+
+<p>Ensure you are in your CA directory, and then source the <code>vars</code> file you just edited:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">cd ~/openvpn-ca
+source vars</pre></td></tr></table>
+</div>
+</div>
+<p>You should see the following if it was sourced correctly:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">OutputNOTE: If you run ./clean-all, I will be doing a rm -rf on /home/sammy/openvpn-ca/keys</pre></td></tr></table>
+</div>
+</div>
+<p>Make sure we’re operating in a clean environment by typing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">./clean-all</pre></td></tr></table>
+</div>
+</div>
+<p>Now, we can build our root CA by typing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">./build-ca</pre></td></tr></table>
+</div>
+</div>
+<p>This will initiate the process of creating the root certificate authority key and certificate. Since we filled out the <code>vars</code> file, all of the values should be populated automatically. Just press <strong>ENTER</strong> through the prompts to confirm the selections:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">OutputGenerating a 2048 bit RSA private key
+..........................................................................................+++
+...............................+++
+writing new private key to &#39;ca.key&#39;
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter &#39;.&#39;, the field will be left blank.
+-----
+Country Name (2 letter code) [US]:
+State or Province Name (full name) [NY]:
+Locality Name (eg, city) [New York City]:
+Organization Name (eg, company) [DigitalOcean]:
+Organizational Unit Name (eg, section) [Community]:
+Common Name (eg, your name or your server&#39;s hostname) [DigitalOcean CA]:
+Name [server]:
+Email Address [admin@email.com]:</pre></td></tr></table>
+</div>
+</div>
+<p>We now have a CA that can be used to create the rest of the files we need.</p>
+
+<h2 id="step-5-create-the-server-certificate-key-and-encryption-files">Step 5: Create the Server Certificate, Key, and Encryption Files</h2>
+
+<p>Next, we will generate our server certificate and key pair, as well as some additional files used during the encryption process.</p>
+
+<p>Start by generating the OpenVPN server certificate and key pair. We can do this by typing:</p>
+
+<p><strong>Note</strong>: If you choose a name other than <code>server</code> here, you will have to adjust some of the instructions below. For instance, when copying the generated files to the <code>/etc/openvpn</code> directroy, you will have to substitute the correct names. You will also have to modify the <code>/etc/openvpn/server.conf</code> file later to point to the correct <code>.crt</code> and <code>.key</code> files.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">./build-key-server server</pre></td></tr></table>
+</div>
+</div>
+<p>Once again, the prompts will have default values based on the argument we just passed in (<code>server</code>) and the contents of our <code>vars</code> file we sourced.</p>
+
+<p>Feel free to accept the default values by pressing <strong>ENTER</strong>. Do <em>not</em> enter a challenge password for this setup. Towards the end, you will have to enter <strong>y</strong> to two questions to sign and commit the certificate:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Output. . .
+
+Certificate is to be certified until May  1 17:51:16 2026 GMT (3650 days)
+Sign the certificate? [y/n]:y
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated</pre></td></tr></table>
+</div>
+</div>
+<p>Next, we’ll generate a few other items. We can generate a strong Diffie-Hellman keys to use during key exchange by typing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">./build-dh</pre></td></tr></table>
+</div>
+</div>
+<p>This might take a few minutes to complete.</p>
+
+<p>Afterwards, we can generate an HMAC signature to strengthen the server’s TLS integrity verification capabilities:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">openvpn --genkey --secret keys/ta.key</pre></td></tr></table>
+</div>
+</div>
+<h2 id="step-6-generate-a-client-certificate-and-key-pair">Step 6: Generate a Client Certificate and Key Pair</h2>
+
+<p>Next, we can generate a client certificate and key pair. Although this can be done on the client machine and then signed by the server/CA for security purposes, for this guide we will generate the signed key on the server for the sake of simplicity.</p>
+
+<p>We will generate a single client key/certificate for this guide, but if you have more than one client, you can repeat this process as many times as you’d like. Pass in a unique value to the script for each client.</p>
+
+<p>Because you may come back to this step at a later time, we’ll re-source the <code>vars</code> file. We will use <code>client1</code> as the value for our first certificate/key pair for this guide.</p>
+
+<p>To produce credentials without a password, to aid in automated connections, use the <code>build-key</code> command like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">cd ~/openvpn-ca
+source vars
+./build-key client1</pre></td></tr></table>
+</div>
+</div>
+<p>If instead, you wish to create a password-protected set of credentials, use the <code>build-key-pass</code> command:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">cd ~/openvpn-ca
+source vars
+./build-key-pass client1</pre></td></tr></table>
+</div>
+</div>
+<p>Again, the defaults should be populated, so you can just hit <strong>ENTER</strong> to continue. Leave the challenge password blank and make sure to enter <strong>y</strong> for the prompts that ask whether to sign and commit the certificate.</p>
+
+<h2 id="step-7-configure-the-openvpn-service">Step 7: Configure the OpenVPN Service</h2>
+
+<p>Next, we can begin configuring the OpenVPN service using the credentials and files we’ve generated.</p>
+
+<h3 id="copy-the-files-to-the-openvpn-directory">Copy the Files to the OpenVPN Directory</h3>
+
+<p>To begin, we need to copy the files we need to the <code>/etc/openvpn</code> configuration directory.</p>
+
+<p>We can start with all of the files that we just generated. These were placed within the <code>~/openvpn-ca/keys</code> directory as they were created. We need to move our CA cert, our server cert and key, the HMAC signature, and the Diffie-Hellman file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">cd ~/openvpn-ca/keys
+sudo cp ca.crt server.crt server.key ta.key dh2048.pem /etc/openvpn</pre></td></tr></table>
+</div>
+</div>
+<p>Next, we need to copy and unzip a sample OpenVPN configuration file into configuration directory so that we can use it as a basis for our setup:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz | sudo tee /etc/openvpn/server.conf</pre></td></tr></table>
+</div>
+</div>
+<h3 id="adjust-the-openvpn-configuration">Adjust the OpenVPN Configuration</h3>
+
+<p>Now that our files are in place, we can modify the server configuration file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo nano /etc/openvpn/server.conf</pre></td></tr></table>
+</div>
+</div>
+<h4 id="basic-configuration">Basic Configuration</h4>
+
+<p>First, find the HMAC section by looking for the <code>tls-auth</code> directive. Remove the “<strong>;</strong>” to uncomment the <code>tls-auth</code> line:</p>
+
+<p>/etc/openvpn/server.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">tls-auth ta.key 0 # This file is secret</pre></td></tr></table>
+</div>
+</div>
+<p>Next, find the section on cryptographic ciphers by looking for the commented out <code>cipher</code> lines. The <code>AES-128-CBC</code> cipher offers a good level of encryption and is well supported. Remove the “<strong>;</strong>” to uncomment the <code>cipher AES-128-CBC</code> line:</p>
+
+<p>/etc/openvpn/server.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">cipher AES-128-CBC</pre></td></tr></table>
+</div>
+</div>
+<p>Below this, add an <code>auth</code> line to select the HMAC message digest algorithm. For this, <code>SHA256</code> is a good choice:</p>
+
+<p>/etc/openvpn/server.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">auth SHA256</pre></td></tr></table>
+</div>
+</div>
+<p>Finally, find the <code>user</code> and <code>group</code> settings and remove the “<strong>;</strong>” at the beginning of to uncomment those lines:</p>
+
+<p>/etc/openvpn/server.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">user nobody
+group nogroup</pre></td></tr></table>
+</div>
+</div>
+<h4 id="optional-push-dns-changes-to-redirect-all-traffic-through-the-vpn">(Optional) Push DNS Changes to Redirect All Traffic Through the VPN</h4>
+
+<p>The settings above will create the VPN connection between the two machines, but will not force any connections to use the tunnel. If you wish to use the VPN to route all of your traffic, you will likely want to push the DNS settings to the client computers.</p>
+
+<p>You can do this, uncomment a few directives that will configure client machines to redirect all web traffic through the VPN. Find the <code>redirect-gateway</code> section and remove the semicolon “<strong>;</strong>” from the beginning of the <code>redirect-gateway</code> line to uncomment it:</p>
+
+<p>/etc/openvpn/server.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">push &#34;redirect-gateway def1 bypass-dhcp&#34;</pre></td></tr></table>
+</div>
+</div>
+<p>Just below this, find the <code>dhcp-option</code> section. Again, remove the “<strong>;</strong>” from in front of both of the lines to uncomment them:</p>
+
+<p>/etc/openvpn/server.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">push &#34;dhcp-option DNS 208.67.222.222&#34;
+push &#34;dhcp-option DNS 208.67.220.220&#34;</pre></td></tr></table>
+</div>
+</div>
+<p>This should assist clients in reconfiguring their DNS settings to use the VPN tunnel for as the default gateway.</p>
+
+<h4 id="optional-adjust-the-port-and-protocol">(Optional) Adjust the Port and Protocol</h4>
+
+<p>By default, the OpenVPN server uses port 1194 and the UDP protocol to accept client connections. If you need to use a different port because of restrictive network environments that your clients might be in, you can change the <code>port</code> option. If you are not hosting web content your OpenVPN server, port 443 is a popular choice since this is usually allowed through firewall rules.</p>
+
+<p>/etc/openvpn/server.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"># Optional!
+port 443</pre></td></tr></table>
+</div>
+</div>
+<p>Often if the protocol will be restricted to that port as well. If so, change <code>proto</code> from UDP to TCP:</p>
+
+<p>/etc/openvpn/server.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"># Optional!
+proto tcp</pre></td></tr></table>
+</div>
+</div>
+<p>If you have no need to use a different port, it is best to leave these two settings as their default.</p>
+
+<h4 id="optional-point-to-non-default-credentials">(Optional) Point to Non-Default Credentials</h4>
+
+<p>If you selected a different name during the <code>./build-key-server</code> command earlier, modify the <code>cert</code> and <code>key</code> lines that you see to point to the appropriate <code>.crt</code> and <code>.key</code> files. If you used the default <code>server</code>, this should already be set correctly:</p>
+
+<p>/etc/openvpn/server.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">cert server.crt
+key server.key</pre></td></tr></table>
+</div>
+</div>
+<p>When you are finished, save and close the file.</p>
+
+<h2 id="step-8-adjust-the-server-networking-configuration">Step 8: Adjust the Server Networking Configuration</h2>
+
+<p>Next, we need to adjust some aspects of the server’s networking so that OpenVPN can correctly route traffic.</p>
+
+<h3 id="allow-ip-forwarding">Allow IP Forwarding</h3>
+
+<p>First, we need to allow the server to forward traffic. This is fairly essential to the functionality we want our VPN server to provide.</p>
+
+<p>We can adjust this setting by modifying the <code>/etc/sysctl.conf</code> file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo nano /etc/sysctl.conf</pre></td></tr></table>
+</div>
+</div>
+<p>Inside, look for the line that sets <code>net.ipv4.ip_forward</code>. Remove the “<strong>#</strong>” character from the beginning of the line to uncomment that setting:</p>
+
+<p>/etc/sysctl.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">net.ipv4.ip_forward=1</pre></td></tr></table>
+</div>
+</div>
+<p>Save and close the file when you are finished.</p>
+
+<p>To read the file and adjust the values for the current session, type:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo sysctl -p</pre></td></tr></table>
+</div>
+</div>
+<h3 id="adjust-the-ufw-rules-to-masquerade-client-connections">Adjust the UFW Rules to Masquerade Client Connections</h3>
+
+<p>If you followed the Ubuntu 16.04 initial server setup guide in the prerequisites, you should have the UFW firewall in place. Regardless of whether you use the firewall to block unwanted traffic (which you almost always should do), we need the firewall in this guide to manipulate some of the traffic coming into the server. We need to modify the rules file to set up masquerading, an <code>iptables</code> concept that provides on-the-fly dynamic NAT to correctly route client connections.</p>
+
+<p>Before we open the firewall configuration file to add masquerading, we need to find the public network interface of our machine. To do this, type:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ip route | grep default</pre></td></tr></table>
+</div>
+</div>
+<p>Your public interface should follow the word “dev”. For example, this result shows the interface named <code>wlp11s0</code>, which is highlighted below:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Outputdefault via 203.0.113.1 dev wlp11s0  proto static  metric 600</pre></td></tr></table>
+</div>
+</div>
+<p>When you have the interface associated with your default route, open the <code>/etc/ufw/before.rules</code> file to add the relevant configuration:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo nano /etc/ufw/before.rules</pre></td></tr></table>
+</div>
+</div>
+<p>This file handles configuration that should be put into place before the conventional UFW rules are loaded. Towards the top of the file, add the highlighted lines below. This will set the default policy for the <code>POSTROUTING</code> chain in the <code>nat</code> table and masquerade any traffic coming from the VPN:</p>
+
+<p><strong>Note</strong>: Remember to replace <code>wlp11s0</code> in the <code>-A POSTROUTING</code> line below with the interface you found in the above command.</p>
+
+<p>/etc/ufw/before.rules</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">#
+# rules.before
+#
+# Rules that should be run before the ufw command line added rules. Custom
+# rules should be added to one of these chains:
+#   ufw-before-input
+#   ufw-before-output
+#   ufw-before-forward
+#
+
+# START OPENVPN RULES
+# NAT table rules
+*nat
+:POSTROUTING ACCEPT [0:0] 
+# Allow traffic from OpenVPN client to wlp11s0 (change to the interface you discovered!)
+-A POSTROUTING -s 10.8.0.0/8 -o wlp11s0 -j MASQUERADE
+COMMIT
+# END OPENVPN RULES
+
+# Don&#39;t delete these required lines, otherwise there will be errors
+*filter
+. . .</pre></td></tr></table>
+</div>
+</div>
+<p>Save and close the file when you are finished.</p>
+
+<p>We need to tell UFW to allow forwarded packets by default as well. To do this, we will open the <code>/etc/default/ufw</code> file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo nano /etc/default/ufw</pre></td></tr></table>
+</div>
+</div>
+<p>Inside, find the <code>DEFAULT_FORWARD_POLICY</code> directive. We will change the value from <code>DROP</code> to <code>ACCEPT</code>:</p>
+
+<p>/etc/default/ufw</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">DEFAULT_FORWARD_POLICY=&#34;ACCEPT&#34;</pre></td></tr></table>
+</div>
+</div>
+<p>Save and close the file when you are finished.</p>
+
+<h3 id="open-the-openvpn-port-and-enable-the-changes">Open the OpenVPN Port and Enable the Changes</h3>
+
+<p>Next, we’ll adjust the firewall itself to allow traffic to OpenVPN.</p>
+
+<p>If you did not change the port and protocol in the <code>/etc/openvpn/server.conf</code> file, you will need to open up UDP traffic to port 1194. If you modified the port and/or protocol, substitute the values you selected here.</p>
+
+<p>We’ll also add the SSH port in case you forgot to add it when following the prerequisite tutorial:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo ufw allow 1194/udp
+sudo ufw allow OpenSSH</pre></td></tr></table>
+</div>
+</div>
+<p>Now, we can disable and re-enable UFW to load the changes from all of the files we’ve modified:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo ufw disable
+sudo ufw enable</pre></td></tr></table>
+</div>
+</div>
+<p>Our server is now configured to correctly handle OpenVPN traffic.</p>
+
+<h2 id="step-9-start-and-enable-the-openvpn-service">Step 9: Start and Enable the OpenVPN Service</h2>
+
+<p>We’re finally ready to start the OpenVPN service on our server. We can do this using systemd.</p>
+
+<p>We need to start the OpenVPN server by specifying our configuration file name as an instance variable after the systemd unit file name. Our configuration file for our server is called <code>/etc/openvpn/server.conf</code>, so we will add <code>@server</code> to end of our unit file when calling it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo systemctl start openvpn@server</pre></td></tr></table>
+</div>
+</div>
+<p>Double-check that the service has started successfully by typing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo systemctl status openvpn@server</pre></td></tr></table>
+</div>
+</div>
+<p>If everything went well, your output should look something that looks like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Output● openvpn@server.service - OpenVPN connection to server
+   Loaded: loaded (/lib/systemd/system/openvpn@.service; disabled; vendor preset: enabled)
+   Active: active (running) since Tue 2016-05-03 15:30:05 EDT; 47s ago
+     Docs: man:openvpn(8)
+           https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage
+           https://community.openvpn.net/openvpn/wiki/HOWTO
+  Process: 5852 ExecStart=/usr/sbin/openvpn --daemon ovpn-%i --status /run/openvpn/%i.status 10 --cd /etc/openvpn --script-security 2 --config /etc/openvpn/%i.conf --writepid /run/openvpn/%i.pid (code=exited, sta
+ Main PID: 5856 (openvpn)
+    Tasks: 1 (limit: 512)
+   CGroup: /system.slice/system-openvpn.slice/openvpn@server.service
+           └─5856 /usr/sbin/openvpn --daemon ovpn-server --status /run/openvpn/server.status 10 --cd /etc/openvpn --script-security 2 --config /etc/openvpn/server.conf --writepid /run/openvpn/server.pid
+
+May 03 15:30:05 openvpn2 ovpn-server[5856]: /sbin/ip addr add dev tun0 local 10.8.0.1 peer 10.8.0.2
+May 03 15:30:05 openvpn2 ovpn-server[5856]: /sbin/ip route add 10.8.0.0/24 via 10.8.0.2
+May 03 15:30:05 openvpn2 ovpn-server[5856]: GID set to nogroup
+May 03 15:30:05 openvpn2 ovpn-server[5856]: UID set to nobody
+May 03 15:30:05 openvpn2 ovpn-server[5856]: UDPv4 link local (bound): [undef]
+May 03 15:30:05 openvpn2 ovpn-server[5856]: UDPv4 link remote: [undef]
+May 03 15:30:05 openvpn2 ovpn-server[5856]: MULTI: multi_init called, r=256 v=256
+May 03 15:30:05 openvpn2 ovpn-server[5856]: IFCONFIG POOL: base=10.8.0.4 size=62, ipv6=0
+May 03 15:30:05 openvpn2 ovpn-server[5856]: IFCONFIG POOL LIST
+May 03 15:30:05 openvpn2 ovpn-server[5856]: Initialization Sequence Completed</pre></td></tr></table>
+</div>
+</div>
+<p>You can also check that the OpenVPN <code>tun0</code> interface is available by typing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ip addr show tun0</pre></td></tr></table>
+</div>
+</div>
+<p>You should see a configured interface:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Output4: tun0: &lt;POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UNKNOWN group default qlen 100
+    link/none 
+    inet 10.8.0.1 peer 10.8.0.2/32 scope global tun0
+       valid_lft forever preferred_lft forever</pre></td></tr></table>
+</div>
+</div>
+<p>If everything went well, enable the service so that it starts automatically at boot:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo systemctl enable openvpn@server</pre></td></tr></table>
+</div>
+</div>
+<h2 id="step-10-create-client-configuration-infrastructure">Step 10: Create Client Configuration Infrastructure</h2>
+
+<p>Next, we need to set up a system that will allow us to create client configuration files easily.</p>
+
+<h3 id="creating-the-client-config-directory-structure">Creating the Client Config Directory Structure</h3>
+
+<p>Create a directory structure within your home directory to store the files:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">mkdir -p ~/client-configs/files</pre></td></tr></table>
+</div>
+</div>
+<p>Since our client configuration files will have the client keys embedded, we should lock down permissions on our inner directory:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">chmod 700 ~/client-configs/files</pre></td></tr></table>
+</div>
+</div>
+<h3 id="creating-a-base-configuration">Creating a Base Configuration</h3>
+
+<p>Next, let’s copy an example client configuration into our directory to use as our base configuration:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf ~/client-configs/base.conf</pre></td></tr></table>
+</div>
+</div>
+<p>Open this new file in your text editor:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">nano ~/client-configs/base.conf</pre></td></tr></table>
+</div>
+</div>
+<p>Inside, we need to make a few adjustments.</p>
+
+<p>First, locate the <code>remote</code> directive. This points the client to our OpenVPN server address. This should be the public IP address of your OpenVPN server. If you changed the port that the OpenVPN server is listening on, change <code>1194</code> to the port you selected:</p>
+
+<p>~/client-configs/base.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">. . .
+# The hostname/IP and port of the server.
+# You can have multiple remote entries
+# to load balance between the servers.
+remote server_IP_address 1194
+. . .</pre></td></tr></table>
+</div>
+</div>
+<p>Be sure that the protocol matches the value you are using in the server configuration:</p>
+
+<p>~/client-configs/base.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">proto udp</pre></td></tr></table>
+</div>
+</div>
+<p>Next, uncomment the <code>user</code> and <code>group</code> directives by removing the “<strong>;</strong>”:</p>
+
+<p>~/client-configs/base.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"># Downgrade privileges after initialization (non-Windows only)
+user nobody
+group nogroup</pre></td></tr></table>
+</div>
+</div>
+<p>Find the directives that set the <code>ca</code>, <code>cert</code>, and <code>key</code>. Comment out these directives since we will be adding the certs and keys within the file itself:</p>
+
+<p>~/client-configs/base.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"># SSL/TLS parms.
+# See the server config file for more
+# description.  It&#39;s best to use
+# a separate .crt/.key file pair
+# for each client.  A single ca
+# file can be used for all clients.
+#ca ca.crt
+#cert client.crt
+#key client.key</pre></td></tr></table>
+</div>
+</div>
+<p>Mirror the <code>cipher</code> and <code>auth</code> settings that we set in the <code>/etc/openvpn/server.conf</code> file:</p>
+
+<p>~/client-configs/base.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">cipher AES-128-CBC
+auth SHA256</pre></td></tr></table>
+</div>
+</div>
+<p>Next, add the <code>key-direction</code> directive somewhere in the file. This <strong>must</strong> be set to “1” to work with the server:</p>
+
+<p>~/client-configs/base.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">key-direction 1</pre></td></tr></table>
+</div>
+</div>
+<p>Finally, add a few <strong>commented out</strong> lines. We want to include these with every config, but should only enable them for Linux clients that ship with a <code>/etc/openvpn/update-resolv-conf</code> file. This script uses the <code>resolvconf</code> utility to update DNS information for Linux clients.</p>
+
+<p>~/client-configs/base.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"># script-security 2
+# up /etc/openvpn/update-resolv-conf
+# down /etc/openvpn/update-resolv-conf</pre></td></tr></table>
+</div>
+</div>
+<p>If your client is running Linux and has an <code>/etc/openvpn/update-resolv-conf</code> file, you should uncomment these lines from the generated OpenVPN client configuration file.</p>
+
+<p>Save the file when you are finished.</p>
+
+<h3 id="creating-a-configuration-generation-script">Creating a Configuration Generation Script</h3>
+
+<p>Next, we will create a simple script to compile our base configuration with the relevant certificate, key, and encryption files. This will place the generated configuration in the <code>~/client-configs/files</code> directory.</p>
+
+<p>Create and open a file called <code>make_config.sh</code> within the <code>~/client-configs</code> directory:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">nano ~/client-configs/make_config.sh</pre></td></tr></table>
+</div>
+</div>
+<p>Inside, paste the following script:</p>
+
+<p>~/client-configs/make_config.sh</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"><span class="cp">#!/bin/bash
+</span><span class="cp"></span>
+<span class="c1"># First argument: Client identifier</span>
+
+<span class="nv">KEY_DIR</span><span class="o">=</span>~/openvpn-ca/keys
+<span class="nv">OUTPUT_DIR</span><span class="o">=</span>~/client-configs/files
+<span class="nv">BASE_CONFIG</span><span class="o">=</span>~/client-configs/base.conf
+
+cat <span class="si">${</span><span class="nv">BASE_CONFIG</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>    &lt;<span class="o">(</span><span class="nb">echo</span> -e <span class="s1">&#39;&lt;ca&gt;&#39;</span><span class="o">)</span> <span class="se">\
+</span><span class="se"></span>    <span class="si">${</span><span class="nv">KEY_DIR</span><span class="si">}</span>/ca.crt <span class="se">\
+</span><span class="se"></span>    &lt;<span class="o">(</span><span class="nb">echo</span> -e <span class="s1">&#39;&lt;/ca&gt;\n&lt;cert&gt;&#39;</span><span class="o">)</span> <span class="se">\
+</span><span class="se"></span>    <span class="si">${</span><span class="nv">KEY_DIR</span><span class="si">}</span>/<span class="si">${</span><span class="nv">1</span><span class="si">}</span>.crt <span class="se">\
+</span><span class="se"></span>    &lt;<span class="o">(</span><span class="nb">echo</span> -e <span class="s1">&#39;&lt;/cert&gt;\n&lt;key&gt;&#39;</span><span class="o">)</span> <span class="se">\
+</span><span class="se"></span>    <span class="si">${</span><span class="nv">KEY_DIR</span><span class="si">}</span>/<span class="si">${</span><span class="nv">1</span><span class="si">}</span>.key <span class="se">\
+</span><span class="se"></span>    &lt;<span class="o">(</span><span class="nb">echo</span> -e <span class="s1">&#39;&lt;/key&gt;\n&lt;tls-auth&gt;&#39;</span><span class="o">)</span> <span class="se">\
+</span><span class="se"></span>    <span class="si">${</span><span class="nv">KEY_DIR</span><span class="si">}</span>/ta.key <span class="se">\
+</span><span class="se"></span>    &lt;<span class="o">(</span><span class="nb">echo</span> -e <span class="s1">&#39;&lt;/tls-auth&gt;&#39;</span><span class="o">)</span> <span class="se">\
+</span><span class="se"></span>    &gt; <span class="si">${</span><span class="nv">OUTPUT_DIR</span><span class="si">}</span>/<span class="si">${</span><span class="nv">1</span><span class="si">}</span>.ovpn</pre></td></tr></table>
+</div>
+</div>
+<p>Save and close the file when you are finished.</p>
+
+<p>Mark the file as executable by typing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">chmod 700 ~/client-configs/make_config.sh</pre></td></tr></table>
+</div>
+</div>
+<h2 id="step-11-generate-client-configurations">Step 11: Generate Client Configurations</h2>
+
+<p>Now, we can easily generate client configuration files.</p>
+
+<p>If you followed along with the guide, you created a client certificate and key called <code>client1.crt</code> and <code>client1.key</code> respectively by running the <code>./build-key client1</code> command in step 6. We can generate a config for these credentials by moving into our <code>~/client-configs</code> directory and using the script we made:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">cd ~/client-configs
+./make_config.sh client1</pre></td></tr></table>
+</div>
+</div>
+<p>If everything went well, we should have a <code>client1.ovpn</code> file in our <code>~/client-configs/files</code> directory:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ls ~/client-configs/files
+Outputclient1.ovpn</pre></td></tr></table>
+</div>
+</div>
+<h3 id="transferring-configuration-to-client-devices">Transferring Configuration to Client Devices</h3>
+
+<p>We need to transfer the client configuration file to the relevant device. For instance, this could be your local computer or a mobile device.</p>
+
+<p>While the exact applications used to accomplish this transfer will depend on your choice and device’s operating system, you want the application to use SFTP (SSH file transfer protocol) or SCP (Secure Copy) on the backend. This will transport your client’s VPN authentication files over an encrypted connection.</p>
+
+<p>Here is an example SFTP command using our client1.ovpn example. This command can be run from your local computer (OS X or Linux). It places the <code>.ovpn</code> file in your home directory:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sftp sammy@openvpn_server_ip:client-configs/files/client1.ovpn ~/</pre></td></tr></table>
+</div>
+</div>
+<p>Here are several tools and tutorials for securely transferring files from the server to a local computer:</p>
+
+<ul>
+<li><a href="http://winscp.net/">WinSCP</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-use-sftp-to-securely-transfer-files-with-a-remote-server">How To Use SFTP to Securely Transfer Files with a Remote Server</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-use-filezilla-to-transfer-and-manage-files-securely-on-your-vps">How To Use Filezilla to Transfer and Manage Files Securely on your VPS</a></li>
+</ul>
+
+<h2 id="step-12-install-the-client-configuration">Step 12: Install the Client Configuration</h2>
+
+<p>Now, we’ll discuss how to install a client VPN profile on Windows, OS X, iOS, and Android. None of these client instructions are dependent on one another, so feel free to skip to whichever is applicable to you.</p>
+
+<p>The OpenVPN connection will be called whatever you named the <code>.ovpn</code> file. In our example, this means that the connection will be called <code>client1.ovpn</code> for the first client file we generated.</p>
+
+<h3 id="windows">Windows</h3>
+
+<p><strong>Installing</strong></p>
+
+<p>The OpenVPN client application for Windows can be found on <a href="https://openvpn.net/index.php/open-source/downloads.html">OpenVPN’s Downloads page</a>. Choose the appropriate installer version for your version of Windows.</p>
+
+<p>Note</p>
+
+<p>OpenVPN needs administrative privileges to install.</p>
+
+<p>After installing OpenVPN, copy the <code>.ovpn</code> file to:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">C:\Program Files\OpenVPN\config</pre></td></tr></table>
+</div>
+</div>
+<p>When you launch OpenVPN, it will automatically see the profile and makes it available.</p>
+
+<p>OpenVPN must be run as an administrator each time it’s used, even by administrative accounts. To do this without having to right-click and select <strong>Run as administrator</strong> every time you use the VPN, you can preset this, but this must be done from an administrative account. This also means that standard users will need to enter the administrator’s password to use OpenVPN. On the other hand, standard users can’t properly connect to the server unless the OpenVPN application on the client has admin rights, so the elevated privileges are necessary.</p>
+
+<p>To set the OpenVPN application to always run as an administrator, right-click on its shortcut icon and go to <strong>Properties</strong>. At the bottom of the <strong>Compatibility</strong> tab, click the button to <strong>Change settings for all users</strong>. In the new window, check <strong>Run this program as an administrator</strong>.</p>
+
+<p><strong>Connecting</strong></p>
+
+<p>Each time you launch the OpenVPN GUI, Windows will ask if you want to allow the program to make changes to your computer. Click <strong>Yes</strong>. Launching the OpenVPN client application only puts the applet in the system tray so that the VPN can be connected and disconnected as needed; it does not actually make the VPN connection.</p>
+
+<p>Once OpenVPN is started, initiate a connection by going into the system tray applet and right-clicking on the OpenVPN applet icon. This opens the context menu. Select <strong>client1</strong> at the top of the menu (that’s our <code>client1.ovpn</code> profile) and choose <strong>Connect</strong>.</p>
+
+<p>A status window will open showing the log output while the connection is established, and a message will show once the client is connected.</p>
+
+<p>Disconnect from the VPN the same way: Go into the system tray applet, right-click the OpenVPN applet icon, select the client profile and click <strong>Disconnect</strong>.</p>
+
+<h3 id="os-x">OS X</h3>
+
+<p><strong>Installing</strong></p>
+
+<p><a href="https://tunnelblick.net/">Tunnelblick</a> is a free, open source OpenVPN client for Mac OS X. You can download the latest disk image from the <a href="https://tunnelblick.net/downloads.html">Tunnelblick Downloads page</a>. Double-click the downloaded <code>.dmg</code> file and follow the prompts to install.</p>
+
+<p>Towards the end of the installation process, Tunnelblick will ask if you have any configuration files. It can be easier to answer <strong>No</strong> and let Tunnelblick finish. Open a Finder window and double-click <code>client1.ovpn</code>. Tunnelblick will install the client profile. Administrative privileges are required.</p>
+
+<p><strong>Connecting</strong></p>
+
+<p>Launch Tunnelblick by double-clicking Tunnelblick in the <strong>Applications</strong> folder. Once Tunnelblick has been launched, there will be a Tunnelblick icon in the menu bar at the top right of the screen for controlling connections. Click on the icon, and then the <strong>Connect</strong> menu item to initiate the VPN connection. Select the <strong>client1</strong> connection.</p>
+
+<h3 id="linux">Linux</h3>
+
+<h4 id="installing">Installing</h4>
+
+<p>If you are using Linux, there are a variety of tools that you can use depending on your distribution. Your desktop environment or window manager might also include connection utilities.</p>
+
+<p>The most universal way of connecting, however, is to just use the OpenVPN software.</p>
+
+<p>On Ubuntu or Debian, you can install it just as you did on the server by typing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo apt-get update
+sudo apt-get install openvpn</pre></td></tr></table>
+</div>
+</div>
+<p>On CentOS you can enable the EPEL repositories and then install it by typing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo yum install epel-release
+sudo yum install openvpn</pre></td></tr></table>
+</div>
+</div>
+<h4 id="configuring">Configuring</h4>
+
+<p>Check to see if your distribution includes a <code>/etc/openvpn/update-resolv-conf</code> script:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ls /etc/openvpn
+Outputupdate-resolve-conf</pre></td></tr></table>
+</div>
+</div>
+<p>Next, edit the OpenVPN client configuration file you transfered:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">nano client1.ovpn</pre></td></tr></table>
+</div>
+</div>
+<p>Uncomment the three lines we placed in to adjust the DNS settings if you were able to find an <code>update-resolv-conf</code> file:</p>
+
+<p>client1.ovpn</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">script-security 2
+up /etc/openvpn/update-resolv-conf
+down /etc/openvpn/update-resolv-conf</pre></td></tr></table>
+</div>
+</div>
+<p>If you are using CentOS, change the <code>group</code> from <code>nogroup</code> to <code>nobody</code> to match the distribution’s available groups:</p>
+
+<p>client1.ovpn</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">group nobody</pre></td></tr></table>
+</div>
+</div>
+<p>Save and close the file.</p>
+
+<p>Now, you can connect to the VPN by just pointing the <code>openvpn</code> command to the client configuration file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo openvpn --config client1.ovpn</pre></td></tr></table>
+</div>
+</div>
+<p>This should connect you to your server.</p>
+
+<h3 id="ios">iOS</h3>
+
+<p><strong>Installing</strong></p>
+
+<p>From the iTunes App Store, search for and install <a href="https://itunes.apple.com/us/app/id590379981">OpenVPN Connect</a>, the official iOS OpenVPN client application. To transfer your iOS client configuration onto the device, connect it directly to a computer.</p>
+
+<p>Completing the transfer with iTunes will be outlined here. Open iTunes on the computer and click on <strong>iPhone</strong> &gt; <strong>apps</strong>. Scroll down to the bottom to the <strong>File Sharing</strong> section and click the OpenVPN app. The blank window to the right, <strong>OpenVPN Documents</strong>, is for sharing files. Drag the <code>.ovpn</code> file to the OpenVPN Documents window.</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openvpn_ubunutu/1.png" alt="iTunes showing the VPN profile ready to load on the iPhone" /></p>
+
+<p>Now launch the OpenVPN app on the iPhone. There will be a notification that a new profile is ready to import. Tap the green plus sign to import it.</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openvpn_ubunutu/2.png" alt="The OpenVPN iOS app showing new profile ready to import" /></p>
+
+<p><strong>Connecting</strong></p>
+
+<p>OpenVPN is now ready to use with the new profile. Start the connection by sliding the <strong>Connect</strong> button to the <strong>On</strong> position. Disconnect by sliding the same button to <strong>Off</strong>.</p>
+
+<p>Note</p>
+
+<p>The VPN switch under <strong>Settings</strong> cannot be used to connect to the VPN. If you try, you will receive a notice to only connect using the OpenVPN app.</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openvpn_ubunutu/3.png" alt="The OpenVPN iOS app connected to the VPN" /></p>
+
+<h3 id="android">Android</h3>
+
+<p><strong>Installing</strong></p>
+
+<p>Open the Google Play Store. Search for and install <a href="https://play.google.com/store/apps/details?id=net.openvpn.openvpn">Android OpenVPN Connect</a>, the official Android OpenVPN client application.</p>
+
+<p>The <code>.ovpn</code> profile can be transferred by connecting the Android device to your computer by USB and copying the file over. Alternatively, if you have an SD card reader, you can remove the device’s SD card, copy the profile onto it and then insert the card back into the Android device.</p>
+
+<p>Start the OpenVPN app and tap the menu to import the profile.</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openvpn_ubunutu/4.png" alt="The OpenVPN Android app profile import menu selection" /></p>
+
+<p>Then navigate to the location of the saved profile (the screenshot uses <code>/sdcard/Download/</code>) and select the file. The app will make a note that the profile was imported.</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openvpn_ubunutu/5.png" alt="The OpenVPN Android app selecting VPN profile to import" /></p>
+
+<p><strong>Connecting</strong></p>
+
+<p>To connect, simply tap the <strong>Connect</strong> button. You’ll be asked if you trust the OpenVPN application. Choose <strong>OK</strong> to initiate the connection. To disconnect from the VPN, go back to the OpenVPN app and choose <strong>Disconnect</strong>.</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openvpn_ubunutu/6.png" alt="The OpenVPN Android app ready to connect to the VPN" /></p>
+
+<h2 id="step-13-test-your-vpn-connection">Step 13: Test Your VPN Connection</h2>
+
+<p>Once everything is installed, a simple check confirms everything is working properly. Without having a VPN connection enabled, open a browser and go to <a href="https://www.dnsleaktest.com/">DNSLeakTest</a>.</p>
+
+<p>The site will return the IP address assigned by your internet service provider and as you appear to the rest of the world. To check your DNS settings through the same website, click on <strong>Extended Test</strong> and it will tell you which DNS servers you are using.</p>
+
+<p>Now connect the OpenVPN client to your Droplet’s VPN and refresh the browser. The completely different IP address of your VPN server should now appear. That is now how you appear to the world. Again, <a href="https://www.dnsleaktest.com/">DNSLeakTest’s</a> <strong>Extended Test</strong> will check your DNS settings and confirm you are now using the DNS resolvers pushed by your VPN.</p>
+
+<h2 id="step-14-revoking-client-certificates">Step 14: Revoking Client Certificates</h2>
+
+<p>Occasionally, you may need to revoke a client certificate to prevent further access to the OpenVPN server.</p>
+
+<p>To do so, enter your CA directory and re-source the <code>vars</code> file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">cd ~/openvpn-ca
+source vars</pre></td></tr></table>
+</div>
+</div>
+<p>Next, call the <code>revoke-full</code> command using the client name that you wish to revoke:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">./revoke-full client3</pre></td></tr></table>
+</div>
+</div>
+<p>This will show some output, ending in <code>error 23</code>. This is normal and the process should have successfully generated the necessary revocation information, which is stored in a file called <code>crl.pem</code> within the <code>keys</code> subdirectory.</p>
+
+<p>Transfer this file to the <code>/etc/openvpn</code> configuration directory:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo cp ~/openvpn-ca/keys/crl.pem /etc/openvpn</pre></td></tr></table>
+</div>
+</div>
+<p>Next, open the OpenVPN server configuration file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo nano /etc/openvpn/server.conf</pre></td></tr></table>
+</div>
+</div>
+<p>At the bottom of the file, add the <code>crl-verify</code> option, so that the OpenVPN server checks the certificate revocation list that we’ve created each time a connection attempt is made:</p>
+
+<p>/etc/openvpn/server.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">crl-verify crl.pem</pre></td></tr></table>
+</div>
+</div>
+<p>Save and close the file.</p>
+
+<p>Finally, restart OpenVPN to implement the certificate revocation:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo systemctl restart openvpn@server</pre></td></tr></table>
+</div>
+</div>
+<p>The client should now longer be able to successfully connect to the server using the old credential.</p>
+
+<p>To revoke additional clients, follow this process:</p>
+
+<ol>
+<li>Generate a new certificate revocation list by sourcing the <code>vars</code> file in the <code>~/openvpn-ca</code> directory and then calling the <code>revoke-full</code> script on the client name.</li>
+<li>Copy the new certificate revocation list to the <code>/etc/openvpn</code> directory to overwrite the old list.</li>
+<li>Restart the OpenVPN service.</li>
+</ol>
+
+<p>This process can be used to revoke any certificates that you’ve previously issued for your server.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Congratulations! You are now securely traversing the internet protecting your identity, location, and traffic from snoopers and censors.</p>
+
+<p>To configure more clients, you only need to follow steps <strong>6</strong>, and <strong>11-13</strong> for each additional device. To revoke access to clients, follow step <strong>14</strong>.</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Wayne</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-09-23
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/jenkins/">Jenkins</a>
+          <a href="/tags/cicd/">cicd</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/2020-09-13-nginx%E7%AC%94%E8%AE%B0/">
+            <span class="next-text nav-default">Nginx笔记</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="wayne.one.wang@outlook.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Wayne One Wang</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.d7b7ada643c9c1a983026e177f141f7363b4640d619caf01d8831a6718cd44ea.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

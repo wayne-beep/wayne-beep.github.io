@@ -986,7 +986,136 @@ Context: http,server,location
 
 两次读取操作之间最长60s超时
 
-  
+### 3.4.5. 上游失败的容错方案
+
+上游返回失败时的处理办法
+
+```code
+Syntax: proxy_nexe_upstream error|timeout|invalid_header|http5xx|http_4xx|non_indempotent|off;
+Default: proxy_nexe_upstream error timeout;
+Context: http,server,location
+```
+
+前提：没有想客户端发送任何内容
+
+配置:
+
+- Error: 错误一般指网络错误
+- timeout： connect timeout，read timeout等
+- invalid_header：不合法的header
+- http_：跟返回码
+- non_idempotent：
+- off
+
+限制proxy_next_upstream的时间与次数
+
+```code
+Syntax: proxy_next_upstream_timeout time;
+Default: proxy_next_upstream_timeout 0s;
+Context: http,server,location
+
+Syntax: proxy_next_upstream_tries number;
+Default: proxy_next_upstream_tries 0;
+Context: http,server,location
+```
+
+### 3.4.6. 用好浏览器缓存
+
+1. 浏览器缓存
+   - 优点：
+     - 使用有效缓存时，没有网络消耗，速度最快
+     - 即使有网络消耗，但对失效缓存使用304响应做到网络流量最小化
+   - 缺点：
+     - 提升用户体验
+2. nginx缓存
+   - 优点：
+     - 提升所有用户体验
+     - 相比浏览器缓存，有效降低上游服务的负载
+     - 通过304响应减少nginx与上游服务之间的消耗
+   - 缺点：
+     - 用户仍然保持网络消耗
+
+一般情况下同时使用浏览器与nginx缓存
+
+![](/images/posts/web-browser-cache.png)
+
+#### Etag 头部
+
+Etag HTTP响应头部是资源的特定版本的标识符。这可以让缓存更高效，节省带宽，因为如果内容没有改变，web服务器不需要发送完整的响应。而如果内容发生了变化，使用Etag有助于防止资源的同时更新相互覆盖。
+
+如果给定URL中的资源更改，则一定要生产新的Etag值。因此Etag类似指纹，也可能呗某些服务器用于跟踪。比较etags能快速确定资源是否变化，但也可能呗跟踪服务器永久存留。
+
+w/可选：
+
+​	'w/'(大小写敏感)表示使用弱验证器。弱验证器很容易生成，但不利于比较。弱验证器是比较理想的选择，但很难有效的生成。相同资源的两个弱Etag值可能语义等同，但不是每个字节都相同。
+
+```code
+Syntax: etag on|off;
+Default: etag on;
+Context: http,server,location
+```
+
+#### IF-None-Match
+
+If-none-match是一个条件式请求首部。对于GET和HEAD请求方法来说，当且仅当服务器上没有任何资源的ETAT属性值与首部中列出的相匹配的时候，服务器端才会返回所请求的资源，响应码为200。对于其他方法来说，当且仅当最终确认没有已存在的资源额ETAG属性值与这个首部所列出的相匹配的时候，才会对请求进行相应的处理。
+
+对于GET和HEAD方法来说，当验证失败的时候，服务器端必须返回响应码304（not modified，未改变）。对于能够引发服务器状态改变的方法，则返回412（Precondition Failed，前置条件失败）。需要注意的是，服务器端在生成状态码304的是时候，必须同时生成一下会存在于对应200响应中的首部：Cache-Control，Content-Location，Date，Etag，Expire和Vary。
+
+Etag属性之间的比较采用的是弱比较算法，即两个文件除了每个比特都相同外，内容一致也可以认为是相同的。例如，如果两个页面仅仅在页脚的生成时间有所不同，就可以认为二者是相同的。
+
+当与if-modified-since一同使用的时候，if-none-match优先级更高（如果服务器支持的话）
+
+以下是常见场景：
+
+- 采用GET或HEAD方法来更新拥有特定的Etag属性值的缓存
+- 采用其他方法，尤其是PUT，将if-none-match used值设置为*，用来生成事先并不知道是否存在的文件，可以确保先前并没有进行过类似的上传操作，防止之前操作的数据丢失。这个问题属于更新丢失问题的一种。
+
+#### If-Modified-Since
+
+If-MOdified-Since是一个条件式请求首部，服务器只在所请求的资源在给定的日期时间之后对内容进行修改的情况下才会将资源返回，状态码为200。如果请求资源从那时起未被修改，纳米返回一个不带有消息主题的304响应，而在Last-Modified首部中会带有上次修改时间。不同于if-unmodified-since,if-modified-since只可以用在GET和HEAD请求中。
+
+当与if-none-match一同出现时，if-modified-since会被忽略掉，除非服务器不支持if-none-match
+
+### 3.4.7. Nginx决策浏览器缓存是否过期
+
+```code
+Syntax: expires [modified] time;
+				expires epoch|max|off;
+Default: expires off;
+Context: http,server,location,if in location
+```
+
+- max 绝对有效:
+  - Expires: Thu,31 Dec 2037 23:55:55 GMT
+  - Cache-Control: max-age=315360000(10年) 相对时间，防止服务器和浏览器时间不一致
+- off: 不添加或修改Expires和cache-control字段
+- epoch 不使用缓存：
+  - Expire：Thu 01 Jan 1970 00:00:01 GMT
+  - Cache-Control: no-cache
+- time 设定具体时间，可以携带单位：
+  - 一天内具体时刻可以加@，比如下午六点半： @18h30m
+    - 设定好Expires，自动计算Cache-Control
+    - 如果当前时间未超过当天time时间，则Expire到当天time，否则是第二天的time时刻
+  - 正数：设定Cache-Control时间，计算出Expires
+  - 负数：Cache-Control：no-cache，计算出Expires
+
+#### not_modified过滤模块
+
+功能：
+
+​	客户端拥有缓存，但不确定缓存是否过期，于是在请求中传入if-Modified-Since或者in-None-Match头部，该模块通过将其值与响应中的Last-Modified值比较，决定是否通过200返回全部内容，还是仅返回304 Not Modified头部，表示浏览器仍然使用之前的缓存。
+
+使用前提：原返回响应码为200
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>Wayne One Wang</copyright>
-    <lastBuildDate>Wed, 23 Sep 2020 11:46:55 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 02 Oct 2020 22:22:53 +0800</lastBuildDate>
     
 	<atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     
@@ -21,6 +21,15 @@
       <description>Hugo is a static site engine written in Go.
 It makes use of a variety of open source projects including:
  Cobra Viper J Walter Weatherman Cast  Learn more and contribute on GitHub.</description>
+    </item>
+    
+    <item>
+      <title>Hadoop学习笔记</title>
+      <link>http://localhost:1313/post/2020-10-02-hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Fri, 02 Oct 2020 22:22:53 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/2020-10-02-hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
+      <description>大数据Hadoop 1. HDFS namenode namenode管理文件系统的命名空间，维护着文件系统树以及整棵树内所有文件和目录。这些信息以两个文件的形式永久保存</description>
     </item>
     
     <item>

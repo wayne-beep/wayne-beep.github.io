@@ -9,35 +9,42 @@
   </url>
   
   <url>
-    <loc>http://localhost:1313/post/2020-10-02-hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</loc>
-    <lastmod>2020-10-02T22:22:53+08:00</lastmod>
+    <loc>http://localhost:1313/post/2020-10-07-hadoop%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</loc>
+    <lastmod>2020-10-07T09:47:53+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://localhost:1313/post/</loc>
-    <lastmod>2020-10-02T22:22:53+08:00</lastmod>
+    <lastmod>2020-10-07T09:47:53+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2020-10-02T22:22:53+08:00</lastmod>
+    <lastmod>2020-10-07T09:47:53+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2020-10-02T22:22:53+08:00</lastmod>
+    <lastmod>2020-10-07T09:47:53+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://localhost:1313/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/</loc>
+    <lastmod>2020-10-07T09:47:53+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/post/2020-10-02-hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2020-10-02T22:22:53+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

@@ -34,7 +34,19 @@ Safe mode is OFF
 
    对于一个大型的集群冷启动时间大概要30分钟甚至更长。
 
+高可用实现：
 
+HDFS HA通常由两个NameNode组成，一个处于Active状态，另一个处于Standby状态。
+
+Active NameNode对外提供服务，而Standby NameNode则不对外提供服务，仅同步Active NameNode的状态，以便能够在它失败时快速进行切换。
+
+Hadoop 2.0官方提供了两种HDFS HA的解决方案，一种是NFS，另一种是QJM。这里我们使用简单的QJM。在该方案中，主备NameNode之间通过一组JournalNode同步元数据信息，一条数据只要成功写入多数JournalNode即认为写入成功。通常配置奇数个JournalNode，这里还配置了一个Zookeeper集群，用于ZKFC故障转移，当Active NameNode挂掉了，会自动切换Standby NameNode为Active状态。
+
+YARN的ResourceManager也存在单点故障问题，这个问题在hadoop-2.4.1得到了解决：有两个ResourceManager，一个是Active，一个是Standby，状态由Zookeeper进行协调。
+
+YARN框架下的MapReduce可以开启JobHistoryServer来记录历史任务信息，否则只能查看当前正在执行的任务信息。
+
+Zookeeper的作用是负责HDFS中NameNode主备节点的选举，和YARN框架下ResourceManaer主备节点的选举
 
 
 
@@ -174,12 +186,35 @@ YARN（yet another resource negotiator）是hadoop的集群资源管理系统，
 
 YARN提供请求和使用集群资源的API，但这些API很少直接用于用户代码，相反，用户代码中用的是分布式计算框架提供的更高层的API，这些API建立在YARN之上且向用户隐藏了资源管理的细节。
 
+#### 应用运行机制
 
-### 1. Flume
+YARN通过两类长期运行的守护进程提供自己的核心服务：管理集群上资源使用的**资源管理器（resource manager）**、运行在集群中**所有节点**上且能够启动核监控容器的**节点管理器（node manager）**。
+
+容器：用于执行特定应用程序的进程，每个容器都有资源限制（CPU、内存等）。一个容器可以是Unix进程也可以是Linux Cgroup，取决于yarn的配置。
+
+为了在YARN上运行一个应用，首先，客户端联系资源管理器，要求它运行一个application master进程。然后资源管理器找到一个能够在容器中启动application master的节点管理器，一个application master运行起来后能做什么依赖于应用本身：简单运行计算返回结果或向资源挂你器氢气更多的容器以用于运行一个分布式计算。后者是MapReduce YARN应用所做的事情。
+
+#### 对比MapReduce
+
+1. 可扩展性：YARN可以在更大规模集群上运行。MapReduce节点数达到4000，任务数达到40000时会遇到瓶颈，瓶颈来自于jobtracker必须同时管理作业和任务。而YARN里有资源管理器和application master的分离架构克服了这个局限。一个应用的每个实例都对应一个专门的application master
+2. 可用性：当服务守护进程失败时，通过为另一个守护进程复制接管工作的状态以便继续服务，从而获得高可用性。然而jobtracker内存中大量快速变化的复杂状态是的改进jobtracker服务获得高可用性非常困难。由于YARN中jobtracker在资源管理器和application master之间进行了职责的划分，高可用的服务随之成为一个分而治之的问题：先为资源管理器提供高可用性，再为YARN应用提供高可用性。
+3. 利用率：MapReduce每个tasktracker都配置有若干个固定长度的slot，都是静态分配的，在配置的时候就划分为map slot和reduce slot。一个slot仅能运行一个任务。YARN中，一个节点管理器管理一个资源池，而不是指定固定数目的slot。YARN上运行的MapReduce不会出现由于集群仅有map slot可用导致reduce任务必须等待的情况，如果能获得运行任务的资源，那么应用就会正常运行。
+4. 多租户：YARN的最大优点在于向MapReduce以外的其他类型的分布式应用开放了hadoop。MapReduce仅仅是YARN应用中的一个。
+
+#### 调度策略
+
+- FIFO调度：维护队列，简单，但是不适合共享集群。达到应用会占用集群的所有资源。
+- 容量调度器：一个独立的专门队列保证小作业一提交就可以启动，由于队列容量是为那个队列中的作业保留的，因此这种策略是以整个集群利用率为代价的，与FIFO调度器比，大作业执行的时间要长
+- 公平调度器：不需要预留一定量的资源，因为调度器会在所有运行的作业之间动态平衡资源。第一个（大）作业启动时，它也是唯一运行的作业，因而获得集群中所有的资源。当第二个（小）作业启动时，它被分配到集群的一半资源，这样每个作业都能公平共享资源。在分配到一般资源时需要等待第一个作业释放资源，所以需要点时间。当小作业结束且不再申请资源后，大作业将回去再次使用全部的集群资源。最终的效果是即得到了较高的集群利用率，又能保证小作业能及时完成。CDH中默认使用公平调度。
+
+
+
+
+### 2. Flume
 
 设计Flume的宗旨是向hadoop批量导入基于事件的海量数据。一个典型的例子是里有Flume从一组web服务器中搜集日志文件，然后把这些文件中的日志事件转移到一个新的HDFS汇总文件以做进一步处理，其终点通常为HDFS，也可以写入HBase或者Solr。
 
-### 2. HBase
+### 3. HBase
 
 HBase是一个在HDFS上开发的面向列的分布式数据库。如果需要实时的随机访问超大规模数据集，就可以使用HBase。HBase可以解决伸缩性的问题，它自底向上地进行构建，能够简单地通过增加节点来达到线性扩展。HBase并不是关系型数据库，它不支持SQL，但是它能做RDBMS（关系型数据库）不能做的事：在廉价硬件构成的集群上管理超大规模的稀疏表。
 
@@ -219,6 +254,32 @@ HBase内部保留名为hbase:meta的特殊目录表。他们维护着当前集�
 - 普通商用硬件的支持：普通的商用机即可
 - 容错：大量节点意味着每个节点的重要性不突出。不用担心单个节点失效。
 - 批处理：MapReduce集成功能使我们可以用全并行的分布式作业根据”数据的位置“来处理
+
+#### 高可用
+
+同HDFS一样，HBase使用Zookeeper作为集群协调与管理系统。
+
+在HBase中其主要的功能与职责为：
+
+- 存储整个集群HMaster与RegionServer的**运行状态**
+- 实现HMaster的**故障恢复与自动切换**
+- 为Client提供**元数据表**的存储信息
+
+HMaster、RegionServer启动之后将会在Zookeeper上注册并创建节点（/hbasae/master 与 /hbase/rs/*），同时 Zookeeper 通过**Heartbeat的心跳机制来维护与监控节点状态**，一旦节点丢失心跳，则认为该节点宕机或者下线，将清除该节点在Zookeeper中的注册信息。
+
+当Zookeeper中**任一RegionServer节点状态发生变化时，HMaster都会收到通知**，并作出相应处理，例如RegionServer宕机，HMaster重新分配Regions至其他RegionServer以保证集群整体可用性。
+
+当HMaster宕机时（Zookeeper监测到心跳超时），**Zookeeper中的 /hbasae/master 节点将会消失，同时Zookeeper通知其他备用HMaster节点**，重新创建 /hbasae/master 并转化为active master。
+
+#### 访问方式
+
+客户端要访问HBase中的数据，只需要知道**Zookeeper集群的连接信息**，访问步骤如下：
+
+- 客户端将从Zookeeper（/hbase/meta-region-server）**获得 hbase:meta 表存储在哪个RegionServer**，缓存该位置信息
+- 查询该RegionServer上的 hbase:meta 表数据，查找要操作的 **rowkey所在的Region存储在哪个RegionServer中**，缓存该位置信息
+- 在具体的RegionServer上**根据rowkey检索该Region数据**
+
+可以看到，客户端操作数据过程并不需要HMaster的参与，通过Zookeeper间接访问RegionServer来操作数据。
 
 #### 常见问题
 
@@ -261,9 +322,7 @@ HBase使用HDFS的方式与MapReduce使用HDFS方式截然不同。在MapReduce�
    ```
 
 
-### 3. HIVE
-
-
+### 4. HIVE
 
 原理：用户创建数据库、表信息，存储在hive的元数据库中；向表中加载数据，元数据记录hdfs文件路径与表之间的映射关系；执行查询语句，首先经过解析器、编译器、优化器、执行器，将指令翻译成MapReduce，提交到Yarn上执行，最后将执行返回的结果输出到用户交互接口。
 
@@ -307,9 +366,40 @@ Hive的设计目的是让精通SQL技能但Java编程技能相对弱的分析师
    这种方式是基于存放元数据的数据库为mysql类型的方式上实现的，进一步实现了在多个节点上操作同一个hive数据库，实现远程连接，常用的一种方式。基于上一种方式，client节点上的配置不需要动，只需更改想要远程连接的节点上的配置文件；在客户端启动远程连接服务 `hive --service metastore` 即可。远程模式是metastore与hive服务分离，这样可以使数据库完全放在防火墙后面，有利于安全性。
 
 - 先执行`cp hive-default.xml.template hive-site.xml`
-
 - 搭建Hive之前要先将HDFS、Yarn以及MapRedecu的进程启动好，因为Hive的实习是在上述环境中进行的。
 - 要注意Hadoop下的Yarn下lib中的jline这个jar包于Hive中的版本相统一，不然会出错。
+
+### 4. Zookeeper
+
+一是故障监控。每个NameNode将会和Zookeeper建立一个持久session，如果NameNode失效，那么此session将会过期失效，此后Zookeeper将会通知另一个Namenode，然后触发Failover；
+
+二是NameNode选举。ZooKeeper提供了简单的机制来实现Acitve Node选举，如果当前Active失效，Standby将会获取一个特定的排他锁，那么获取锁的Node接下来将会成为Active。
+
+**ZKFC：**
+
+ZKFC是一个Zookeeper的客户端，它主要用来监测和管理NameNodes的状态，每个NameNode机器上都会运行一个ZKFC程序
+
+**主要职责：**
+
+一是健康监控。ZKFC间歇性的ping NameNode，得到NameNode返回状态，如果NameNode失效或者不健康，那么ZKFS将会标记其为不健康；
+
+二是Zookeeper会话管理。当本地NaneNode运行良好时，ZKFC将会持有一个Zookeeper session，如果本地NameNode为Active，它同时也持有一个“排他锁”znode，如果session过期，那么次lock所对应的znode也将被删除；
+
+三是选举。当集群中其中一个NameNode宕机，Zookeeper会自动将另一个激活。
+
+## 部署CDH
+
+合理的集群规划应该做到以下几点：
+
+- 充分了解当前的数据现状
+- 与业务方深入沟通，了解将会在集群上运行的业务，集群将会为业务提供什么服务
+- 结合数据现状与业务，合理预估未来的数据量增长
+- 盘点当前可用的硬件资源，包括机柜机架、服务器、交换机等
+- 当前硬件资源不充足的情况下，根据数据评估情况作出采购建议
+- 根据业务属性与组成，合理规划集群的部署架构
+- 根据可用硬件资源，对集群节点的服务角色进行合理划分
+
+
 
 
 ## Q&A
@@ -329,7 +419,7 @@ Hive的设计目的是让精通SQL技能但Java编程技能相对弱的分析师
 
 ## 面试
 
-#### 1. Hadoop的各角色的职能？
+### 1. Hadoop的各角色的职能？
 
 Hadoop这头大 象奔跑起来，需要在集群中运行一系列后台(deamon）程序。不同的后台程序扮演不用的角色，这些角色由NameNode、DataNode、 Secondary NameNode、JobTracker、TaskTracker组成。其中NameNode、Secondary  NameNode、JobTracker运行在Master节点上，而在每个Slave节点上，部署一个DataNode和TaskTracker，以便这个Slave服务器运行的数据处理程序能尽可能直接处理本机的数据。对Master节点需要特别说明的是，在小集群中，Secondary  NameNode可以属于某个从节点；在大型集群中，NameNode和JobTracker被分别部署在两台服务器上。 
 
@@ -346,4 +436,47 @@ Hadoop这头大 象奔跑起来，需要在集群中运行一系列后台(deamon
 **JobClient**
 
   配置好作业之后，就可以向JobTracker提交该作业了，然后JobTracker才能安排适当的TaskTracker来完成该作业。（JobTracker是mapreduce框架中的主服务器，TaskTracker是从服务器）。
+
+### 2. 集群角色
+
+目前集群规模30台
+
+- 类型：CPU40 mem176G 106TB 20台   CPU16 mem128G 14TB 12台
+
+- 磁盘使用情况：1.9PB空间，使用220TB
+
+  
+
+#### 2.1. HDFS
+
+- Namenode Zkfc zkfailovercontroller active 1 zkfailovercontroller
+- Namenode  Zkfc zkfailovercontroller standby  1 
+- Datanode 24
+- balancer 1 
+- JournalNode 3
+- zookeeper 5
+
+#### 2.2. HBASE
+
+- master active 1  与namenode在一起
+- master backup | Thrift server| REST server 1  与namenode在一起，thirft为其他非java语言提供接口，rest提供web请求接口
+- regionServer 30 和DataNode在一起
+
+#### 2.3. HIVE 
+
+都运行在master01和master02上
+
+- hive metastore server 2
+- Hiveserver 2
+- webHCat server 1
+
+#### 2.4. YARN 
+
+- JobHistore server 1 与namenode在一起
+- resourceManager active 与namenode在一起
+- Nodemanager 30 与HDFS在一起
+
+#### 2.5. zookeeper
+
+公共zk，5台
 

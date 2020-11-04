@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>Wayne One Wang</copyright>
-    <lastBuildDate>Wed, 07 Oct 2020 09:47:53 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 04 Nov 2020 20:50:51 +0800</lastBuildDate>
     
 	<atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     
@@ -24,93 +24,111 @@ It makes use of a variety of open source projects including:
     </item>
     
     <item>
+      <title>English interview</title>
+      <link>http://localhost:1313/post/english-interview/</link>
+      <pubDate>Wed, 04 Nov 2020 20:50:51 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/english-interview/</guid>
+      <description>tell me about your self I came from Inner Mongolia , I finished my college in shandong province and my first work is in shandong too. since 2014, My new wife and I came to Beijing and started our career ，I became an operations engineer. after six years of hard working, I&amp;rsquo;m a senior engineer now, I‘m good at working in linux system enviroment.I have a lot of experience with open source tools,such as nginx , tomcat , jenkins ,ansible , kubernetes and so on .</description>
+    </item>
+    
+    <item>
       <title>Hadoop集群部署</title>
-      <link>http://localhost:1313/post/2020-10-07-hadoop%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</link>
+      <link>http://localhost:1313/post/hadoop%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</link>
       <pubDate>Wed, 07 Oct 2020 09:47:53 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/2020-10-07-hadoop%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</guid>
+      <guid>http://localhost:1313/post/hadoop%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</guid>
       <description>目录 测试环境 Hadoop 组织框架 HDFS架构 YARN架构 HA集群部署规划 自动故障转移 关于集群主机时间 Linux环境搭建 配置Java环境 安装单机版Had</description>
     </item>
     
     <item>
       <title>Hadoop学习笔记</title>
-      <link>http://localhost:1313/post/2020-10-02-hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
+      <link>http://localhost:1313/post/hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
       <pubDate>Fri, 02 Oct 2020 22:22:53 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/2020-10-02-hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
+      <guid>http://localhost:1313/post/hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
       <description>大数据Hadoop 1. HDFS namenode namenode管理文件系统的命名空间，维护着文件系统树以及整棵树内所有文件和目录。这些信息以两个文件的形式永久保存</description>
     </item>
     
     <item>
       <title>OpenVPN</title>
-      <link>http://localhost:1313/post/2020-09-23-opevpn/</link>
+      <link>http://localhost:1313/post/openvpn/</link>
       <pubDate>Wed, 23 Sep 2020 11:46:55 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/2020-09-23-opevpn/</guid>
+      <guid>http://localhost:1313/post/openvpn/</guid>
       <description>OpenVPN部署 转载：https://www.digitalocean.com/community/tutorials/how-to-se</description>
     </item>
     
     <item>
       <title>Nginx笔记</title>
-      <link>http://localhost:1313/post/2020-09-13-nginx%E7%AC%94%E8%AE%B0/</link>
+      <link>http://localhost:1313/post/nginx%E7%AC%94%E8%AE%B0/</link>
       <pubDate>Sun, 13 Sep 2020 20:38:26 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/2020-09-13-nginx%E7%AC%94%E8%AE%B0/</guid>
+      <guid>http://localhost:1313/post/nginx%E7%AC%94%E8%AE%B0/</guid>
       <description>1. Nginx架构 1.1. Nginx处理流程 Nginx使用Epoll的非租塞事件驱动模型，内部有三种状态机： 传输层状态机，接收四层请求 HTTP状态机</description>
     </item>
     
     <item>
       <title>Sftp的配置</title>
-      <link>http://localhost:1313/post/2020-08-25-sftp%E7%9A%84%E9%85%8D%E7%BD%AE/</link>
+      <link>http://localhost:1313/post/sftp%E7%9A%84%E9%85%8D%E7%BD%AE/</link>
       <pubDate>Tue, 25 Aug 2020 13:38:26 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/2020-08-25-sftp%E7%9A%84%E9%85%8D%E7%BD%AE/</guid>
+      <guid>http://localhost:1313/post/sftp%E7%9A%84%E9%85%8D%E7%BD%AE/</guid>
       <description>SFTP配置过程 连接用户根据用户需求添加系统用户配置密码 1 2 $ useradd sftp_test $ passwd sftp_test 将用户加入sftp-group组（已预先添加） 1 $ usermod -a -G sftp-group sftp_test 创建ch</description>
     </item>
     
     <item>
       <title>Rabbitmq技术总结</title>
-      <link>http://localhost:1313/post/2020-08-04-rabbitmq%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/</link>
+      <link>http://localhost:1313/post/rabbitmq%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/</link>
       <pubDate>Tue, 04 Aug 2020 07:44:20 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/2020-08-04-rabbitmq%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/</guid>
+      <guid>http://localhost:1313/post/rabbitmq%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/</guid>
       <description>题纲 RABBITMQ介绍 RABBITMQ重要概念 传输信道CHANNEL，交换机，队列，虚拟机 RABBITMQ权限 RABBITMQ分布式介绍 RABBITMQ</description>
     </item>
     
     <item>
       <title>ELK概念总结</title>
-      <link>http://localhost:1313/post/2020-09-04-elk%E6%A6%82%E5%BF%B5%E6%80%BB%E7%BB%93/</link>
+      <link>http://localhost:1313/post/elk%E6%A6%82%E5%BF%B5%E6%80%BB%E7%BB%93/</link>
       <pubDate>Fri, 31 Jul 2020 18:06:45 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/2020-09-04-elk%E6%A6%82%E5%BF%B5%E6%80%BB%E7%BB%93/</guid>
+      <guid>http://localhost:1313/post/elk%E6%A6%82%E5%BF%B5%E6%80%BB%E7%BB%93/</guid>
       <description>Search查询 1. 搜索 查询索引 1 2 3 4 GET /_search #查询所有索引信息 GET /index1/_search #查询指定索引信息 GET /index1,index2/_search #同时查询多个索引 GET /index*/_search #通配符匹配索引 2. URI查询 1 2</description>
     </item>
     
     <item>
       <title>Kubernetes知识积累</title>
-      <link>http://localhost:1313/post/2020-07-31-kubernetes%E7%9F%A5%E8%AF%86%E7%A7%AF%E7%B4%AF/</link>
+      <link>http://localhost:1313/post/kubernetes%E7%9F%A5%E8%AF%86%E7%A7%AF%E7%B4%AF/</link>
       <pubDate>Fri, 31 Jul 2020 18:06:45 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/2020-07-31-kubernetes%E7%9F%A5%E8%AF%86%E7%A7%AF%E7%B4%AF/</guid>
+      <guid>http://localhost:1313/post/kubernetes%E7%9F%A5%E8%AF%86%E7%A7%AF%E7%B4%AF/</guid>
       <description>1. Kubernetes各个组件的功能 1.1. kube-apiserver master组件kube-apiserver负责将kubernetes资源组、资源版本、资源已res</description>
     </item>
     
     <item>
       <title>TCP/IP学习笔记</title>
-      <link>http://localhost:1313/post/2020-07-31-tcpip%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
+      <link>http://localhost:1313/post/tcp/ip%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
       <pubDate>Fri, 31 Jul 2020 15:44:45 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/2020-07-31-tcpip%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
+      <guid>http://localhost:1313/post/tcp/ip%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
       <description>1. 概念 1.1. TCP/IP协议簇的四个层次 链路层-网络层-运输层-应用层 每一层负责不通的功能： 链路层：也被称为数据链路层或网络接口层，通常包括操作</description>
     </item>
     
     <item>
       <title>Jenkins结合Nexus实现CICD分离</title>
-      <link>http://localhost:1313/post/2020-07-31-jenkins-cicd/</link>
+      <link>http://localhost:1313/post/jenkins%E7%BB%93%E5%90%88nexus%E5%AE%9E%E7%8E%B0cicd%E5%88%86%E7%A6%BB/</link>
       <pubDate>Fri, 31 Jul 2020 13:10:17 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/2020-07-31-jenkins-cicd/</guid>
+      <guid>http://localhost:1313/post/jenkins%E7%BB%93%E5%90%88nexus%E5%AE%9E%E7%8E%B0cicd%E5%88%86%E7%A6%BB/</guid>
       <description>CICD for Jenkins use Pipeline Nexus and Ansible 部署流程： CI：nexus建立好存储包仓库，jenkinsfile调用nexusArtifactUploader模块上传ja</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://localhost:1313/post/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/</guid>
+      <description>Hadoop学习 Hdfs 50070端口可以下载文件，出于安全性考虑，需要使用https和修改默认端口</description>
     </item>
     
   </channel>

@@ -1,0 +1,2120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Nginx笔记 - Wayne&#39;s Blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Wayne" /><meta name="description" content="1. Nginx架构 1.1. Nginx处理流程 Nginx使用Epoll的非租塞事件驱动模型，内部有三种状态机： 传输层状态机，接收四层请求 HTTP状态机" /><meta name="keywords" content="theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.59.0 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/nginx%E7%AC%94%E8%AE%B0/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<link href="/sass/main.min.6eb09ed45a88bd339269c14515d2a11f2e0afdadbdd763d83f9b5c797166b081.css" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+<meta property="og:title" content="Nginx笔记" />
+<meta property="og:description" content="1. Nginx架构 1.1. Nginx处理流程 Nginx使用Epoll的非租塞事件驱动模型，内部有三种状态机： 传输层状态机，接收四层请求 HTTP状态机" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/nginx%E7%AC%94%E8%AE%B0/" />
+<meta property="article:published_time" content="2020-09-13T20:38:26+08:00" />
+<meta property="article:modified_time" content="2020-09-13T20:38:26+08:00" />
+<meta itemprop="name" content="Nginx笔记">
+<meta itemprop="description" content="1. Nginx架构 1.1. Nginx处理流程 Nginx使用Epoll的非租塞事件驱动模型，内部有三种状态机： 传输层状态机，接收四层请求 HTTP状态机">
+
+
+<meta itemprop="datePublished" content="2020-09-13T20:38:26&#43;08:00" />
+<meta itemprop="dateModified" content="2020-09-13T20:38:26&#43;08:00" />
+<meta itemprop="wordCount" content="13675">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Nginx笔记"/>
+<meta name="twitter:description" content="1. Nginx架构 1.1. Nginx处理流程 Nginx使用Epoll的非租塞事件驱动模型，内部有三种状态机： 传输层状态机，接收四层请求 HTTP状态机"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Wayne</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Wayne</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Nginx笔记</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-09-13 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-nginx架构">1. Nginx架构</a>
+<ul>
+<li><a href="#1-1-nginx处理流程">1.1. Nginx处理流程</a></li>
+<li><a href="#1-2-nginx进程结构">1.2. Nginx进程结构</a></li>
+<li><a href="#1-3-使用信号管理进程">1.3. 使用信号管理进程</a></li>
+<li><a href="#1-4-reload的过程">1.4. reload的过程</a></li>
+<li><a href="#1-5-热升级以及回滚">1.5. 热升级以及回滚</a></li>
+<li><a href="#1-6-优雅关闭worker进程">1.6. 优雅关闭worker进程</a></li>
+<li><a href="#1-7-nginx事件驱动模型epoll">1.7. Nginx事件驱动模型Epoll</a></li>
+<li><a href="#1-8-同步-异步-阻塞-非租塞的区别">1.8. 同步&amp;异步、阻塞&amp;非租塞的区别</a>
+<ul>
+<li><a href="#阻塞调用">阻塞调用</a></li>
+<li><a href="#非租塞调用">非租塞调用</a></li>
+</ul></li>
+<li><a href="#1-9-nginx的模块">1.9. Nginx的模块</a></li>
+<li><a href="#1-11-worker进程间的协同工作">1.11. worker进程间的协同工作</a></li>
+</ul></li>
+<li><a href="#2-http模块">2. HTTP模块</a>
+<ul>
+<li><a href="#2-1-冲突的配置指令优先级">2.1. 冲突的配置指令优先级</a>
+<ul>
+<li><a href="#配置快的嵌套">配置快的嵌套</a></li>
+<li><a href="#指令的context">指令的Context</a></li>
+<li><a href="#指令的合并">指令的合并</a></li>
+</ul></li>
+<li><a href="#2-2-listen指令的用法">2.2. listen指令的用法</a></li>
+<li><a href="#2-3-正则表达式">2.3. 正则表达式</a></li>
+<li><a href="#2-4-server指令块查找">2.4. server指令块查找</a>
+<ul>
+<li><a href="#server-name指令">server_name指令</a></li>
+<li><a href="#server匹配顺序">server匹配顺序</a></li>
+</ul></li>
+<li><a href="#2-5-http请求的11个阶段">2.5. HTTP请求的11个阶段</a>
+<ul>
+<li><a href="#11个阶段的处理顺序">11个阶段的处理顺序</a></li>
+<li><a href="#2-5-1-获取用户真实ip的realip模块">2.5.1 获取用户真实ip的realip模块</a></li>
+<li><a href="#2-5-2-rewrite阶段的rewrite指令和return">2.5.2 rewrite阶段的rewrite指令和return</a>
+<ul>
+<li>
+<ul>
+<li><a href="#return与error-page">return与error_page</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#2-5-3-rewrite重写url">2.5.3 rewrite重写url</a></li>
+<li><a href="#2-5-4-条件判断if">2.5.4. 条件判断if</a></li>
+<li><a href="#2-5-5-find-config找到处理请求的location">2.5.5. find_config找到处理请求的location</a></li>
+<li><a href="#2-5-6-对连接数限制的limit-conn">2.5.6. 对连接数限制的limit_conn</a></li>
+<li><a href="#2-5-7-对连接数限制的limit-req">2.5.7. 对连接数限制的limit_req</a></li>
+<li><a href="#2-5-8-对ip做限制的access模块">2.5.8. 对ip做限制的access模块</a></li>
+<li><a href="#2-5-9-precontent阶段的try-files模块">2.5.9. precontent阶段的try_files模块</a></li>
+<li><a href="#2-5-11-static模块的三个变量">2.5.11. static模块的三个变量</a></li>
+<li><a href="#2-5-12-static模块url后面斜杆问题">2.5.12. static模块url后面斜杆问题</a></li>
+<li><a href="#2-5-13-access日志详细用法">2.5.13. access日志详细用法</a></li>
+<li><a href="#2-5-14-http过滤模块">2.5.14. HTTP过滤模块</a>
+<ul>
+<li><a href="#在响应的前后添加内容-addition模块">在响应的前后添加内容：addition模块</a></li>
+</ul></li>
+<li><a href="#2-5-15-使用变量进行防盗链">2.5.15. 使用变量进行防盗链</a></li>
+<li><a href="#2-5-16-对客户端使用keepalive提升效率">2.5.16. 对客户端使用keepalive提升效率</a></li>
+</ul></li>
+<li><a href="#3-1-加权round-roubin负载均衡算法">3.1. 加权round-roubin负载均衡算法</a></li>
+<li><a href="#3-2-对上游服务使用keepalive长连接">3.2. 对上游服务使用keepalive长连接</a></li>
+<li><a href="#3-3-upstream变量">3.3.   upstream变量</a></li>
+<li><a href="#3-4-反向代理模块">3.4. 反向代理模块</a>
+<ul>
+<li><a href="#http反向代理流程">HTTP反向代理流程</a></li>
+<li><a href="#3-4-1-http-反向代理模块-proxy模块">3.4.1. HTTP 反向代理模块：proxy模块</a></li>
+<li><a href="#3-4-2-接收客户请求包体">3.4.2. 接收客户请求包体</a></li>
+<li><a href="#3-4-3-与上游建立连接">3.4.3. 与上游建立连接</a></li>
+<li><a href="#3-4-4-接收上游的响应头部">3.4.4. 接收上游的响应头部</a></li>
+</ul></li>
+<li><a href="#3-4-5-上游失败的容错方案">3.4.5. 上游失败的容错方案</a></li>
+<li><a href="#3-4-6-用好浏览器缓存">3.4.6. 用好浏览器缓存</a>
+<ul>
+<li><a href="#etag-头部">Etag 头部</a></li>
+<li><a href="#if-none-match">IF-None-Match</a></li>
+<li><a href="#if-modified-since">If-Modified-Since</a></li>
+</ul></li>
+<li><a href="#3-4-7-nginx决策浏览器缓存是否过期">3.4.7. Nginx决策浏览器缓存是否过期</a>
+<ul>
+<li><a href="#not-modified过滤模块">not_modified过滤模块</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="1-nginx架构">1. Nginx架构</h2>
+
+<h3 id="1-1-nginx处理流程">1.1. Nginx处理流程</h3>
+
+<p>Nginx使用Epoll的非租塞事件驱动模型，内部有三种状态机：</p>
+
+<ol>
+<li>传输层状态机，接收四层请求</li>
+<li>HTTP状态机，处理七层事件</li>
+<li>Mail状态机，处理邮件</li>
+</ol>
+
+<p>基于状态机，在nginx接收请求处理静态资源的时候，在静态目录找到静态资源，如果做反向代理的时候，从磁盘中缓存取，当nginx内存不足以缓存文件和信息的时候，sendfile活AIO会退化成阻塞的IO调用，因此需要一个线程池来处理调用。对于处理完成的请求会记录access和error日志。当进行反向代理的时候，可以通过协议或应用层代理到后端服务器。</p>
+
+<h3 id="1-2-nginx进程结构">1.2. Nginx进程结构</h3>
+
+<p>Nginx采用多进程而不是多线程模型的原因是进程之间是独立内存空间的，而多线程是共享内存地址空间的，如果某个线程出现内存问题，会导致整个nginx进程挂掉，而多进程则不会出现这样的问题。</p>
+
+<p>Nginx进程包含一个Master的父进程和多个子进程，子进程包含worker进程和cache进程。master进程的目的是管理worker进程，所有的worker进程是处理真正的请求，master进程监控worker进程的运行，是不是需要载入新的配置文件、是不是要进行热部署。</p>
+
+<p>缓存是不仅要在多个worker进程之间共享，而且也要被cache manager和cache loader进程使用，cache manager和cache load也是为反向代理时，后端发来的动态请求做缓存使用的。cache loader做缓存的载入，manager做缓存的管理。</p>
+
+<p>进程之间的通信是使用共享内存来解决的。worker进程很多的原因是nginx采用事件驱动模型以后，希望nginx每个nginx进程都占用一颗CPU，所以不仅nginx一般配置进程数等于CPU核心数，而且最好为每个进程分配固定的CPU核更有效的利用CPU上的缓存来减少缓存失效降低命中率。</p>
+
+<p>Tip：nginx reload和kill -SIGHUP pid是一样的</p>
+
+<h3 id="1-3-使用信号管理进程">1.3. 使用信号管理进程</h3>
+
+<ol>
+<li><p>Master进程：</p>
+
+<ul>
+<li>监控worker进程CHLD信号，如果worker进程终止，会发送CHLD信号给master，如果worker进程意外终止，master可以立刻通过CHLD发现worker进程异常，会立刻拉起worker进程</li>
+<li>管理worker进程</li>
+<li>接收信号：
+
+<ul>
+<li>TERM，INT立刻停止进程</li>
+<li>、QUIT优雅停止，保证不会对用户发reset报文</li>
+<li>HUP重载配置</li>
+<li>USR1重新打开日志文件，对日志文件切割</li>
+<li>USR2平滑升级</li>
+<li>WINCH优雅关闭旧的进程(配合USR2来进行升级)</li>
+</ul></li>
+</ul></li>
+
+<li><p>Worker进程</p></li>
+</ol>
+
+<p>接收信号：TERM、INT、QUIT、USR1、WINCH，虽然worker也可以接收信号，但是通常不这么操作，都是有master来管理的</p>
+
+<ol>
+<li><p>Nginx命令行</p>
+
+<ul>
+<li>reload：HUP</li>
+<li>reopen：USER1</li>
+<li>stop：TERM</li>
+<li>quit：QUIT</li>
+</ul></li>
+</ol>
+
+<p>nginx接收命令和使用kill+信号处理的效果是一样的</p>
+
+<h3 id="1-4-reload的过程">1.4. reload的过程</h3>
+
+<p>在配置文件变更后，执行nginx -s reload会将新的配置文件应用，reload的流程：</p>
+
+<ol>
+<li>想master进程发送HUP信号（reload指令）</li>
+<li>master进程校验配置语法是否正确（不一定非要执行-t指令校验）</li>
+<li>master进程打开可能引入的新的监听端口</li>
+<li>master进程用新的配置文件启动新的worker子进程</li>
+<li>master进程向老的worker子进程发送QUIT信号优雅关闭。为了保证nginx的平滑，关闭老进程之前一定要保证新进程启动</li>
+<li>老worker进程收到QUIT信号后，关闭监听句柄，处理完当前连接后结束进程。正常情况下老的worker进程都会正常退出。但是在一些特殊情况，比如连接出了问题，客户端长时间没有处理，导致老worker进程一直存在，新版的nginx通过参数<strong>worker_shutdown_timeout</strong>来释放异常超时的worker进程连接</li>
+</ol>
+
+<h3 id="1-5-热升级以及回滚">1.5. 热升级以及回滚</h3>
+
+<ol>
+<li>将旧的Nginx二进制文件替换成新的二进制文件（注意备份；替换时，由于文件被进程使用，所以用cp -f参数强制替换）</li>
+<li>想master进程发送USER2信号</li>
+<li>master进程修改pid文件名，加后缀.oldbin</li>
+<li>用新Nginx文件启动新的master进程</li>
+<li>想老的master进程发送WINCH信号（从第三部的备份pid文件找到进程号，或者ps查看），关闭老的worker进程</li>
+<li>回滚：向老master发送HUP信号，向新master发送QUIT</li>
+</ol>
+
+<h3 id="1-6-优雅关闭worker进程">1.6. 优雅关闭worker进程</h3>
+
+<p>如果直接关闭worker进程，会导致正在连接的用户收到异常信息，优雅的关闭是指worker进程可以识别出当前的连接没有处理请求，然后把进程关闭。优雅关闭只针对HTTP请求</p>
+
+<ol>
+<li>设置定时器work_shutdown_timeout</li>
+<li>关闭监听句柄</li>
+<li>关闭空闲连接</li>
+<li>在循环中等待全部链接关闭，这个等待时间可能会比较长，可能会超过work_shutdown_timeout设置时间，当达到work_shutdown_timeout时间，就会被强制关闭</li>
+<li>退出进程</li>
+</ol>
+
+<h3 id="1-7-nginx事件驱动模型epoll">1.7. Nginx事件驱动模型Epoll</h3>
+
+<p>在建立了百万并发的连接时，同时活跃的连接可能只有几百个，只需要处理着几百个请求，而select或poll每次取操作系统事件时，会把这百万连接都交给操作系统，由操作系统判断哪些连接有请求进来。Epoll就是用了前者。</p>
+
+<p>Epoll的实现：Epoll维护了eventpoll，它通过两个数据结构将两个事件分开，nginx每次取活跃连接的时候，会遍历一个链表，这个链表里只有活跃的连接，从内核态读取到用户态，这样效率就很高。</p>
+
+<p>通常可以将worker进程的优先级调高（比如-19），这样CPU会给worker进程分配的时间片比较大，避免进程切换，一个县城仅处理一个连接，不做连接切换，依赖OS的进程调度实现并发。一线程同时处理多连接，在用户态代码完成连接切换，尽量减少OS进程切换。</p>
+
+<h3 id="1-8-同步-异步-阻塞-非租塞的区别">1.8. 同步&amp;异步、阻塞&amp;非租塞的区别</h3>
+
+<p>以Accept为例：</p>
+
+<h4 id="阻塞调用">阻塞调用</h4>
+
+<p>阻塞Accept请求，调用Accept，正常Accept不为空会立即返回；但是如果Accept队列为空时，操作系统会等待新的三次握手的连接到达内核中去唤醒Accept调用。这个过程会导致进程的切换，对于nginx是不能容忍进程切换的。</p>
+
+<h4 id="非租塞调用">非租塞调用</h4>
+
+<p>调用Accept时，监听套接字设置为非租塞，如果Accept队列为空，则不等待，立刻返回EAGAIN错误，代码会进行处理。所以，这里由代码决定是否切换新任务。</p>
+
+<h3 id="1-9-nginx的模块">1.9. Nginx的模块</h3>
+
+<ul>
+<li>前提编译进nginx</li>
+<li>提供哪些配置项</li>
+<li>模块何时被使用（编译即使用还是显示配置）</li>
+<li>提供哪些变量</li>
+</ul>
+
+<p>### 1.10. Nginx如何通过连接池处理网络请求</p>
+
+<p>syntax: worker_connections |default 512 | context events</p>
+
+<p>配置一个worker进程最大同时建立连接数，该连接数用于客户端与nginx、nginx与上游服务器的连接，因此，一个客户端的请求需要消耗两个连接。每个连接对应一个读事件和写事件。</p>
+
+<p>内存池配置：</p>
+
+<p>Syntax: connection_pool_size</p>
+
+<h3 id="1-11-worker进程间的协同工作">1.11. worker进程间的协同工作</h3>
+
+<p>Nginx进程间的通信方式</p>
+
+<ol>
+<li>信号</li>
+<li>共享内存，多个进程可以同时使用，避免竞争问题需要加锁</li>
+</ol>
+
+<h2 id="2-http模块">2. HTTP模块</h2>
+
+<h3 id="2-1-冲突的配置指令优先级">2.1. 冲突的配置指令优先级</h3>
+
+<h4 id="配置快的嵌套">配置快的嵌套</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">main
+http{
+  upstream{}
+  split_client{}
+  map{}
+  geo{}
+  server{
+    if(){}
+    location{
+      limit_except{}
+    }
+    location {
+      location {     
+      }
+    }
+  }
+  server{}
+}</pre></td></tr></table>
+</div>
+</div>
+<h4 id="指令的context">指令的Context</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">Syntax<span class="p">:</span><span class="w"> </span>log_format<span class="w"> </span>name;<span class="w">
+</span><span class="w"></span>Default<span class="p">:</span><span class="w"> </span>log_format<span class="w"> </span>combined<span class="w"> </span><span class="s2">&#34;...&#34;</span>;<span class="w">
+</span><span class="w"></span>Context<span class="p">:</span><span class="w"> </span>http<span class="w">
+</span><span class="w">
+</span><span class="w"></span>Syntax<span class="p">:</span><span class="w"> </span>access_log<span class="w">
+</span><span class="w"></span>Default<span class="p">:</span><span class="w"> </span>access_log<span class="w"> </span>logs/access.log<span class="w"> </span>combined;<span class="w">
+</span><span class="w"></span>Context<span class="p">:</span><span class="w"> </span>http<span class="p">,</span>server<span class="p">,</span>location<span class="p">,</span>if<span class="w"> </span>in<span class="w"> </span>location<span class="p">,</span>limit_except</code></pre></td></tr></table>
+</div>
+</div>
+<p>log_format只能存在于http块，而access_log可以存在于很多模块内</p>
+
+<h4 id="指令的合并">指令的合并</h4>
+
+<ul>
+<li>直指令：存储配置项的值</li>
+</ul>
+
+<p>不同块下可以合并，存储值指令继承规则向上覆盖，子配置不存在，直接使用父配置；子配置存在则覆盖父配置。例如root；access_log；gzip。</p>
+
+<ul>
+<li>动作类指令：指定行为</li>
+</ul>
+
+<p>不同块下不可以合并，例如：rewrite，proxy_pass，当指令执行到这个位置时，必须立刻执行这种行为。生效阶段：server_rewrite阶段；rewrite阶段；content阶段</p>
+
+<h3 id="2-2-listen指令的用法">2.2. listen指令的用法</h3>
+
+<ul>
+<li>listen unix:/var/run/nginx.sock;</li>
+<li>listen 127.0.0.1:8080;</li>
+<li>listen 127.0.0.1;</li>
+<li>isten 8080;</li>
+<li>listen *:8080;</li>
+<li>listen localhost:8080 bind;</li>
+<li>listen [::]8080 ipv6only=on;</li>
+<li>listen[::1];</li>
+</ul>
+
+<h3 id="2-3-正则表达式">2.3. 正则表达式</h3>
+
+<table>
+<thead>
+<tr>
+<th align="center">代码</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">.</td>
+<td>匹配除换行符以外的任意字符</td>
+</tr>
+
+<tr>
+<td align="center">\w</td>
+<td>匹配字母或数字或下划线或汉字</td>
+</tr>
+
+<tr>
+<td align="center">\s</td>
+<td>匹配任意空白字符</td>
+</tr>
+
+<tr>
+<td align="center">\d</td>
+<td>匹配数字</td>
+</tr>
+
+<tr>
+<td align="center">\b</td>
+<td>匹配单词的开始或结束</td>
+</tr>
+
+<tr>
+<td align="center">^</td>
+<td>匹配字符串的开始</td>
+</tr>
+
+<tr>
+<td align="center">$</td>
+<td>匹配字符串结束</td>
+</tr>
+
+<tr>
+<td align="center">*</td>
+<td>重复0或更多次</td>
+</tr>
+
+<tr>
+<td align="center">+</td>
+<td>重复1或多次</td>
+</tr>
+
+<tr>
+<td align="center">？</td>
+<td>重复0或1次</td>
+</tr>
+
+<tr>
+<td align="center">{n}</td>
+<td>重复n次</td>
+</tr>
+
+<tr>
+<td align="center">{n,}</td>
+<td>重复n或多次</td>
+</tr>
+
+<tr>
+<td align="center">{n,m}</td>
+<td>重复n到m次</td>
+</tr>
+
+<tr>
+<td align="center"></td>
+<td>转译</td>
+</tr>
+
+<tr>
+<td align="center">（）</td>
+<td>分组</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="2-4-server指令块查找">2.4. server指令块查找</h3>
+
+<h4 id="server-name指令">server_name指令</h4>
+
+<ul>
+<li><p>*泛域名：仅支持最前或最后，例如：server_name *.example.com</p></li>
+
+<li><p>正则表达式：server_name www.example.com ~^www\d+\.example.com，使用正则表达式，前面需要加上~^</p></li>
+
+<li><p>.example.com 可以匹配 example.com  *.example.com</p></li>
+
+<li><p>server<em>name 后面写 &ldquo;</em>&rdquo; 表示匹配所有域名</p></li>
+</ul>
+
+<p>指令后可以跟多个域名，第一个是主域名</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax server_name_in_redirect on|off
+Default server_name_in_redirect off
+Context http,server,location</pre></td></tr></table>
+</div>
+</div>
+<p>在多域名的时候，当使用return指令开启重定向时，默认的请求返回的重定向地址就是请求的地址，当设置server_name_in_redirect为on时，请求任一域名都会重定向到主域名</p>
+
+<p>用正则表达式创建变量：用小()</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">server {
+	server_name ~^(www\.)?(.+)$;
+	location / {
+			root /sites/$2; # $2就是取的domain中的(.+)
+	}
+}</pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">server {
+		server_name ~^(www\.)?(?&lt;domain&gt;.+)$;  # 匿名变量?&lt;domain&gt;
+		location / {
+				root /sites/$domain;
+		}
+}</pre></td></tr></table>
+</div>
+</div>
+<h4 id="server匹配顺序">server匹配顺序</h4>
+
+<ol>
+<li>精确匹配</li>
+<li>*在前的域名</li>
+<li>*在后的域名</li>
+<li>按文件中出现的顺序匹配正则表达式域名</li>
+<li>default server
+
+<ul>
+<li>server块下第一个就是default server</li>
+<li>可以在listen后加上default指定为default server</li>
+</ul></li>
+</ol>
+
+<h3 id="2-5-http请求的11个阶段">2.5. HTTP请求的11个阶段</h3>
+
+<p>当nginx接收完header时，就会按照这11个阶段来处理请求</p>
+
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Module</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>POST_READ</td>
+<td>realip</td>
+</tr>
+
+<tr>
+<td>SERVER_REWRITE</td>
+<td>rewrite</td>
+</tr>
+
+<tr>
+<td>FIND_CONFIG</td>
+<td></td>
+</tr>
+
+<tr>
+<td>REWRITE</td>
+<td>rewrite</td>
+</tr>
+
+<tr>
+<td>POST_REWRITE</td>
+<td></td>
+</tr>
+
+<tr>
+<td>PREACCESS</td>
+<td>limit_conn,limit_req</td>
+</tr>
+
+<tr>
+<td>ACCESS</td>
+<td>Auth_basic,access,auth_request</td>
+</tr>
+
+<tr>
+<td>POST_ACCESS</td>
+<td></td>
+</tr>
+
+<tr>
+<td>PRECONTENT</td>
+<td>Try_files</td>
+</tr>
+
+<tr>
+<td>CONTENT</td>
+<td>Index,autoindex,concat</td>
+</tr>
+
+<tr>
+<td>LOG</td>
+<td>Access_log</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="11个阶段的处理顺序">11个阶段的处理顺序</h4>
+
+<p><img src="/images/posts/nginx_request_11stages.jpg" alt="" /></p>
+
+<p>同一个阶段的各个模块也并不一定都会执行到，执行顺序和处理流程。</p>
+
+<h4 id="2-5-1-获取用户真实ip的realip模块">2.5.1 获取用户真实ip的realip模块</h4>
+
+<p>如何拿到用户真实IP</p>
+
+<ol>
+<li>TCP连接四元组</li>
+<li>HTTP头部X-Forward-For用于传递IP</li>
+<li>HTTP头部X-Real-IP用于传递用户IP</li>
+<li>网络中存在许多反向代理</li>
+</ol>
+
+<p>X-Forward-For与X-Real-IP的区别是，X-Forward-For会将用户真实ip地址与经过链路代理的IP地址全部记录下来传递给nginx，而X-Real-IP只能保存一个地址就是用户的真实IP地址。</p>
+
+<p>拿到用户真实IP后基于变量来使用，例如binary_remote_addr,remote_addr这样的变量的值就是真实IP。利用这两个变量来做连接限制才有意义，所以limit_conn模块一定要在PRE_ACCESS阶段而不能在POST_ACCESS阶段。</p>
+
+<p>realip模块默认是不会编译到nginx的，需要通过&ndash;with-http_realip_module启用功能。它的功能是修改客户端地址。它修改了原来的remote_addr和remote_port变量，因此如果还想使用原来的变量，需要使用realip_remote_addr和realip_remote_port两个变量。</p>
+
+<p>realip模块的指令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">set_real_ip_from
+real_ip_header X-Real-IP|X-Forward-For|proxy_protocol ,默认是X-Real-IP
+real_ip_recursive 环回地址，如果real_ip_header是X-Forward-For ，开启它会取X-Forward-For与客户端相同ip的上一个ip</pre></td></tr></table>
+</div>
+</div>
+<h4 id="2-5-2-rewrite阶段的rewrite指令和return">2.5.2 rewrite阶段的rewrite指令和return</h4>
+
+<p>rewrite模块执行后，后续的其他模块都无法执行</p>
+
+<ol>
+<li><p>return指令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: return code [text] | code URL | URL
+Context server,location,if</pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+
+<p>返回状态码：</p>
+
+<ul>
+<li>nginx自定义 444：关闭连接</li>
+<li>http1.0标准：
+
+<ul>
+<li>301：http1.0永久重定向</li>
+<li>302：临时重定向，禁止被缓存</li>
+</ul></li>
+<li>http1.1标准：
+
+<ul>
+<li>303：临时重定向，允许改变方法，禁止被缓存</li>
+<li>307：临时重定向，不允许改变方法，禁止被缓存</li>
+<li>308：永久重定向，不允许改变方法</li>
+</ul></li>
+</ul>
+
+<h6 id="return与error-page">return与error_page</h6>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: error_page code ...[=[response]] uri;
+Default: -
+Context: http,server,location,if in location</pre></td></tr></table>
+</div>
+</div>
+<p>error_page 收到返回码的时候可以重定向到其他返回码，也可以返回个页面</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">error_page 404 /404.html
+error_page 404 =200 /empty.gif;
+location / {
+		error_page 404 =@fallback
+}
+
+location @fallback {
+		proxy_pass http://backend;
+}
+error_page 403 http://example.com/forbidden.html
+error_page 404 =301 http://example.com/notfounnd.html</pre></td></tr></table>
+</div>
+</div>
+<p>与return的区别</p>
+
+<p>例子：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">server {
+		server_name return.example.com;
+		listen 80;
+		
+		root html/;
+		error_page 404 403.html;
+		return 403;
+		location / {
+				return 404 &#34;not found&#34;;
+		}
+}</pre></td></tr></table>
+</div>
+</div>
+<p>问题：</p>
+
+<ul>
+<li>server与location下的return的关系？</li>
+</ul>
+
+<p>当同时打开server下的return和locatiion下的return，会直接由高级别的server段的return返回，因为return是rewrite阶段的指令，又返回会直接跳出。</p>
+
+<ul>
+<li>return与error_page指令的关系？</li>
+</ul>
+
+<p>当同时打开location下的return和error_page，error_page不会执行，虽然error_page比return级别高，但是由于return处于最开始的rewrite阶段，所以还是优先执行return而直接返回。</p>
+
+<h4 id="2-5-3-rewrite重写url">2.5.3 rewrite重写url</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: rewrite regex replicement [flag]
+Default: -
+Context: server,location,if</pre></td></tr></table>
+</div>
+</div>
+<p>将regex指定的url替换成replacement的新url，可以使用正则表达式及变量提取。当replacement以http[s]://或$schema开头，则直接返回302重定向。替换后的url根据flag指定的方式进行处理：</p>
+
+<ul>
+<li>&ndash;last：用replacement这个URL进行新的location匹配</li>
+<li>&ndash;break：break指令停止当前脚本指令的执行，等价于独立的break指令</li>
+<li>&ndash;redirect：返回302重定向</li>
+<li>&ndash;permanent：返回301重定向</li>
+</ul>
+
+<p>示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">server {
+		.....
+		root html/
+		location /first {
+				rewrite /first(.*) /second$1 last;
+				return 200 &#39;first&#39;;
+		}
+		location /second {
+				rewrite /second(.*) /third$1 break;
+				return 200 &#39;second&#39;;
+		}
+		location /third {
+				return 200 &#39;third&#39;;
+		}
+		location /redirect1 {
+				rewrite /redirect1(.*) $1 permanent;
+		}
+		location /redirect2 {
+				rewrite /redirect2(.*) $1 redirect;
+		}
+		location /redirect3 {
+				rewrite /redirect3(.*) http://rewrite.example.com/$1;
+		}
+		location /redirect4 {
+				rewrite /redirect4(.*) http://rewrite.example.com/$1 permanent;
+		}
+}</pre></td></tr></table>
+</div>
+</div>
+<p>问题：</p>
+
+<ol>
+<li>return和rewrite指令的顺序关系？</li>
+<li>访问/firxt/3.txt、/second/3.txt、/third/3.txt分别返回的是什么？</li>
+<li>如果不携带flag会怎么样？</li>
+</ol>
+
+<p>解答：</p>
+
+<ol>
+<li>rewrite指令在后面的标志不是break的时候，会和return指令形成一个集合按照顺序执行。当flag是break的时候，直接返回结果。</li>
+<li>访问/firxt/3.txt、/second/3.txt都会返回&rsquo;second&rsquo;，因为first执行了last继续匹配到/second</li>
+<li>permanent返回301，redirect返回302，redirect3会返回302，redirect4会返回301.</li>
+</ol>
+
+<h4 id="2-5-4-条件判断if">2.5.4. 条件判断if</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: if (condition) {……}
+Default：-
+Context：server，location</pre></td></tr></table>
+</div>
+</div>
+<p>if指令条件表达式</p>
+
+<ul>
+<li>检查变量为空或者值是否为0</li>
+<li>将变量与字符串做匹配，使用=或者!=</li>
+<li>将变量与正则表达式做匹配
+
+<ul>
+<li>大小写敏感：~或者!~</li>
+<li>大小写不敏感：~*或者!~*</li>
+</ul></li>
+<li>检查文件是否存在 -f 或者 !-f</li>
+<li>检查目录是否存在，使用-d或者!-d</li>
+<li>检查文件、目录、软连接是否存在使用-e或者!-e</li>
+<li>检查是否为可执行文件，使用-x或者!-x</li>
+</ul>
+
+<p>示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">if ($http_user_agent ~ MSIE) {
+		rewrite ^(.*)$ /msie/$1 break;
+}
+if ($http_cookie ~* &#34;id=([^;]+)(?:;|$)&#34;) {
+		sed $id $1;
+}
+if ($request_method = POST){
+		return 405;
+}
+if ($slow) {
+		limit_rate 10k;
+}
+if ($invalid_referer) {
+		return 403;
+}</pre></td></tr></table>
+</div>
+</div>
+<h4 id="2-5-5-find-config找到处理请求的location">2.5.5. find_config找到处理请求的location</h4>
+
+<p>location指令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: location [=|~|~*|^~] uri {……}
+				location @name {……}
+Default: -
+Context: server location
+
+# merge合并uri中连续 的&#34;/&#34; ,比如连续写了两个 / ,会合并成一个
+Syntax: merge_slashes on | off;  
+Default: merge_slashes on;
+Context: http，server</pre></td></tr></table>
+</div>
+</div>
+<p>location匹配规则：仅匹配URI忽略参数</p>
+
+<ul>
+<li>= 精确匹配 ^~匹配上后则不再进行正则匹配</li>
+<li>正则表达式：~ 大小写敏感 ~* 忽略大小写</li>
+<li>用于内部调整的命名 @</li>
+</ul>
+
+<p>location匹配顺序</p>
+
+<p><img src="/images/posts/nginx_location_order.png" alt="" /></p>
+
+<h4 id="2-5-6-对连接数限制的limit-conn">2.5.6. 对连接数限制的limit_conn</h4>
+
+<p>在preaccess阶段有limit_req和limit_conn。限制每个客户端的并发连接数，ngx_http_limit_conn_module模块</p>
+
+<ul>
+<li>生效阶段：NGX_HTTP_PREACCESS_PHASE</li>
+<li>默认编译进nginx，通过&ndash;without-http_limit_conn_module禁用</li>
+<li>生小范围
+
+<ul>
+<li>全部worker进程，基于共享内存</li>
+<li>进入preaccess阶段前不生效</li>
+<li>限制的有效性取决于key的设计，依赖postread阶段的realip模块取到用户真实IP</li>
+</ul></li>
+</ul>
+
+<p>定义共享内存（包括大小）以及key关键字</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: limit_conn_zone key zone=name:size
+Default: - 
+Context: http</pre></td></tr></table>
+</div>
+</div>
+<p>限制并发连接数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: limit_conn zone number;
+Default: - 
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div>
+<p>限制发生时的日志级别</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: limit_conn_log_level info|notice|warn|error;;
+Default: limit_conn_log_level error;
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div>
+<p>限制发生时向客户端返回的错误码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: limit_conn_status code;
+Default: limit_conn_status 503
+Context: http, server,location</pre></td></tr></table>
+</div>
+</div>
+<h4 id="2-5-7-对连接数限制的limit-req">2.5.7. 对连接数限制的limit_req</h4>
+
+<p>limit_req将用户的突发请求进行恒定请求速率，ngx_http_limit_req_module模块</p>
+
+<ul>
+<li>生效阶段：NGX_HTTP_PREACCESS_PHASE</li>
+<li>默认编译进nginx，通过&ndash;without-http_limit_req_module禁用</li>
+<li>生效算法：leaky bucket算法</li>
+<li>生小范围
+
+<ul>
+<li>全部worker进程，基于共享内存</li>
+<li>进入preaccess阶段前不生效</li>
+</ul></li>
+</ul>
+
+<p>定义共享内存包括大小，以及key关键字和限制速率</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: limit_req_zone key zone=name:size rate=rate;
+Default: - 
+Context: http
+# rate单位为r/s或者r/m</pre></td></tr></table>
+</div>
+</div>
+<p>限制并发连接数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: limit_req zone=name [burst=number] [nodelay];
+Default: - 
+Context: http,server,location
+# burst默认为0
+# nodelay，对burst中的请求不再采用延时处理的做法，而是立刻处理</pre></td></tr></table>
+</div>
+</div>
+<p>同时打开limit_conn和limit_req，会都生效，但是返回是limit_req的返回，因为req在conn之前</p>
+
+<h4 id="2-5-8-对ip做限制的access模块">2.5.8. 对ip做限制的access模块</h4>
+
+<p>access阶段控制请求是否可以继续向下访问</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: allow address|CIDE|unix:|all
+Default: - 
+Context: http,server,location,limit_except
+
+Syntax: deny address|CIDE|unix:|all
+Default: - 
+Context: http,server,location,limit_except</pre></td></tr></table>
+</div>
+</div>
+<p>当有多个语句设置的时候，会按照顺序向下匹配，当匹配到时就直接返回，不会继续执行了</p>
+
+<h4 id="2-5-9-precontent阶段的try-files模块">2.5.9. precontent阶段的try_files模块</h4>
+
+<p>模块ngx_http_try_files_module</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: try_files file ..... uri|code;
+Default: - 
+Context: server,location</pre></td></tr></table>
+</div>
+</div>
+<p>依次视图访问多个url对应的文件（由root或者alias指令指定），当文件存在时直接返回文件内存，如果所有文件都不存在，则按最后一个url或者code返回。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">server {
+		server_name tryfiles.example.com;
+		root html/;
+		location /first {
+				try_files /a/a.html $uri $uri/index.html $uri.html @lasturl; # 依次寻找文件，$uri表示html/first文件
+		}
+		location @lasturl {
+				return 200 &#34;lasturl!\n&#34;
+		}
+		location /second {
+				try_files $uri $uri/index.htl =404;
+		}
+}</pre></td></tr></table>
+</div>
+</div>
+<p>#### 2.5.10. precontent阶段的mirror模块</p>
+
+<p>模块ngx_http_mirror_module默认编译进了nginx，处理请求时，生成自请求访问其他服务为，对子请求的返回值不做任何处理。对于多个环境处理用户流量很有帮助</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: mirror uri|off;
+Default: mirror off;
+Context: http,server,location
+
+Syntax: mirror_request_body on|off;  # 是否将请求体发送到上游服务器
+Default:mirror_request_body on;
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div>
+<h4 id="2-5-11-static模块的三个变量">2.5.11. static模块的三个变量</h4>
+
+<ol>
+<li>request_filename 待访问文件的完整路径</li>
+<li>document_root 由URI和root/alias规则生成的文件夹路径</li>
+
+<li><p>realpath_root 将document_root中的软连接等换成真实路径</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">location /realpath/ {
+		alias html/realpath;
+		return 200 &#34;$request_filename:$document_root:$realpath_root&#34;
+}
+
+realpath为first目录的软连接</pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+
+<p>返回结果： /usr/local/openresty/nginx/html/realpath/1.txt:/usr/local/openresty/nginx/html/realpath:/usr/local/openresty/nginx/html/first</p>
+
+<h4 id="2-5-12-static模块url后面斜杆问题">2.5.12. static模块url后面斜杆问题</h4>
+
+<p>static模块实现了root/alias功能时，发现访问目标是目录，但是URL末尾加上/时，会返回301重定向</p>
+
+<h4 id="2-5-13-access日志详细用法">2.5.13. access日志详细用法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: access_log path [format [buffer=size] [gzip [level] [flush=time] [if=condition] ];
+				access_log off;
+Default: access_log logs/access.log combined;
+Context: http,server,location,if in location,limit_expect;</pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li>Path 路径可以包含变量：不打开cache时每记录一条日志都需要打开、关闭日志文件</li>
+<li>if通过变量值控制请求日志是否记录</li>
+<li>日志缓存：
+
+<ul>
+<li>功能：批量将内存中的日志写入磁盘</li>
+<li>写入磁盘的条件</li>
+<li>所有待写入磁盘的日志超出缓存大小</li>
+<li>达到flush指定过期时间</li>
+<li>worker进程执行reopen命令或者正在关闭</li>
+</ul></li>
+<li>日志压缩
+
+<ul>
+<li>功能：批量压缩内存中日志再写入磁盘</li>
+<li>buffer大小默认64KB</li>
+<li>压缩级别默认1，最高9</li>
+</ul></li>
+</ul>
+
+<p>当日志文件名包含变量时，每次写入都会打开关闭文件，可以通过open_log_file_cache进行优化</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: open_log_file_cache max=N [inactive=time] [min_uses=N] [valid=time]
+Default: open_log_file_cache off;
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li>Max: 缓存内的最大文件句柄数，超出后用LRU算法淘汰</li>
+<li>Inactive：文件访问完后在这段时间内不会关闭。默认10s</li>
+<li>min_uses: 在inactive时间内使用次数超过min_uses才会继续在内存中使用。默认1</li>
+<li>valid：超出valid时间后，将对缓存的日志文件检查是否存在。默认60s</li>
+<li>off：关闭缓存功能</li>
+</ul>
+
+<h4 id="2-5-14-http过滤模块">2.5.14. HTTP过滤模块</h4>
+
+<p>返回响应-加工响应内容。重点关注的4个模块</p>
+
+<ul>
+<li>copy_filter：复制包体内容</li>
+<li>Postpone_filter：处理子请求</li>
+<li>header_filter：构造响应头部</li>
+<li>write_filter：发送响应</li>
+</ul>
+
+<p>##### 替换响应中的字符串：sub模块</p>
+
+<p>功能：将响应中指定的字符串替换成新的字符串</p>
+
+<p>模块：ngx_http_sub_filter_module模块，默认未编译进nginx，通过&ndash;with-http_sub_filter_module启用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"># 指定字符串string和替换的字符串replacement
+Syntax: sub_filter string replacemnt;
+Default: -
+Context: http,server,location
+
+# 决定是否在响应头部显示last_modified
+Syntax: sub_filter_last_modified on|off;
+Default: sub_filter_last_modified off
+Context: http,server,location
+
+# 是否只替换一次
+Syntax: sub_filter_once on|off;
+Default: sub_filter_once on
+Context: http,server,location
+
+# 指定替换的文本类型
+Syntax: sub_filter_types mime-type .......;
+Default: sub_filter_types text/html;
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div>
+<h5 id="在响应的前后添加内容-addition模块">在响应的前后添加内容：addition模块</h5>
+
+<p>功能：在响应前或者响应后增加内容，儿增加的方式是铜鼓哦新增子请求的响应完成</p>
+
+<p>模块：ngx_http_addition_filter_module 默认未编译进nginx，通过&ndash;with-http_addition_filter_module启用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: add_before_body uri;
+Default: -
+Context: http,server,location
+
+Syntax: add_after_body uri;
+Default: -
+Context: http,server,location
+
+Syntax: addition_types minie-types;
+Default: addition_types text/html; # * 对所有文件类型产生效果
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div>
+<h4 id="2-5-15-使用变量进行防盗链">2.5.15. 使用变量进行防盗链</h4>
+
+<p>简单有效的防盗链手段：referer模块</p>
+
+<blockquote>
+<p>盗链：某网站通过URL引用了一个页面，当用户在浏览器上点击了url时，http请求的头部会通过referer头部，将该网站当前页面的url带上来告诉这个页面的服务器请求是由某网站发起的。盗链就是使用非正常的网站请求我们的站点资源</p>
+</blockquote>
+
+<p>防止盗链：通过referer模块，用invalid_referer变量根据配置判断referer头部是否合法。该模块默认编译进了nginx，通过&ndash;without-http_referer_module禁用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: valid_referers none|blocked|server_names|string……;
+Default: -
+Context: server,location
+
+Syntax: referer_hash_bucket_size size;
+Default: referer_hash_bucket_size 64;
+Context: server,location
+
+Syntax: referer_hash_max_size size;
+Default: referer_hash_max_size 2048;
+Context: server,location</pre></td></tr></table>
+</div>
+</div>
+<p>Valid_referers指令可以同时携带多个参数，表示多个referer头部都生效，参数值：</p>
+
+<ul>
+<li>none：允许确实referer头部的请求访问</li>
+<li>block：允许referer头部没有对应的值的请求访问</li>
+<li>server_names：若referer中站点域名与server_name中本机域名某个匹配，允许改请求访问</li>
+<li>表示域名及URL的字符串，对域名可在前缀或者后缀中含有*通配符：若referer头部的值匹配字符串后，则允许访问</li>
+<li>正则表达式：若referer头部的值匹配正则表达式后，则允许访问</li>
+</ul>
+
+<p>invalid_referer变量</p>
+
+<ul>
+<li>允许访问时变量值为空</li>
+<li>不允许访问时变量值为1</li>
+</ul>
+
+<p>例子：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">location / {
+		valid_regerers none blocked server_names *.example.com www.xxxx.com/api ~\.google\.;
+		if ($invalid_referer){
+				return 403;
+		}
+		return 200;
+}</pre></td></tr></table>
+</div>
+</div>
+<h4 id="2-5-16-对客户端使用keepalive提升效率">2.5.16. 对客户端使用keepalive提升效率</h4>
+
+<p>对客户端keepalive行为控制指令。多个HTTP通过复用TCP连接实现了以下功能：</p>
+
+<ul>
+<li>减少握手次数</li>
+<li>通过减少并发连接数减少了服务器资源消耗</li>
+<li>降低TCP拥塞控制的影响</li>
+</ul>
+
+<p>Connection头部取值为close或者keepalive，close表示请求处理完即关闭连接，keepalive表示复用连接处理下一条请求</p>
+
+<p>Keep-Alive头部：其值为timeout=n，后面的数字n单位为秒，告诉客户端连接至少保留n秒</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: keepalive_disable none|browser; #对某些浏览器不进行keepalive
+Default: keepalive_disable msie6;
+Context: http,server,location
+
+Syntax: keepalive_request number; # 每个保持会话的连接最大请求次数
+Default: keepalive_request 100;
+Context: http,server,location
+
+Syntax: keepalive_timeout timeout [header_timeout]; # 设置用户请求完成以后，最多经过timeout时间还是没有新请求进来就关闭连接。header_timeout表示nginx同过Keep-Alive头部向浏览器表示这个连接应该保留多少秒
+Default: keepalive_timeout 75;
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div>
+<p>## 3. 反向代理与负载均衡</p>
+
+<h3 id="3-1-加权round-roubin负载均衡算法">3.1. 加权round-roubin负载均衡算法</h3>
+
+<p>在加权轮询的方式访问server指令指定的上游服务，集成在nginx的upstream框架中，指令：</p>
+
+<ul>
+<li>weight：服务访问的权重，默认是1</li>
+<li>max_conns：server的最大并发连接数，仅作用于单worker进程，默认是0，表示没有限制</li>
+<li>max_fails：在fail_timeout时间段内，最大的失败次数。当达到最大失败时，会在fail_timeout秒内这台server不允许再次被选择</li>
+<li>fail_timeout：单位为秒，默认为10s，指定一段时间内，最大失败次数。到达max_fails后，该server不能访问的时间</li>
+</ul>
+
+<h3 id="3-2-对上游服务使用keepalive长连接">3.2. 对上游服务使用keepalive长连接</h3>
+
+<p>功能：通过复用连接，降低nginx与上游服务器建立、关闭连接的消耗，提升吞吐量的同时降低时延</p>
+
+<p>模块：ngx_http_upstream_keepalive_module默认编译进nginx</p>
+
+<p>对上游连接http头部设定：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">proxy_http_version: 1.1;  # http 1.0是不支持长连接的
+proxy_set_header Connection &#34;&#34;;</pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: keepalive connections; # 指定nginx与一组上游服务器最多保持多少空闲连接用于keepalive请求
+Default: -;
+Context: upstream</pre></td></tr></table>
+</div>
+</div>
+<p>当上游服务使用域名的时候，指定上游服务域名解析的resolver指令（可以防止上游服务器域名解析变更带来的问题）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: resolver address …… [valid=time][ipv6=on|off] # 指定dns服务地址
+Default: -;
+Context: http,server,location
+
+Syntax: resolver_timeout time;
+Default: resolver_timeout 30s;
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div>
+<h3 id="3-3-upstream变量">3.3.   upstream变量</h3>
+
+<p>upstream模块提供的变量（不含cache）</p>
+
+<ul>
+<li>upstream_addr：上游服务器的IP地址，格式为可读的字符串</li>
+<li>upstream_connect_time：与上游服务器建立连接消耗的时间，单位为秒，精确到毫秒</li>
+<li>upstream_header_time：接收上游服务发挥响应中http头部所消耗的时间，单位为秒，精确到毫秒</li>
+<li>upstream_response_time：接收完整上游服务响应所消耗的时间，单位为秒，精确到毫秒</li>
+<li>upstream_http_名称：从上游服务返回响应头部的值</li>
+</ul>
+
+<h3 id="3-4-反向代理模块">3.4. 反向代理模块</h3>
+
+<h4 id="http反向代理流程">HTTP反向代理流程</h4>
+
+<p><img src="/images/posts/nginx_proxy_stream.png" alt="" /></p>
+
+<p>nginx的反向代理过程在11个阶段的content阶段执行，指令为proxy_pass。当一个客户发起请求时，nginx会检查是否存在响应缓存cache，如果cache命中，则直接发送响应头部，如果未命中或者未开启cache，则根据指令生产发往上游头部及包体。当设置参数：</p>
+
+<ul>
+<li>proxy_request_buffering on时，nginx先读取完整的包体，然后根据负载均衡策略选择上游服务器，根据参数连接上游服务器后发送请求给上游。</li>
+<li>proxy_request_buffering off时，nginx根据负载均衡策略选择上游服务器，根据参数连接上游服务器后边读包体边发送。</li>
+</ul>
+
+<p>上游服务器接收到nginx发送的响应头部后开始处理响应头部，当设置参数：</p>
+
+<ul>
+<li>proxy_buffering on时接收完整的包体，然后后发送响应头部给nginx，随即发送响应包体给nginx</li>
+<li>proxy_buffering off时，直接发送响应头部给nginx，随即边读宝体边发送</li>
+</ul>
+
+<p>当关闭cache时，关闭或复用连接，当打开cache时，包体加入缓存。</p>
+
+<h4 id="3-4-1-http-反向代理模块-proxy模块">3.4.1. HTTP 反向代理模块：proxy模块</h4>
+
+<p>功能：对上游服务使用http/https协议进行反向代理</p>
+
+<p>指令：ngx_http_proxy_module，默认编译进了nginx</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: proxy_pass URL;
+Default: -
+Context: location,if in location,limit_except</pre></td></tr></table>
+</div>
+</div>
+<p>URL参数规则：</p>
+
+<ul>
+<li>URL必须以http://或https://开头，接下来是域名，ip，Unix socket地址或者upstream的名字，前两者可以在域名或者ip后加端口，最后是可选uri</li>
+<li>当URL参数中是否携带uri会导致发向上游请求的URL不同
+
+<ul>
+<li>不携带URI，则将客户端请求中的URL直接转发给上游，location中使用正则、@时应采用</li>
+<li>携带URI，则对location参数中匹配上的一段替换为该URI</li>
+</ul></li>
+<li>该URL参数可以携带变量</li>
+<li>更复杂的URL替换可以在location内的配置添加rewrite break语句</li>
+</ul>
+
+<h4 id="3-4-2-接收客户请求包体">3.4.2. 接收客户请求包体</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: proxy_request_buffering on|off;
+Default: proxy_request_buffering on;
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li>on场景：客户端网速较慢。上游服务并发处理能力低。适用于高吞吐量场景</li>
+<li>off场景：上游服务更及时的响应，降低nginx读写磁盘的消耗</li>
+
+<li><p>一旦开始发送内容，proxy_next_upstream功能失败</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: proxy_request_buffering on|off;
+Default: proxy_request_buffering on;
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+
+<h4 id="3-4-3-与上游建立连接">3.4.3. 与上游建立连接</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: proxy_connect_timeout time;
+Default: proxy_connect_timeout 60s;
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div>
+<p>与上游建立连接的超时时间，超时后，会向客户端生成http响应，响应码为502。如果后端挂了或不存在，会直接返回502</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: proxy_next_upstream http_502;
+Default: proxy_next_upstream error timeout;
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div>
+<p>当因为某种原因与上游服务器没有成功建立连接就再换一台重新建立连接</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: keepalive connections;
+Default: -;
+Context: upstream
+
+Syntax: keepalive_requests number;
+Default: keepalive_requests 100;
+Context: upstream</pre></td></tr></table>
+</div>
+</div>
+<p>与上游连接启用http keepalive连接数</p>
+
+<h4 id="3-4-4-接收上游的响应头部">3.4.4. 接收上游的响应头部</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: proxy_buffer_size size;
+Default: proxy_buffer_size 4k|8k;
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div>
+<p>接收上游响应头部的最大值，当超过这个大小的时候，会在error.log中输出upstream sent too big header</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Syntax: proxy_read_timeout time;
+Default: proxy_read_timeout 60s;
+Context: http,server,location</pre></td></tr></table>
+</div>
+</div>
+<p>两次读取操作之间最长60s超时</p>
+
+<h3 id="3-4-5-上游失败的容错方案">3.4.5. 上游失败的容错方案</h3>
+
+<p>上游返回失败时的处理办法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-code" data-lang="code"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-code" data-lang="code">Syntax: proxy_nexe_upstream error|timeout|invalid_header|http5xx|http_4xx|non_indempotent|off;
+Default: proxy_nexe_upstream error timeout;
+Context: http,server,location</code></pre></td></tr></table>
+</div>
+</div>
+<p>前提：没有想客户端发送任何内容</p>
+
+<p>配置:</p>
+
+<ul>
+<li>Error: 错误一般指网络错误</li>
+<li>timeout： connect timeout，read timeout等</li>
+<li>invalid_header：不合法的header</li>
+<li>http_：跟返回码</li>
+<li>non_idempotent：</li>
+<li>off</li>
+</ul>
+
+<p>限制proxy_next_upstream的时间与次数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-code" data-lang="code"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-code" data-lang="code">Syntax: proxy_next_upstream_timeout time;
+Default: proxy_next_upstream_timeout 0s;
+Context: http,server,location
+
+Syntax: proxy_next_upstream_tries number;
+Default: proxy_next_upstream_tries 0;
+Context: http,server,location</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="3-4-6-用好浏览器缓存">3.4.6. 用好浏览器缓存</h3>
+
+<ol>
+<li>浏览器缓存
+
+<ul>
+<li>优点：
+
+<ul>
+<li>使用有效缓存时，没有网络消耗，速度最快</li>
+<li>即使有网络消耗，但对失效缓存使用304响应做到网络流量最小化</li>
+</ul></li>
+<li>缺点：
+
+<ul>
+<li>提升用户体验</li>
+</ul></li>
+</ul></li>
+<li>nginx缓存
+
+<ul>
+<li>优点：
+
+<ul>
+<li>提升所有用户体验</li>
+<li>相比浏览器缓存，有效降低上游服务的负载</li>
+<li>通过304响应减少nginx与上游服务之间的消耗</li>
+</ul></li>
+<li>缺点：
+
+<ul>
+<li>用户仍然保持网络消耗</li>
+</ul></li>
+</ul></li>
+</ol>
+
+<p>一般情况下同时使用浏览器与nginx缓存</p>
+
+<p><img src="/images/posts/web-browser-cache.png" alt="" /></p>
+
+<h4 id="etag-头部">Etag 头部</h4>
+
+<p>Etag HTTP响应头部是资源的特定版本的标识符。这可以让缓存更高效，节省带宽，因为如果内容没有改变，web服务器不需要发送完整的响应。而如果内容发生了变化，使用Etag有助于防止资源的同时更新相互覆盖。</p>
+
+<p>如果给定URL中的资源更改，则一定要生产新的Etag值。因此Etag类似指纹，也可能呗某些服务器用于跟踪。比较etags能快速确定资源是否变化，但也可能呗跟踪服务器永久存留。</p>
+
+<p>w/可选：</p>
+
+<p>​   &lsquo;w/&rsquo;(大小写敏感)表示使用弱验证器。弱验证器很容易生成，但不利于比较。弱验证器是比较理想的选择，但很难有效的生成。相同资源的两个弱Etag值可能语义等同，但不是每个字节都相同。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-code" data-lang="code"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-code" data-lang="code">Syntax: etag on|off;
+Default: etag on;
+Context: http,server,location</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="if-none-match">IF-None-Match</h4>
+
+<p>If-none-match是一个条件式请求首部。对于GET和HEAD请求方法来说，当且仅当服务器上没有任何资源的ETAT属性值与首部中列出的相匹配的时候，服务器端才会返回所请求的资源，响应码为200。对于其他方法来说，当且仅当最终确认没有已存在的资源额ETAG属性值与这个首部所列出的相匹配的时候，才会对请求进行相应的处理。</p>
+
+<p>对于GET和HEAD方法来说，当验证失败的时候，服务器端必须返回响应码304（not modified，未改变）。对于能够引发服务器状态改变的方法，则返回412（Precondition Failed，前置条件失败）。需要注意的是，服务器端在生成状态码304的是时候，必须同时生成一下会存在于对应200响应中的首部：Cache-Control，Content-Location，Date，Etag，Expire和Vary。</p>
+
+<p>Etag属性之间的比较采用的是弱比较算法，即两个文件除了每个比特都相同外，内容一致也可以认为是相同的。例如，如果两个页面仅仅在页脚的生成时间有所不同，就可以认为二者是相同的。</p>
+
+<p>当与if-modified-since一同使用的时候，if-none-match优先级更高（如果服务器支持的话）</p>
+
+<p>以下是常见场景：</p>
+
+<ul>
+<li>采用GET或HEAD方法来更新拥有特定的Etag属性值的缓存</li>
+<li>采用其他方法，尤其是PUT，将if-none-match used值设置为*，用来生成事先并不知道是否存在的文件，可以确保先前并没有进行过类似的上传操作，防止之前操作的数据丢失。这个问题属于更新丢失问题的一种。</li>
+</ul>
+
+<h4 id="if-modified-since">If-Modified-Since</h4>
+
+<p>If-MOdified-Since是一个条件式请求首部，服务器只在所请求的资源在给定的日期时间之后对内容进行修改的情况下才会将资源返回，状态码为200。如果请求资源从那时起未被修改，纳米返回一个不带有消息主题的304响应，而在Last-Modified首部中会带有上次修改时间。不同于if-unmodified-since,if-modified-since只可以用在GET和HEAD请求中。</p>
+
+<p>当与if-none-match一同出现时，if-modified-since会被忽略掉，除非服务器不支持if-none-match</p>
+
+<h3 id="3-4-7-nginx决策浏览器缓存是否过期">3.4.7. Nginx决策浏览器缓存是否过期</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-code" data-lang="code"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-code" data-lang="code">Syntax: expires [modified] time;
+				expires epoch|max|off;
+Default: expires off;
+Context: http,server,location,if in location</code></pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li>max 绝对有效:
+
+<ul>
+<li>Expires: Thu,31 Dec 2037 23:55:55 GMT</li>
+<li>Cache-Control: max-age=315360000(10年) 相对时间，防止服务器和浏览器时间不一致</li>
+</ul></li>
+<li>off: 不添加或修改Expires和cache-control字段</li>
+<li>epoch 不使用缓存：
+
+<ul>
+<li>Expire：Thu 01 Jan 1970 00:00:01 GMT</li>
+<li>Cache-Control: no-cache</li>
+</ul></li>
+<li>time 设定具体时间，可以携带单位：
+
+<ul>
+<li>一天内具体时刻可以加@，比如下午六点半： @18h30m</li>
+<li>设定好Expires，自动计算Cache-Control</li>
+<li>如果当前时间未超过当天time时间，则Expire到当天time，否则是第二天的time时刻</li>
+<li>正数：设定Cache-Control时间，计算出Expires</li>
+<li>负数：Cache-Control：no-cache，计算出Expires</li>
+</ul></li>
+</ul>
+
+<h4 id="not-modified过滤模块">not_modified过滤模块</h4>
+
+<p>功能：</p>
+
+<p>​   客户端拥有缓存，但不确定缓存是否过期，于是在请求中传入if-Modified-Since或者in-None-Match头部，该模块通过将其值与响应中的Last-Modified值比较，决定是否通过200返回全部内容，还是仅返回304 Not Modified头部，表示浏览器仍然使用之前的缓存。</p>
+
+<p>使用前提：原返回响应码为200</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Wayne</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-09-13
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/openvpn/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">OpenVPN</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/sftp%E7%9A%84%E9%85%8D%E7%BD%AE/">
+            <span class="next-text nav-default">Sftp的配置</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="wayne.one.wang@outlook.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Wayne One Wang</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.d7b7ada643c9c1a983026e177f141f7363b4640d619caf01d8831a6718cd44ea.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

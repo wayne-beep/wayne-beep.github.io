@@ -14,19 +14,19 @@
     
     <item>
       <title>Hadoop集群部署</title>
-      <link>http://localhost:1313/post/2020-10-07-hadoop%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</link>
+      <link>http://localhost:1313/post/hadoop%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</link>
       <pubDate>Wed, 07 Oct 2020 09:47:53 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/2020-10-07-hadoop%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</guid>
+      <guid>http://localhost:1313/post/hadoop%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</guid>
       <description>目录 测试环境 Hadoop 组织框架 HDFS架构 YARN架构 HA集群部署规划 自动故障转移 关于集群主机时间 Linux环境搭建 配置Java环境 安装单机版Had</description>
     </item>
     
     <item>
       <title>Hadoop学习笔记</title>
-      <link>http://localhost:1313/post/2020-10-02-hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
+      <link>http://localhost:1313/post/hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
       <pubDate>Fri, 02 Oct 2020 22:22:53 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/2020-10-02-hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
+      <guid>http://localhost:1313/post/hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
       <description>大数据Hadoop 1. HDFS namenode namenode管理文件系统的命名空间，维护着文件系统树以及整棵树内所有文件和目录。这些信息以两个文件的形式永久保存</description>
     </item>
     

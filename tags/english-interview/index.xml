@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>English interview on Wayne&#39;s Blog</title>
+    <link>http://localhost:1313/tags/english-interview/</link>
+    <description>Recent content in English interview on Wayne&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>Wayne One Wang</copyright>
+    <lastBuildDate>Wed, 04 Nov 2020 20:50:51 +0800</lastBuildDate>
+    
+	<atom:link href="http://localhost:1313/tags/english-interview/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>English interview</title>
+      <link>http://localhost:1313/post/english-interview/</link>
+      <pubDate>Wed, 04 Nov 2020 20:50:51 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/english-interview/</guid>
+      <description>tell me about your self I came from Inner Mongolia , I finished my college in shandong province and my first work is in shandong too. since 2014, My new wife and I came to Beijing and started our career ，I became an operations engineer. after six years of hard working, I&amp;rsquo;m a senior engineer now, I‘m good at working in linux system enviroment.I have a lot of experience with open source tools,such as nginx , tomcat , jenkins ,ansible , kubernetes and so on .</description>
+    </item>
+    
+  </channel>
+</rss>

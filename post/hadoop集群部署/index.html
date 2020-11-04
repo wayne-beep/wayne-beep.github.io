@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Hadoop集群部署 - Wayne&#39;s Blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Wayne" /><meta name="description" content="目录 测试环境 Hadoop 组织框架 HDFS架构 YARN架构 HA集群部署规划 自动故障转移 关于集群主机时间 Linux环境搭建 配置Java环境 安装单机版Had" /><meta name="keywords" content="theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.59.0 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/hadoop%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<link href="/sass/main.min.6eb09ed45a88bd339269c14515d2a11f2e0afdadbdd763d83f9b5c797166b081.css" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+<meta property="og:title" content="Hadoop集群部署" />
+<meta property="og:description" content="目录 测试环境 Hadoop 组织框架 HDFS架构 YARN架构 HA集群部署规划 自动故障转移 关于集群主机时间 Linux环境搭建 配置Java环境 安装单机版Had" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/hadoop%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/" />
+<meta property="article:published_time" content="2020-10-07T09:47:53+08:00" />
+<meta property="article:modified_time" content="2020-10-07T09:47:53+08:00" />
+<meta itemprop="name" content="Hadoop集群部署">
+<meta itemprop="description" content="目录 测试环境 Hadoop 组织框架 HDFS架构 YARN架构 HA集群部署规划 自动故障转移 关于集群主机时间 Linux环境搭建 配置Java环境 安装单机版Had">
+
+
+<meta itemprop="datePublished" content="2020-10-07T09:47:53&#43;08:00" />
+<meta itemprop="dateModified" content="2020-10-07T09:47:53&#43;08:00" />
+<meta itemprop="wordCount" content="10691">
+
+
+
+<meta itemprop="keywords" content="大数据," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Hadoop集群部署"/>
+<meta name="twitter:description" content="目录 测试环境 Hadoop 组织框架 HDFS架构 YARN架构 HA集群部署规划 自动故障转移 关于集群主机时间 Linux环境搭建 配置Java环境 安装单机版Had"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Wayne</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Wayne</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Hadoop集群部署</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-10-07 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#next-comes-the-main-part-which-users-can-run-what-software-on">Next comes the main part: which users can run what software on</a></li>
+<li><a href="#which-machines-the-sudoers-file-can-be-shared-between-multiple">which machines (the sudoers file can be shared between multiple</a></li>
+<li><a href="#systems">systems).</a></li>
+<li><a href="#syntax">Syntax:</a></li>
+<li><a href="#user-machine-commands">user MACHINE=COMMANDS</a></li>
+<li><a href="#the-commands-section-may-have-other-options-added-to-it">The COMMANDS section may have other options added to it.</a></li>
+<li><a href="#allow-root-to-run-any-commands-anywhere">Allow root to run any commands anywhere</a></li>
+</ul></li>
+<li><a href="#客户端心跳时间-毫秒">客户端心跳时间(毫秒)</a></li>
+<li><a href="#允许心跳间隔的最大时间">允许心跳间隔的最大时间</a></li>
+<li><a href="#同步时限">同步时限</a></li>
+<li><a href="#数据存储目录">数据存储目录</a></li>
+<li><a href="#数据日志存储目录">数据日志存储目录</a></li>
+<li><a href="#端口号">端口号</a></li>
+<li><a href="#集群节点和服务端口配置">集群节点和服务端口配置</a></li>
+<li><a href="#以下为优化配置">以下为优化配置</a></li>
+<li><a href="#服务器最大连接数-默认为10-改为0表示无限制">服务器最大连接数，默认为10，改为0表示无限制</a></li>
+<li><a href="#快照数">快照数</a></li>
+<li><a href="#快照清理时间-默认为0">快照清理时间，默认为0</a></li>
+<li><a href="#集群节点和服务端口配置-1">集群节点和服务端口配置</a></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<p>目录
+测试环境</p>
+
+<p>Hadoop 组织框架</p>
+
+<p>HDFS架构</p>
+
+<p>YARN架构</p>
+
+<p>HA集群部署规划</p>
+
+<p>自动故障转移</p>
+
+<p>关于集群主机时间</p>
+
+<p>Linux环境搭建</p>
+
+<p>配置Java环境</p>
+
+<p>安装单机版Hadoop</p>
+
+<p>Zookeeper集群安装</p>
+
+<p>配置环境变量</p>
+
+<p>关闭防火墙</p>
+
+<p>修改hosts文件</p>
+
+<p>配置SSH免密登录</p>
+
+<p>修改Hadoop配置文件</p>
+
+<p>Hadoop集群的初始化</p>
+
+<p>Hadoop集群的启动</p>
+
+<p>测试环境
+Linux系统版本：CentOS 7 64位</p>
+
+<p>Hadoop版本：hadoop-2.7.3</p>
+
+<p>Java版本：jdk-8u181-linux-x64</p>
+
+<p>ZooKeeper版本：zookeeper-3.4.10.tar.gz</p>
+
+<p>配置HA高可用集群建议先看一下完全分布式集群的部署过程，整个流程大致一样。</p>
+
+<p>CentOS 7部署Hadoop集群（完全分布式）</p>
+
+<p>Hadoop 组织框架
+Hadoop主要包括两部分：</p>
+
+<p>一部分是HDFS（Hadoop Distributed File System），主要负责分布式存储和计算；</p>
+
+<p>另一部分是YARN（Yet Another Resource Negotiator， 从Hadoop2.0开始引入），主要负责集群的资源管理和调度。</p>
+
+<p>HDFS架构
+架构图：</p>
+
+<ol>
+<li>Active Name Node</li>
+</ol>
+
+<p>主Master，整个Hadoop集群只能有一个</p>
+
+<p>管理HDFS文件系统的命名空间</p>
+
+<p>维护元数据信息</p>
+
+<p>管理副本的配置和信息（默认三个副本）</p>
+
+<p>处理客户端读写请求</p>
+
+<ol>
+<li>Standby Name Node</li>
+</ol>
+
+<p>Active Name Node的热备节点</p>
+
+<p>Active Name Node故障时可快速切换成新的Active Name Node</p>
+
+<p>周期性同步edits编辑日志，定期合并fsimage与edits到本地磁盘</p>
+
+<ol>
+<li>Journal Node</li>
+</ol>
+
+<p>可以被Active Name Node和StandBy Name Node同时访问，用以支持Active Name Node高可用</p>
+
+<p>Active Name Node在文件系统被修改时，会向Journal Node写入操作日志（edits）</p>
+
+<p>Standby Name Node同步Journal Node edits日志，使集群中的更新操作可以被共享和同步。</p>
+
+<ol>
+<li>Data Node</li>
+</ol>
+
+<p>Slave 工作节点，集群一般会启动多个</p>
+
+<p>负责存储数据块和数据块校验</p>
+
+<p>执行客户端的读写请求</p>
+
+<p>通过心跳机制定期向NameNode汇报运行状态和本地所有块的列表信息</p>
+
+<p>在集群启动时DataNode项NameNode提供存储Block块的列表信息</p>
+
+<ol>
+<li>Block数据块</li>
+</ol>
+
+<p>HDSF固定的最小的存储单元（默认128M，可配置修改）</p>
+
+<p>写入到HDFS的文件会被切分成Block数据块（若文件大小小于数据块大小，则不会占用整个数据块）</p>
+
+<p>默认配置下，每个block有三个副本</p>
+
+<ol>
+<li>Client</li>
+</ol>
+
+<p>与Name Node交互获取文件的元数据信息</p>
+
+<p>与Data Node，读取或者写入数据</p>
+
+<p>通过客户端可以管理HDFS</p>
+
+<p>YARN架构
+架构图：</p>
+
+<ol>
+<li>Resource Manager</li>
+</ol>
+
+<p>整个集群只有一个Master。Slave可以有多个，支持高可用</p>
+
+<p>处理客户端Client请求</p>
+
+<p>启动／管理／监控ApplicationMaster</p>
+
+<p>监控NodeManager</p>
+
+<p>资源的分配和调度</p>
+
+<ol>
+<li>Node Manager</li>
+</ol>
+
+<p>每个节点只有一个，一般与Data Node部署在同一台机器上且一一对应</p>
+
+<p>定时向Resource Manager汇报本机资源的使用状况</p>
+
+<p>处理来自Resource Manager的作业请求，为作业分配Container</p>
+
+<p>处理来自Application Master的请求，启动和停止Container</p>
+
+<ol>
+<li>Application Master</li>
+</ol>
+
+<p>每个任务只有一个，负责任务的管理，资源的申请和任务调度</p>
+
+<p>与Resource Manager协商，为任务申请资源</p>
+
+<p>与Node Manager通信，启动／停止任务</p>
+
+<p>监控任务的运行状态和失败处理</p>
+
+<ol>
+<li>Container</li>
+</ol>
+
+<p>任务运行环境的抽象，只有在分配任务时才会抽象生成一个Container</p>
+
+<p>负责任务运行资源和环境的维护（节点，内存，CPU）</p>
+
+<p>负责任务的启动</p>
+
+<p>虽然在架构图中没有画出，但Hadoop高可用都是基于Zookeeper来实现的。如NameNode高可用，Block高可用，ResourceManager高可用等</p>
+
+<p>以上部分内容来自：<a href="https://baijiahao.baidu.com/s?id=1589175554246101619&amp;wfr=spider&amp;for=pc">https://baijiahao.baidu.com/s?id=1589175554246101619&amp;wfr=spider&amp;for=pc</a></p>
+
+<p>HA集群部署规划
+主机名称    IP地址    用户名称    进程  安装的软件
+node200 192.168.33.200  hadoop  NameNode（Active）、ResourceManager（StandBy）、ZKFC、JobHistoryServer JDK、Hadoop
+node201 192.168.33.201  hadoop  NameNode（StandBy）、ResourceManager（Active）、ZKFC、WebProxyServer   JDK、Hadoop
+node202 192.168.33.202  hadoop  DataNode、NodeManager、JournalNode、QuorumPeerMain JDK、Hadoop、Zookeeper
+node203 192.168.33.203  hadoop  DataNode、NodeManager、JournalNode、QuorumPeerMain JDK、Hadoop、Zookeeper
+node204 192.168.33.204  hadoop  DataNode、NodeManager、JournalNode、QuorumPeerMain JDK、Hadoop、Zookeeper
+规划说明：</p>
+
+<p>HDFS HA通常由两个NameNode组成，一个处于Active状态，另一个处于Standby状态。</p>
+
+<p>Active NameNode对外提供服务，而Standby NameNode则不对外提供服务，仅同步Active NameNode的状态，以便能够在它失败时快速进行切换。</p>
+
+<p>Hadoop 2.0官方提供了两种HDFS HA的解决方案，一种是NFS，另一种是QJM。这里我们使用简单的QJM。在该方案中，主备NameNode之间通过一组JournalNode同步元数据信息，一条数据只要成功写入多数JournalNode即认为写入成功。通常配置奇数个JournalNode，这里还配置了一个Zookeeper集群，用于ZKFC故障转移，当Active NameNode挂掉了，会自动切换Standby NameNode为Active状态。</p>
+
+<p>YARN的ResourceManager也存在单点故障问题，这个问题在hadoop-2.4.1得到了解决：有两个ResourceManager，一个是Active，一个是Standby，状态由Zookeeper进行协调。</p>
+
+<p>YARN框架下的MapReduce可以开启JobHistoryServer来记录历史任务信息，否则只能查看当前正在执行的任务信息。</p>
+
+<p>Zookeeper的作用是负责HDFS中NameNode主备节点的选举，和YARN框架下ResourceManaer主备节点的选举。</p>
+
+<p>部分内容来自：<a href="https://www.linuxidc.com/Linux/2016-08/134180.htm">https://www.linuxidc.com/Linux/2016-08/134180.htm</a></p>
+
+<p>自动故障转移
+Zookeeper集群作用：</p>
+
+<p>一是故障监控。每个NameNode将会和Zookeeper建立一个持久session，如果NameNode失效，那么此session将会过期失效，此后Zookeeper将会通知另一个Namenode，然后触发Failover；</p>
+
+<p>二是NameNode选举。ZooKeeper提供了简单的机制来实现Acitve Node选举，如果当前Active失效，Standby将会获取一个特定的排他锁，那么获取锁的Node接下来将会成为Active。</p>
+
+<p>ZKFC：</p>
+
+<p>ZKFC是一个Zookeeper的客户端，它主要用来监测和管理NameNodes的状态，每个NameNode机器上都会运行一个ZKFC程序</p>
+
+<p>主要职责：</p>
+
+<p>一是健康监控。ZKFC间歇性的ping NameNode，得到NameNode返回状态，如果NameNode失效或者不健康，那么ZKFS将会标记其为不健康；</p>
+
+<p>二是Zookeeper会话管理。当本地NaneNode运行良好时，ZKFC将会持有一个Zookeeper session，如果本地NameNode为Active，它同时也持有一个“排他锁”znode，如果session过期，那么次lock所对应的znode也将被删除；</p>
+
+<p>三是选举。当集群中其中一个NameNode宕机，Zookeeper会自动将另一个激活。</p>
+
+<p>此处内容来自：<a href="https://www.linuxidc.com/Linux/2016-08/134180.htm">https://www.linuxidc.com/Linux/2016-08/134180.htm</a></p>
+
+<p>关于集群主机时间
+因为高可用集群的机制，各主机在集群中的时间需一致。</p>
+
+<p>在下面Linux搭建前将虚拟机进行设置，设置方法如下：</p>
+
+<p>安装完成后对每台主机的时间进行确认，确保每台主机时间一致。</p>
+
+<p>Linux环境搭建
+按如下方法部署五台主机，主机名与IP地址的对应关系见上文集群部署规划</p>
+
+<p>VMware虚拟机安装Linux系统</p>
+
+<p>配置完成之后各主机IP、主机名与时间信息如下：（时间不一致的自己百度同步集群时间的方法）</p>
+
+<p>命令：</p>
+
+<p>#查看系统ip信息
+ip a
+#查看系统时间
+date
+执行结果：</p>
+
+<p>[root@node200 ~]# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.<sup>1</sup>&frasl;<sub>8</sub> scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::<sup>1</sup>&frasl;<sub>128</sub> scope host
+       valid_lft forever preferred_lft forever
+2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:6a:0e:74 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.33.<sup>200</sup>&frasl;<sub>24</sub> brd 192.168.33.255 scope global noprefixroute ens33
+       valid_lft forever preferred_lft forever
+    inet6 fe80::20c:29ff:fe6a:e74/64 scope link
+       valid_lft forever preferred_lft forever
+[root@node200 ~]# date
+2018年 10月 11日 星期四 16:57:56 CST
+[root@node201 ~]# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.<sup>1</sup>&frasl;<sub>8</sub> scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::<sup>1</sup>&frasl;<sub>128</sub> scope host
+       valid_lft forever preferred_lft forever
+2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:60:36:3c brd ff:ff:ff:ff:ff:ff
+    inet 192.168.33.<sup>201</sup>&frasl;<sub>24</sub> brd 192.168.33.255 scope global noprefixroute ens33
+       valid_lft forever preferred_lft forever
+    inet6 fe80::20c:29ff:fe60:363c/64 scope link
+       valid_lft forever preferred_lft forever
+[root@node201 ~]# date
+2018年 10月 11日 星期四 16:57:48 CST
+[root@node202 ~]# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.<sup>1</sup>&frasl;<sub>8</sub> scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::<sup>1</sup>&frasl;<sub>128</sub> scope host
+       valid_lft forever preferred_lft forever
+2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:41:4a:f4 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.33.<sup>202</sup>&frasl;<sub>24</sub> brd 192.168.33.255 scope global noprefixroute ens33
+       valid_lft forever preferred_lft forever
+    inet6 fe80::20c:29ff:fe41:4af4/64 scope link
+       valid_lft forever preferred_lft forever
+[root@node202 ~]# date
+2018年 10月 11日 星期四 16:58:00 CST
+[root@node203 ~]# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.<sup>1</sup>&frasl;<sub>8</sub> scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::<sup>1</sup>&frasl;<sub>128</sub> scope host
+       valid_lft forever preferred_lft forever
+2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:53:27:40 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.33.<sup>203</sup>&frasl;<sub>24</sub> brd 192.168.33.255 scope global noprefixroute ens33
+       valid_lft forever preferred_lft forever
+    inet6 fe80::20c:29ff:fe53:<sup>2740</sup>&frasl;<sub>64</sub> scope link
+       valid_lft forever preferred_lft forever
+[root@node203 ~]# date
+2018年 10月 11日 星期四 16:58:01 CST
+[root@node204 ~]# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.<sup>1</sup>&frasl;<sub>8</sub> scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::<sup>1</sup>&frasl;<sub>128</sub> scope host
+       valid_lft forever preferred_lft forever
+2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:6e:ad:fa brd ff:ff:ff:ff:ff:ff
+    inet 192.168.33.<sup>204</sup>&frasl;<sub>24</sub> brd 192.168.33.255 scope global noprefixroute ens33
+       valid_lft forever preferred_lft forever
+    inet6 fe80::20c:29ff:fe6e:adfa/64 scope link
+       valid_lft forever preferred_lft forever
+[root@node204 ~]# date
+2018年 10月 11日 星期四 16:57:54 CST
+网络测试：</p>
+
+<p>配置完成之后测试各主机网络互通情况，在每台主机上执行下面两条命令，运行过程中按Ctrl+C可以终止进程，下面就不贴测试效果了</p>
+
+<p>ping 192.168.33.1
+ping www.baidu.com
+配置Java环境
+node200、node201、node202、node203、node204都需要安装</p>
+
+<p>为上面安装的系统配置Java环境变量，本文中就写关键配置步骤与执行命令了，想了解详细的配置过程可以查看：</p>
+
+<p>Linux系统下安装Java环境</p>
+
+<p>为了方便，本文就直接使用rpm包安装了，/etc/profile文件暂时不进行配置，到后面配置hadoop单机版时再进行配置</p>
+
+<p>[1-3]均使用root用户执行</p>
+
+<p>1、将安装包jdk-8u181-linux-x64.rpm上传到/usr/local目录下</p>
+
+<p>2、安装rpm包，先设置权限，然后执行rpm命令安装</p>
+
+<p>chmod 755 /usr/local/jdk-8u181-linux-x64.rpm
+rpm -ivh /usr/local/jdk-8u181-linux-x64.rpm
+3、校验安装情况</p>
+
+<p>java -version
+安装单机版Hadoop
+node200、node201、node202、node203、node204都需要安装</p>
+
+<p>详细步骤查看：CentOS 7部署Hadoop（单机版），这里只简单介绍安装步骤</p>
+
+<p>[1-5]均使用root用户执行</p>
+
+<p>1、将压缩包hadoop-2.7.3.tar.gz上传到/usr/local目录下</p>
+
+<p>2、解压压缩包，进入/usr/local目录，对文件夹重命名</p>
+
+<p>tar -zxvf /usr/local/hadoop-2.7.3.tar.gz
+cd /usr/local
+mv hadoop-2.7.3 hadoop
+3、创建hadoop用户和hadoop用户组，并设置hadoop用户密码</p>
+
+<p>useradd hadoop
+passwd hadoop
+4、为hadoop用户添加sudo权限</p>
+
+<p>vi /etc/sudoers
+ 在root用户下面一行加上hadoop  ALL=(ALL)       ALL，保存并退出（这里需要用wq!强制保存退出）</p>
+
+<h2 id="next-comes-the-main-part-which-users-can-run-what-software-on">Next comes the main part: which users can run what software on</h2>
+
+<h2 id="which-machines-the-sudoers-file-can-be-shared-between-multiple">which machines (the sudoers file can be shared between multiple</h2>
+
+<h2 id="systems">systems).</h2>
+
+<h2 id="syntax">Syntax:</h2>
+
+<p>##</p>
+
+<h2 id="user-machine-commands">user MACHINE=COMMANDS</h2>
+
+<p>##</p>
+
+<h2 id="the-commands-section-may-have-other-options-added-to-it">The COMMANDS section may have other options added to it.</h2>
+
+<p>##</p>
+
+<h2 id="allow-root-to-run-any-commands-anywhere">Allow root to run any commands anywhere</h2>
+
+<p>root    ALL=(ALL)    ALL
+hadoop    ALL=(ALL)    ALL
+5、将hadoop文件夹的主：组设置成hadoop，/usr目录与/usr/local目录所属主：组均为root，默认权限为755，也就是说其他用户（hadoop）没有写入（w）权限，在这里我们需要将这两个目录其他用户的权限设置为7。在这里将hadoop用户加入root组，然后将文件夹权限设置为775</p>
+
+<p>###############################
+#chown -R hadoop:hadoop hadoop
+#chmod 757 /usr
+#chmod 757 /usr/local
+###############################</p>
+
+<p>使用下面代码：</p>
+
+<p>gpasswd -a hadoop root
+chmod 771 /usr
+chmod 771 /usr/local
+chown -R hadoop:hadoop /usr/local/hadoop
+Zookeeper集群安装
+在node202、node203、node204上安装</p>
+
+<p>Zookeeper是一个开源分布式协调服务，其独特的Leader-Follower集群结构，很好的解决了分布式单点问题。目前主要用于诸如：统一命名服务、配置管理、锁服务、集群管理等场景。大数据应用中主要使用Zookeeper的集群管理功能。</p>
+
+<p>[1-5]均使用root用户执行</p>
+
+<p>1、将压缩包zookeeper-3.4.10.tar.gz上传到node202的/usr/local目录下</p>
+
+<p>2、解压压缩包，进入/usr/local目录，对文件夹重命名</p>
+
+<p>tar -zxvf /usr/local/zookeeper-3.4.10.tar.gz
+cd /usr/local
+mv zookeeper-3.4.10 zookeeper
+3、修改zookeeper的配置文件，命令如下：</p>
+
+<p>cd /usr/local/zookeeper/conf/
+cp zoo_sample.cfg zoo.cfg
+vi zoo.cfg
+配置文件如下：</p>
+
+<h1 id="客户端心跳时间-毫秒">客户端心跳时间(毫秒)</h1>
+
+<p>tickTime=2000</p>
+
+<h1 id="允许心跳间隔的最大时间">允许心跳间隔的最大时间</h1>
+
+<p>initLimit=10</p>
+
+<h1 id="同步时限">同步时限</h1>
+
+<p>syncLimit=5</p>
+
+<h1 id="数据存储目录">数据存储目录</h1>
+
+<p>dataDir=/usr/local/zookeeperdata</p>
+
+<h1 id="数据日志存储目录">数据日志存储目录</h1>
+
+<p>dataLogDir=/usr/local/tmp/zookeeperlogs</p>
+
+<h1 id="端口号">端口号</h1>
+
+<p>clientPort=2181</p>
+
+<h1 id="集群节点和服务端口配置">集群节点和服务端口配置</h1>
+
+<p>server.1=node202:2888:3888
+server.2=node203:2888:3888
+server.3=node204:2888:3888</p>
+
+<h1 id="以下为优化配置">以下为优化配置</h1>
+
+<h1 id="服务器最大连接数-默认为10-改为0表示无限制">服务器最大连接数，默认为10，改为0表示无限制</h1>
+
+<p>maxClientCnxns=0</p>
+
+<h1 id="快照数">快照数</h1>
+
+<p>autopurge.snapRetainCount=3</p>
+
+<h1 id="快照清理时间-默认为0">快照清理时间，默认为0</h1>
+
+<p>autopurge.purgeInterval=1
+ 3、修改完zookeeper的配置文件，将node202上的zookeeper上传到其他两台服务器：</p>
+
+<p>[root@node202 conf]# scp -r /usr/local/zookeeper 192.168.33.203:/usr/local/
+[root@node202 conf]# scp -r /usr/local/zookeeper 192.168.33.204:/usr/local/</p>
+
+<p>#这儿输入yes回车
+Are you sure you want to continue connecting (yes/no)? yes
+#这里输入远程主机的root密码
+root@192.168.33.204&rsquo;s password:
+4、在三台主机上创建 zookeeper数据存储目录：</p>
+
+<p>mkdir /usr/local/zookeeperdata
+在文件夹下面创建一个文件，叫myid，并且在文件里写入server.X对应的X</p>
+
+<h1 id="集群节点和服务端口配置-1">集群节点和服务端口配置</h1>
+
+<p>server.1=node202:2888:3888
+server.2=node203:2888:3888
+server.3=node204:2888:3888
+上述配置中node202是1，node203是2，node204是3，所以按如下操作：</p>
+
+<p>在node202 上执行：</p>
+
+<p>echo &ldquo;1&rdquo; &gt; /usr/local/zookeeperdata/myid
+在node203 上执行：</p>
+
+<p>echo &ldquo;2&rdquo; &gt; /usr/local/zookeeperdata/myid
+在node204 上执行：</p>
+
+<p>echo &ldquo;3&rdquo; &gt; /usr/local/zookeeperdata/myid
+5、将zookeeper文件夹的主：组设置成hadoop</p>
+
+<p>chown -R hadoop:hadoop /usr/local/zookeeper
+chown -R hadoop:hadoop /usr/local/zookeeperdata
+配置环境变量
+node200、node201、node202、node203、node204都需要配置，第2步有所区别</p>
+
+<p>[1-3]均使用root用户执行</p>
+
+<p>1、编辑/etc/profile文件</p>
+
+<p>vi /etc/profile
+2、在末尾加上如下代码</p>
+
+<p>node200、node201添加如下代码：</p>
+
+<p>export JAVA_HOME=/usr/java/jdk1.8.0_181-amd64
+export HADOOP_HOME=/usr/local/hadoop
+export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export JRE_HOME=$JAVA_HOME/jre
+node202、node203、node204添加如下代码：</p>
+
+<p>export JAVA_HOME=/usr/java/jdk1.8.0_181-amd64
+export HADOOP_HOME=/usr/local/hadoop
+export ZOOKEEPER_HOME=/usr/local/zookeeper
+export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$ZOOKEEPER_HOME/bin
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export JRE_HOME=$JAVA_HOME/jre
+3、配置完环境变量之后保存退出，让环境变量立即生效</p>
+
+<p>source /etc/profile
+关闭防火墙
+node200、node201、node202、node203、node204都需要配置</p>
+
+<p>CentOS 7 使用的是firewalld作为防火墙，与CentOS 6 有所不同</p>
+
+<p>下面三步均使用root用户执行</p>
+
+<p>查看防火墙状态：</p>
+
+<p>systemctl status firewalld
+关闭防火墙：</p>
+
+<p>systemctl stop firewalld
+关闭防火墙开机自动启动：</p>
+
+<p>systemctl disable firewalld
+ 更多详情可以了解：CentOS 7部署Hadoop（伪分布式）</p>
+
+<p>修改hosts文件
+修改所有主机的/etc/hosts文件，这里使用root用户操作</p>
+
+<p>vi /etc/hosts
+在文件最后面加上：</p>
+
+<p>192.168.33.200    node200
+192.168.33.201    node201
+192.168.33.202    node202
+192.168.33.203    node203
+192.168.33.204    node204
+注意：IP后面是Tab制表符，而不是空格，这里配置完后最好测试一下网络。如果复制粘贴配置完后无法ping通，可能是IP地址后面的空格问题。</p>
+
+<p>以下为测试方法：</p>
+
+<p>ping node200
+ping node201
+ping node202
+ping node203
+ping node204
+ 配置到这里，我们切换到hadoop用户，使用hadoop用户进行下面的操作</p>
+
+<p>配置SSH免密登录
+具体方法参照：</p>
+
+<p>Linux系统配置SSH免密登录(多主机互通)</p>
+
+<p>这里贴关键代码，不展示操作过程：</p>
+
+<p>在node200、node201、node202、node203、node204上分别操作，一路回车就可以了：</p>
+
+<p>[hadoop@node200 ~]$ ssh-keygen -t rsa
+[hadoop@node201 ~]$ ssh-keygen -t rsa
+[hadoop@node202 ~]$ ssh-keygen -t rsa
+[hadoop@node203 ~]$ ssh-keygen -t rsa
+[hadoop@node204 ~]$ ssh-keygen -t rsa
+在node200上操作：</p>
+
+<p>[hadoop@node200 ~]$ ssh-copy-id localhost
+[hadoop@node200 ~]$ scp ~/.ssh/* node201:~/.ssh
+[hadoop@node200 ~]$ scp ~/.ssh/* node202:~/.ssh
+[hadoop@node200 ~]$ scp ~/.ssh/* node203:~/.ssh
+[hadoop@node200 ~]$ scp ~/.ssh/* node204:~/.ssh
+修改Hadoop配置文件
+均使用hadoop用户操作，只需要在node200上修改即可</p>
+
+<p>先进入/usr/local/hadoop/etc/hadoop/文件</p>
+
+<p>[hadoop@node200 ~]$ cd /usr/local/hadoop/etc/hadoop/
+1、修改hadoop-env.sh文件</p>
+
+<p>[hadoop@node200 hadoop]$ vi hadoop-env.sh
+找到export JAVA_HOME=${JAVA_HOME}，在前面加个#注释掉，将JAVA_HOME用路径代替，如下：</p>
+
+<p>#export JAVA_HOME=${JAVA_HOME}
+export JAVA_HOME=/usr/java/jdk1.8.0_181-amd64
+2、修改core-site.xml文件</p>
+
+<p>[hadoop@node200 hadoop]$ vi core-site.xml
+配置文件如下：</p>
+
+<p>&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;UTF-8&rdquo;?&gt;
+&lt;?xml-stylesheet type=&ldquo;text/xsl&rdquo; href=&ldquo;configuration.xsl&rdquo;?&gt;
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+--></p>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<p><configuration>
+        <!-- 指定hdfs的nameservices名称为mycluster，与hdfs-site.xml的HA配置相同 -->
+        <property>
+                <name>fs.defaultFS</name>
+                <value>hdfs://mycluster</value>
+        </property></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">    &lt;!-- 指定缓存文件存储的路径 --&gt;
+    &lt;property&gt;
+            &lt;name&gt;hadoop.tmp.dir&lt;/name&gt;
+            &lt;value&gt;/usr/local/tmp/hadoop/data&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;!-- 配置hdfs文件被永久删除前保留的时间（单位：分钟），默认值为0表明垃圾回收站功能关闭 --&gt;
+    &lt;property&gt;
+            &lt;name&gt;fs.trash.interval&lt;/name&gt;
+            &lt;value&gt;1440&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;!-- 指定zookeeper地址，配置HA时需要 --&gt;
+    &lt;property&gt;
+            &lt;name&gt;ha.zookeeper.quorum&lt;/name&gt;
+            &lt;value&gt;node202:2181,node203:2181,node204:2181&lt;/value&gt;
+    &lt;/property&gt;</pre></td></tr></table>
+</div>
+</div>
+<p></configuration>
+ 3、修改hdfs-site.xml</p>
+
+<p>[hadoop@node200 hadoop]$ vi hdfs-site.xml
+ 配置文件如下：</p>
+
+<p>&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;UTF-8&rdquo;?&gt;
+&lt;?xml-stylesheet type=&ldquo;text/xsl&rdquo; href=&ldquo;configuration.xsl&rdquo;?&gt;
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+--></p>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<p><configuration>
+    <!-- 指定hdfs元数据存储的路径 -->
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>/usr/local/hadoopdata/namenode</value>
+    </property></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span><span class="lnt">92
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">&lt;!-- 指定hdfs数据存储的路径 --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.datanode.data.dir&lt;/name&gt;
+    &lt;value&gt;/usr/local/hadoopdata/datanode&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 数据备份的个数 --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.replication&lt;/name&gt;
+    &lt;value&gt;3&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 关闭权限验证 --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.permissions.enabled&lt;/name&gt;
+    &lt;value&gt;false&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 开启WebHDFS功能（基于REST的接口服务） --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.webhdfs.enabled&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- //以下为HDFS HA的配置// --&gt;
+&lt;!-- 指定hdfs的nameservices名称为mycluster --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.nameservices&lt;/name&gt;
+    &lt;value&gt;mycluster&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 指定mycluster的两个namenode的名称分别为nn1,nn2 --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.ha.namenodes.mycluster&lt;/name&gt;
+    &lt;value&gt;nn1,nn2&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 配置nn1,nn2的rpc通信端口 --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.namenode.rpc-address.mycluster.nn1&lt;/name&gt;
+    &lt;value&gt;node200:9000&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.namenode.rpc-address.mycluster.nn2&lt;/name&gt;
+    &lt;value&gt;node201:9000&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 配置nn1,nn2的http通信端口 --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.namenode.http-address.mycluster.nn1&lt;/name&gt;
+    &lt;value&gt;node200:50070&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.namenode.http-address.mycluster.nn2&lt;/name&gt;
+    &lt;value&gt;node201:50070&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 指定namenode元数据存储在journalnode中的路径 --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.namenode.shared.edits.dir&lt;/name&gt;
+    &lt;value&gt;qjournal://node202:8485;node203:8485;node204:8485/mycluster&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 指定journalnode日志文件存储的路径 --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.journalnode.edits.dir&lt;/name&gt;
+    &lt;value&gt;/usr/local/tmp/journalnodelogs&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 指定HDFS客户端连接active namenode的java类 --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.client.failover.proxy.provider.mycluster&lt;/name&gt;
+    &lt;value&gt;org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 配置隔离机制为ssh --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.ha.fencing.methods&lt;/name&gt;
+    &lt;value&gt;sshfence&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 指定秘钥的位置 --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.ha.fencing.ssh.private-key-files&lt;/name&gt;
+    &lt;value&gt;/home/hadoop/.ssh/id_rsa&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 开启自动故障转移 --&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.ha.automatic-failover.enabled&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+&lt;/property&gt;</pre></td></tr></table>
+</div>
+</div>
+<p></configuration>
+4、修改mapred-site.xml</p>
+
+<p>/usr/local/hadoop/etc/hadoop文件夹中并没有mapred-site.xml文件，但提供了模板mapred-site.xml.template，将其复制一份重命名为mapred-site.xml 即可</p>
+
+<p>[hadoop@node200 hadoop]$ cp mapred-site.xml.template mapred-site.xml
+[hadoop@node200 hadoop]$ vi mapred-site.xml
+配置文件如下：</p>
+
+<p>&lt;?xml version=&ldquo;1.0&rdquo;?&gt;
+&lt;?xml-stylesheet type=&ldquo;text/xsl&rdquo; href=&ldquo;configuration.xsl&rdquo;?&gt;
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+--></p>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<p><configuration>
+    <!-- 指定MapReduce计算框架使用YARN -->
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">&lt;!-- 指定jobhistory server的rpc地址 --&gt;
+&lt;property&gt;
+    &lt;name&gt;mapreduce.jobhistory.address&lt;/name&gt;
+    &lt;value&gt;node200:10020&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 指定jobhistory server的http地址 --&gt;
+&lt;property&gt;
+    &lt;name&gt;mapreduce.jobhistory.webapp.address&lt;/name&gt;
+    &lt;value&gt;node200:19888&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 开启uber模式（针对小作业的优化） --&gt;
+&lt;property&gt;
+    &lt;name&gt;mapreduce.job.ubertask.enable&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 配置启动uber模式的最大map数 --&gt;
+&lt;property&gt;
+    &lt;name&gt;mapreduce.job.ubertask.maxmaps&lt;/name&gt;
+    &lt;value&gt;9&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 配置启动uber模式的最大reduce数 --&gt;
+&lt;property&gt;
+    &lt;name&gt;mapreduce.job.ubertask.maxreduces&lt;/name&gt;
+    &lt;value&gt;5&lt;/value&gt;
+&lt;/property&gt;</pre></td></tr></table>
+</div>
+</div>
+<p></configuration>
+5、修改yarn-site.xml</p>
+
+<p>[hadoop@master200 hadoop]$ vi yarn-site.xml
+配置文件如下：</p>
+
+<p>&lt;?xml version=&ldquo;1.0&rdquo;?&gt;
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+--></p>
+
+<p><configuration></p>
+
+<!-- Site specific YARN configuration properties -->
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">&lt;!-- NodeManager上运行的附属服务，需配置成mapreduce_shuffle才可运行MapReduce程序 --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;
+    &lt;value&gt;mapreduce_shuffle&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 配置Web Application Proxy安全代理（防止yarn被攻击） --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.web-proxy.address&lt;/name&gt;
+    &lt;value&gt;node201:8888&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 开启日志 --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.log-aggregation-enable&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 配置日志删除时间为7天，-1为禁用，单位为秒 --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.log-aggregation.retain-seconds&lt;/name&gt;
+    &lt;value&gt;604800&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 修改日志目录 --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.nodemanager.remote-app-log-dir&lt;/name&gt;
+    &lt;value&gt;/usr/local/tmp/hadooplogs&lt;/value&gt;
+&lt;/property&gt;</pre></td></tr></table>
+</div>
+</div>
+<!--配置nodemanager可用的资源内存 
+    <property>
+        <name>yarn.nodemanager.resource.memory-mb</name>
+        <value>2048</value>
+    </property>
+    配置nodemanager可用的资源CPU 
+    <property>
+        <name>yarn.nodemanager.resource.cpu-vcores</name>
+        <value>2</value>
+    </property> 
+ -->
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">&lt;!-- //以下为YARN HA的配置// --&gt;
+&lt;!-- 开启YARN HA --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.resourcemanager.ha.enabled&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 启用自动故障转移 --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.resourcemanager.ha.automatic-failover.enabled&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 指定YARN HA的名称 --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.resourcemanager.cluster-id&lt;/name&gt;
+    &lt;value&gt;yarncluster&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 指定两个resourcemanager的名称 --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.resourcemanager.ha.rm-ids&lt;/name&gt;
+    &lt;value&gt;rm1,rm2&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 配置rm1，rm2的主机 --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.resourcemanager.hostname.rm1&lt;/name&gt;
+    &lt;value&gt;node201&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.resourcemanager.hostname.rm2&lt;/name&gt;
+    &lt;value&gt;node200&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 配置YARN的http端口 --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.resourcemanager.webapp.address.rm1&lt;/name&gt;
+    &lt;value&gt;node201:8088&lt;/value&gt;
+&lt;/property&gt; 
+&lt;property&gt;
+    &lt;name&gt;yarn.resourcemanager.webapp.address.rm2&lt;/name&gt;
+    &lt;value&gt;node200:8088&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 配置zookeeper的地址 --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.resourcemanager.zk-address&lt;/name&gt;
+    &lt;value&gt;node202:2181,node203:2181,node204:2181&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 配置zookeeper的存储位置 --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.resourcemanager.zk-state-store.parent-path&lt;/name&gt;
+    &lt;value&gt;/usr/local/zookeeperdata/rmstore&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 开启yarn resourcemanager restart --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.resourcemanager.recovery.enabled&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 配置resourcemanager的状态存储到zookeeper中 --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.resourcemanager.store.class&lt;/name&gt;
+    &lt;value&gt;org.apache.hadoop.yarn.server.resourcemanager.recovery.ZKRMStateStore&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 开启yarn nodemanager restart --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.nodemanager.recovery.enabled&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+&lt;/property&gt;
+
+&lt;!-- 配置nodemanager IPC的通信端口 --&gt;
+&lt;property&gt;
+    &lt;name&gt;yarn.nodemanager.address&lt;/name&gt;
+    &lt;value&gt;0.0.0.0:45454&lt;/value&gt;
+&lt;/property&gt;</pre></td></tr></table>
+</div>
+</div>
+<p></configuration>
+6、修改slaves文件</p>
+
+<p>[hadoop@node200 hadoop]$ vi slaves
+配置文件如下：</p>
+
+<p>node202
+node203
+node204
+上述关键的配置文件我已经上传至：<a href="https://github.com/PengShuaixin/hadoop-2.7.3_centos7">https://github.com/PengShuaixin/hadoop-2.7.3_centos7</a></p>
+
+<p>可以直接下载下来，通过上传到Linux直接覆盖原来文件的方式进行配置</p>
+
+<p>7、通过scp将配置文件上传到其他主机</p>
+
+<p>[hadoop@node200 hadoop]$ scp -r /usr/local/hadoop/etc/hadoop/* node201:/usr/local/hadoop/etc/hadoop
+[hadoop@node200 hadoop]$ scp -r /usr/local/hadoop/etc/hadoop/* node202:/usr/local/hadoop/etc/hadoop
+[hadoop@node200 hadoop]$ scp -r /usr/local/hadoop/etc/hadoop/* node203:/usr/local/hadoop/etc/hadoop
+[hadoop@node200 hadoop]$ scp -r /usr/local/hadoop/etc/hadoop/* node204:/usr/local/hadoop/etc/hadoop
+Hadoop集群的初始化
+1、启动zookeeper集群（分别在node202、node203和node204上执行）</p>
+
+<p>zkServer.sh start
+ps：zookeeper其他命令</p>
+
+<p>#查看状态
+zkServer.sh status
+#关闭
+zkServer.sh stop
+启动后查看状态如下：</p>
+
+<p>#node202
+[hadoop@node202 ~]$ zkServer.sh status
+ZooKeeper JMX enabled by default
+Using config: /usr/local/zookeeper/bin/../conf/zoo.cfg
+Mode: follower</p>
+
+<p>#node203
+[hadoop@node203 ~]$ zkServer.sh status
+ZooKeeper JMX enabled by default
+Using config: /usr/local/zookeeper/bin/../conf/zoo.cfg
+Mode: leader</p>
+
+<p>#node204
+[hadoop@node204 ~]$ zkServer.sh status
+ZooKeeper JMX enabled by default
+Using config: /usr/local/zookeeper/bin/../conf/zoo.cfg
+Mode: follower</p>
+
+<p>#只有一台主机为leader，剩下的都是follower
+#zookeeper配置的主机数一般为2n+1台，且最少需要3台
+2、格式化ZKFC（在node200上执行）</p>
+
+<p>[hadoop@node200 ~]$ hdfs zkfc -formatZK
+出现如下代码说明执行成功：</p>
+
+<p>18/10/12 09:19:11 INFO tools.DFSZKFailoverController: Failover controller configured for NameNode NameNode at node200/192.168.33.200:9000
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.6-1569965, built on 02/20/2014 09:09 GMT
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:host.name=node200
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:java.version=1.8.0_181
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:java.home=/usr/java/jdk1.8.0_181-amd64/jre
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:java.class.path=/usr/local/hadoop/etc/hadoop:/usr/local/hadoop/share/hadoop/common/lib/jaxb-impl-2.2.3-1.jar:/usr/local/hadoop/share/hadoop/common/lib/jaxb-api-2.2.2.jar:/usr/local/hadoop/share/hadoop/common/lib/stax-api-1.0-2.jar:/usr/local/hadoop/share/hadoop/common/lib/activation-1.1.jar:/usr/local/hadoop/share/hadoop/common/lib/jackson-core-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/common/lib/jackson-mapper-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/common/lib/jackson-jaxrs-1.9.13.jar:/usr/local/hadoop/share/hadoop/common/lib/jackson-xc-1.9.13.jar:/usr/local/hadoop/share/hadoop/common/lib/jersey-server-1.9.jar:/usr/local/hadoop/share/hadoop/common/lib/asm-3.2.jar:/usr/local/hadoop/share/hadoop/common/lib/log4j-1.2.17.jar:/usr/local/hadoop/share/hadoop/common/lib/jets3t-0.9.0.jar:/usr/local/hadoop/share/hadoop/common/lib/httpclient-4.2.5.jar:/usr/local/hadoop/share/hadoop/common/lib/httpcore-4.2.5.jar:/usr/local/hadoop/share/hadoop/common/lib/java-xmlbuilder-0.4.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-lang-2.6.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-configuration-1.6.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-digester-1.8.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-beanutils-1.7.0.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-beanutils-core-1.8.0.jar:/usr/local/hadoop/share/hadoop/common/lib/slf4j-api-1.7.10.jar:/usr/local/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar:/usr/local/hadoop/share/hadoop/common/lib/avro-1.7.4.jar:/usr/local/hadoop/share/hadoop/common/lib/paranamer-2.3.jar:/usr/local/hadoop/share/hadoop/common/lib/snappy-java-1.0.4.1.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-compress-1.4.1.jar:/usr/local/hadoop/share/hadoop/common/lib/xz-1.0.jar:/usr/local/hadoop/share/hadoop/common/lib/protobuf-java-2.5.0.jar:/usr/local/hadoop/share/hadoop/common/lib/gson-2.2.4.jar:/usr/local/hadoop/share/hadoop/common/lib/hadoop-auth-2.7.3.jar:/usr/local/hadoop/share/hadoop/common/lib/apacheds-kerberos-codec-2.0.0-M15.jar:/usr/local/hadoop/share/hadoop/common/lib/apacheds-i18n-2.0.0-M15.jar:/usr/local/hadoop/share/hadoop/common/lib/api-asn1-api-1.0.0-M20.jar:/usr/local/hadoop/share/hadoop/common/lib/api-util-1.0.0-M20.jar:/usr/local/hadoop/share/hadoop/common/lib/zookeeper-3.4.6.jar:/usr/local/hadoop/share/hadoop/common/lib/netty-3.6.2.Final.jar:/usr/local/hadoop/share/hadoop/common/lib/curator-framework-2.7.1.jar:/usr/local/hadoop/share/hadoop/common/lib/curator-client-2.7.1.jar:/usr/local/hadoop/share/hadoop/common/lib/jsch-0.1.42.jar:/usr/local/hadoop/share/hadoop/common/lib/curator-recipes-2.7.1.jar:/usr/local/hadoop/share/hadoop/common/lib/htrace-core-3.1.0-incubating.jar:/usr/local/hadoop/share/hadoop/common/lib/junit-4.11.jar:/usr/local/hadoop/share/hadoop/common/lib/hamcrest-core-1.3.jar:/usr/local/hadoop/share/hadoop/common/lib/mockito-all-1.8.5.jar:/usr/local/hadoop/share/hadoop/common/lib/hadoop-annotations-2.7.3.jar:/usr/local/hadoop/share/hadoop/common/lib/guava-11.0.2.jar:/usr/local/hadoop/share/hadoop/common/lib/jsr305-3.0.0.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-cli-1.2.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-math3-3.1.1.jar:/usr/local/hadoop/share/hadoop/common/lib/xmlenc-0.52.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-httpclient-3.1.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-logging-1.1.3.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-codec-1.4.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-io-2.4.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-net-3.1.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-collections-3.2.2.jar:/usr/local/hadoop/share/hadoop/common/lib/servlet-api-2.5.jar:/usr/local/hadoop/share/hadoop/common/lib/jetty-6.1.26.jar:/usr/local/hadoop/share/hadoop/common/lib/jetty-util-6.1.26.jar:/usr/local/hadoop/share/hadoop/common/lib/jsp-api-2.1.jar:/usr/local/hadoop/share/hadoop/common/lib/jersey-core-1.9.jar:/usr/local/hadoop/share/hadoop/common/lib/jersey-json-1.9.jar:/usr/local/hadoop/share/hadoop/common/lib/jettison-1.1.jar:/usr/local/hadoop/share/hadoop/common/hadoop-common-2.7.3.jar:/usr/local/hadoop/share/hadoop/common/hadoop-common-2.7.3-tests.jar:/usr/local/hadoop/share/hadoop/common/hadoop-nfs-2.7.3.jar:/usr/local/hadoop/share/hadoop/hdfs:/usr/local/hadoop/share/hadoop/hdfs/lib/commons-codec-1.4.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/log4j-1.2.17.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/commons-logging-1.1.3.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/netty-3.6.2.Final.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/guava-11.0.2.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jsr305-3.0.0.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/commons-cli-1.2.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/xmlenc-0.52.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/commons-io-2.4.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/servlet-api-2.5.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jetty-6.1.26.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jetty-util-6.1.26.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jersey-core-1.9.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jackson-core-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jackson-mapper-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jersey-server-1.9.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/asm-3.2.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/commons-lang-2.6.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/protobuf-java-2.5.0.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/htrace-core-3.1.0-incubating.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/commons-daemon-1.0.13.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/netty-all-4.0.23.Final.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/xercesImpl-2.9.1.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/xml-apis-1.3.04.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/leveldbjni-all-1.8.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-2.7.3.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-2.7.3-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-nfs-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/lib/zookeeper-3.4.6-tests.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-lang-2.6.jar:/usr/local/hadoop/share/hadoop/yarn/lib/guava-11.0.2.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jsr305-3.0.0.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-logging-1.1.3.jar:/usr/local/hadoop/share/hadoop/yarn/lib/protobuf-java-2.5.0.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-cli-1.2.jar:/usr/local/hadoop/share/hadoop/yarn/lib/log4j-1.2.17.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jaxb-api-2.2.2.jar:/usr/local/hadoop/share/hadoop/yarn/lib/stax-api-1.0-2.jar:/usr/local/hadoop/share/hadoop/yarn/lib/activation-1.1.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-compress-1.4.1.jar:/usr/local/hadoop/share/hadoop/yarn/lib/xz-1.0.jar:/usr/local/hadoop/share/hadoop/yarn/lib/servlet-api-2.5.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-codec-1.4.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jetty-util-6.1.26.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jersey-core-1.9.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jersey-client-1.9.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jackson-core-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jackson-mapper-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jackson-jaxrs-1.9.13.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jackson-xc-1.9.13.jar:/usr/local/hadoop/share/hadoop/yarn/lib/guice-servlet-3.0.jar:/usr/local/hadoop/share/hadoop/yarn/lib/guice-3.0.jar:/usr/local/hadoop/share/hadoop/yarn/lib/javax.inject-1.jar:/usr/local/hadoop/share/hadoop/yarn/lib/aopalliance-1.0.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-io-2.4.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jersey-server-1.9.jar:/usr/local/hadoop/share/hadoop/yarn/lib/asm-3.2.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jersey-json-1.9.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jettison-1.1.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jaxb-impl-2.2.3-1.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jersey-guice-1.9.jar:/usr/local/hadoop/share/hadoop/yarn/lib/zookeeper-3.4.6.jar:/usr/local/hadoop/share/hadoop/yarn/lib/netty-3.6.2.Final.jar:/usr/local/hadoop/share/hadoop/yarn/lib/leveldbjni-all-1.8.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-collections-3.2.2.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jetty-6.1.26.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-api-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-common-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-common-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-nodemanager-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-web-proxy-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-applicationhistoryservice-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-resourcemanager-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-tests-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-client-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-sharedcachemanager-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-applications-distributedshell-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-applications-unmanaged-am-launcher-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-registry-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/protobuf-java-2.5.0.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/avro-1.7.4.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/jackson-core-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/jackson-mapper-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/paranamer-2.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/snappy-java-1.0.4.1.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/commons-compress-1.4.1.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/xz-1.0.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/hadoop-annotations-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/commons-io-2.4.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/jersey-core-1.9.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/jersey-server-1.9.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/asm-3.2.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/log4j-1.2.17.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/netty-3.6.2.Final.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/leveldbjni-all-1.8.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/guice-3.0.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/javax.inject-1.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/aopalliance-1.0.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/jersey-guice-1.9.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/guice-servlet-3.0.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/junit-4.11.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/hamcrest-core-1.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-core-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-common-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-shuffle-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-app-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-hs-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-hs-plugins-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.3-tests.jar:/usr/local/hadoop/contrib/capacity-scheduler/*.jar
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:java.library.path=/usr/local/hadoop/lib/native
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:java.io.tmpdir=/tmp
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:os.name=Linux
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:os.arch=amd64
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:os.version=3.10.0-862.el7.x86_64
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:user.name=hadoop
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:user.home=/home/hadoop
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Client environment:user.dir=/home/hadoop
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Initiating client connection, connectString=node202:2181,node203:2181,node204:2181 sessionTimeout=5000 watcher=org.apache.hadoop.ha.ActiveStandbyElector$WatcherWithClientRef@57a3af25
+18/10/12 09:19:12 INFO zookeeper.ClientCnxn: Opening socket connection to server node202/192.168.33.202:2181. Will not attempt to authenticate using SASL (unknown error)
+18/10/12 09:19:12 INFO zookeeper.ClientCnxn: Socket connection established to node202/192.168.33.202:2181, initiating session
+18/10/12 09:19:12 INFO zookeeper.ClientCnxn: Session establishment complete on server node202/192.168.33.202:2181, sessionid = 0x16665c138780001, negotiated timeout = 5000
+18/10/12 09:19:12 INFO ha.ActiveStandbyElector: Successfully created /hadoop-ha/mycluster in ZK.
+18/10/12 09:19:12 INFO zookeeper.ZooKeeper: Session: 0x16665c138780001 closed
+18/10/12 09:19:12 WARN ha.ActiveStandbyElector: Ignoring stale result from old client with sessionId 0x16665c138780001
+18/10/12 09:19:12 INFO zookeeper.ClientCnxn: EventThread shut down
+3、启动journalnode（分别在node202、node203和node204上执行）</p>
+
+<p>hadoop-daemon.sh start journalnode
+执行过程如下：</p>
+
+<p>[hadoop@node202 ~]$ hadoop-daemon.sh start journalnode
+starting journalnode, logging to /usr/local/hadoop/logs/hadoop-hadoop-journalnode-node202.out
+[hadoop@node202 ~]$ jps
+1508 QuorumPeerMain
+3239 Jps
+3182 JournalNode</p>
+
+<p>[hadoop@node203 ~]$ hadoop-daemon.sh start journalnode
+starting journalnode, logging to /usr/local/hadoop/logs/hadoop-hadoop-journalnode-node203.out
+[hadoop@node203 ~]$ jps
+3289 Jps
+1484 QuorumPeerMain
+3231 JournalNode</p>
+
+<p>[hadoop@node204 ~]$ hadoop-daemon.sh start journalnode
+starting journalnode, logging to /usr/local/hadoop/logs/hadoop-hadoop-journalnode-node204.out
+[hadoop@node204 ~]$ jps
+3296 Jps
+1490 QuorumPeerMain
+3237 JournalNode</p>
+
+<p>#这里用jps命令确认JournalNode进程启动情况
+#QuorumPeerMain是第1步操作启动的zookeeper的进程
+4、格式化HDFS（在node200上执行）</p>
+
+<p>[hadoop@node200 ~]$ hdfs namenode -format
+执行出现如下代码说明执行成功：</p>
+
+<p>[hadoop@node200 ~]$ hdfs namenode -format
+18/10/12 09:36:22 INFO namenode.NameNode: STARTUP_MSG:
+/************************************************************
+STARTUP_MSG: Starting NameNode
+STARTUP_MSG:   host = node200/192.168.33.200
+STARTUP_MSG:   args = [-format]
+STARTUP_MSG:   version = 2.7.3
+STARTUP_MSG:   classpath = /usr/local/hadoop/etc/hadoop:/usr/local/hadoop/share/hadoop/common/lib/jaxb-impl-2.2.3-1.jar:/usr/local/hadoop/share/hadoop/common/lib/jaxb-api-2.2.2.jar:/usr/local/hadoop/share/hadoop/common/lib/stax-api-1.0-2.jar:/usr/local/hadoop/share/hadoop/common/lib/activation-1.1.jar:/usr/local/hadoop/share/hadoop/common/lib/jackson-core-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/common/lib/jackson-mapper-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/common/lib/jackson-jaxrs-1.9.13.jar:/usr/local/hadoop/share/hadoop/common/lib/jackson-xc-1.9.13.jar:/usr/local/hadoop/share/hadoop/common/lib/jersey-server-1.9.jar:/usr/local/hadoop/share/hadoop/common/lib/asm-3.2.jar:/usr/local/hadoop/share/hadoop/common/lib/log4j-1.2.17.jar:/usr/local/hadoop/share/hadoop/common/lib/jets3t-0.9.0.jar:/usr/local/hadoop/share/hadoop/common/lib/httpclient-4.2.5.jar:/usr/local/hadoop/share/hadoop/common/lib/httpcore-4.2.5.jar:/usr/local/hadoop/share/hadoop/common/lib/java-xmlbuilder-0.4.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-lang-2.6.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-configuration-1.6.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-digester-1.8.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-beanutils-1.7.0.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-beanutils-core-1.8.0.jar:/usr/local/hadoop/share/hadoop/common/lib/slf4j-api-1.7.10.jar:/usr/local/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar:/usr/local/hadoop/share/hadoop/common/lib/avro-1.7.4.jar:/usr/local/hadoop/share/hadoop/common/lib/paranamer-2.3.jar:/usr/local/hadoop/share/hadoop/common/lib/snappy-java-1.0.4.1.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-compress-1.4.1.jar:/usr/local/hadoop/share/hadoop/common/lib/xz-1.0.jar:/usr/local/hadoop/share/hadoop/common/lib/protobuf-java-2.5.0.jar:/usr/local/hadoop/share/hadoop/common/lib/gson-2.2.4.jar:/usr/local/hadoop/share/hadoop/common/lib/hadoop-auth-2.7.3.jar:/usr/local/hadoop/share/hadoop/common/lib/apacheds-kerberos-codec-2.0.0-M15.jar:/usr/local/hadoop/share/hadoop/common/lib/apacheds-i18n-2.0.0-M15.jar:/usr/local/hadoop/share/hadoop/common/lib/api-asn1-api-1.0.0-M20.jar:/usr/local/hadoop/share/hadoop/common/lib/api-util-1.0.0-M20.jar:/usr/local/hadoop/share/hadoop/common/lib/zookeeper-3.4.6.jar:/usr/local/hadoop/share/hadoop/common/lib/netty-3.6.2.Final.jar:/usr/local/hadoop/share/hadoop/common/lib/curator-framework-2.7.1.jar:/usr/local/hadoop/share/hadoop/common/lib/curator-client-2.7.1.jar:/usr/local/hadoop/share/hadoop/common/lib/jsch-0.1.42.jar:/usr/local/hadoop/share/hadoop/common/lib/curator-recipes-2.7.1.jar:/usr/local/hadoop/share/hadoop/common/lib/htrace-core-3.1.0-incubating.jar:/usr/local/hadoop/share/hadoop/common/lib/junit-4.11.jar:/usr/local/hadoop/share/hadoop/common/lib/hamcrest-core-1.3.jar:/usr/local/hadoop/share/hadoop/common/lib/mockito-all-1.8.5.jar:/usr/local/hadoop/share/hadoop/common/lib/hadoop-annotations-2.7.3.jar:/usr/local/hadoop/share/hadoop/common/lib/guava-11.0.2.jar:/usr/local/hadoop/share/hadoop/common/lib/jsr305-3.0.0.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-cli-1.2.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-math3-3.1.1.jar:/usr/local/hadoop/share/hadoop/common/lib/xmlenc-0.52.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-httpclient-3.1.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-logging-1.1.3.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-codec-1.4.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-io-2.4.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-net-3.1.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-collections-3.2.2.jar:/usr/local/hadoop/share/hadoop/common/lib/servlet-api-2.5.jar:/usr/local/hadoop/share/hadoop/common/lib/jetty-6.1.26.jar:/usr/local/hadoop/share/hadoop/common/lib/jetty-util-6.1.26.jar:/usr/local/hadoop/share/hadoop/common/lib/jsp-api-2.1.jar:/usr/local/hadoop/share/hadoop/common/lib/jersey-core-1.9.jar:/usr/local/hadoop/share/hadoop/common/lib/jersey-json-1.9.jar:/usr/local/hadoop/share/hadoop/common/lib/jettison-1.1.jar:/usr/local/hadoop/share/hadoop/common/hadoop-common-2.7.3.jar:/usr/local/hadoop/share/hadoop/common/hadoop-common-2.7.3-tests.jar:/usr/local/hadoop/share/hadoop/common/hadoop-nfs-2.7.3.jar:/usr/local/hadoop/share/hadoop/hdfs:/usr/local/hadoop/share/hadoop/hdfs/lib/commons-codec-1.4.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/log4j-1.2.17.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/commons-logging-1.1.3.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/netty-3.6.2.Final.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/guava-11.0.2.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jsr305-3.0.0.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/commons-cli-1.2.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/xmlenc-0.52.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/commons-io-2.4.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/servlet-api-2.5.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jetty-6.1.26.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jetty-util-6.1.26.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jersey-core-1.9.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jackson-core-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jackson-mapper-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/jersey-server-1.9.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/asm-3.2.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/commons-lang-2.6.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/protobuf-java-2.5.0.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/htrace-core-3.1.0-incubating.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/commons-daemon-1.0.13.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/netty-all-4.0.23.Final.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/xercesImpl-2.9.1.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/xml-apis-1.3.04.jar:/usr/local/hadoop/share/hadoop/hdfs/lib/leveldbjni-all-1.8.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-2.7.3.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-2.7.3-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-nfs-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/lib/zookeeper-3.4.6-tests.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-lang-2.6.jar:/usr/local/hadoop/share/hadoop/yarn/lib/guava-11.0.2.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jsr305-3.0.0.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-logging-1.1.3.jar:/usr/local/hadoop/share/hadoop/yarn/lib/protobuf-java-2.5.0.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-cli-1.2.jar:/usr/local/hadoop/share/hadoop/yarn/lib/log4j-1.2.17.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jaxb-api-2.2.2.jar:/usr/local/hadoop/share/hadoop/yarn/lib/stax-api-1.0-2.jar:/usr/local/hadoop/share/hadoop/yarn/lib/activation-1.1.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-compress-1.4.1.jar:/usr/local/hadoop/share/hadoop/yarn/lib/xz-1.0.jar:/usr/local/hadoop/share/hadoop/yarn/lib/servlet-api-2.5.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-codec-1.4.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jetty-util-6.1.26.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jersey-core-1.9.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jersey-client-1.9.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jackson-core-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jackson-mapper-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jackson-jaxrs-1.9.13.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jackson-xc-1.9.13.jar:/usr/local/hadoop/share/hadoop/yarn/lib/guice-servlet-3.0.jar:/usr/local/hadoop/share/hadoop/yarn/lib/guice-3.0.jar:/usr/local/hadoop/share/hadoop/yarn/lib/javax.inject-1.jar:/usr/local/hadoop/share/hadoop/yarn/lib/aopalliance-1.0.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-io-2.4.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jersey-server-1.9.jar:/usr/local/hadoop/share/hadoop/yarn/lib/asm-3.2.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jersey-json-1.9.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jettison-1.1.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jaxb-impl-2.2.3-1.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jersey-guice-1.9.jar:/usr/local/hadoop/share/hadoop/yarn/lib/zookeeper-3.4.6.jar:/usr/local/hadoop/share/hadoop/yarn/lib/netty-3.6.2.Final.jar:/usr/local/hadoop/share/hadoop/yarn/lib/leveldbjni-all-1.8.jar:/usr/local/hadoop/share/hadoop/yarn/lib/commons-collections-3.2.2.jar:/usr/local/hadoop/share/hadoop/yarn/lib/jetty-6.1.26.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-api-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-common-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-common-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-nodemanager-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-web-proxy-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-applicationhistoryservice-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-resourcemanager-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-tests-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-client-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-server-sharedcachemanager-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-applications-distributedshell-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-applications-unmanaged-am-launcher-2.7.3.jar:/usr/local/hadoop/share/hadoop/yarn/hadoop-yarn-registry-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/protobuf-java-2.5.0.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/avro-1.7.4.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/jackson-core-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/jackson-mapper-asl-1.9.13.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/paranamer-2.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/snappy-java-1.0.4.1.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/commons-compress-1.4.1.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/xz-1.0.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/hadoop-annotations-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/commons-io-2.4.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/jersey-core-1.9.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/jersey-server-1.9.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/asm-3.2.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/log4j-1.2.17.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/netty-3.6.2.Final.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/leveldbjni-all-1.8.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/guice-3.0.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/javax.inject-1.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/aopalliance-1.0.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/jersey-guice-1.9.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/guice-servlet-3.0.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/junit-4.11.jar:/usr/local/hadoop/share/hadoop/mapreduce/lib/hamcrest-core-1.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-core-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-common-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-shuffle-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-app-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-hs-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-hs-plugins-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.3.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.3-tests.jar:/usr/local/hadoop/contrib/capacity-scheduler/*.jar
+STARTUP_MSG:   build = <a href="https://git-wip-us.apache.org/repos/asf/hadoop.git">https://git-wip-us.apache.org/repos/asf/hadoop.git</a> -r baa91f7c6bc9cb92be5982de4719c1c8af91ccff; compiled by &lsquo;root&rsquo; on 2016-08-18T01:41Z
+STARTUP_MSG:   java = 1.8.0_181
+*********************************************************<strong><em>/
+18/10/12 09:36:22 INFO namenode.NameNode: registered UNIX signal handlers for [TERM, HUP, INT]
+18/10/12 09:36:22 INFO namenode.NameNode: createNameNode [-format]
+18/10/12 09:36:23 WARN common.Util: Path /usr/local/hadoopdata/namenode should be specified as a URI in configuration files. Please update hdfs configuration.
+18/10/12 09:36:23 WARN common.Util: Path /usr/local/hadoopdata/namenode should be specified as a URI in configuration files. Please update hdfs configuration.
+Formatting using clusterid: CID-882887d1-b39c-419c-8945-f9c753f516ae
+18/10/12 09:36:23 INFO namenode.FSNamesystem: No KeyProvider found.
+18/10/12 09:36:23 INFO namenode.FSNamesystem: fsLock is fair:true
+18/10/12 09:36:23 INFO blockmanagement.DatanodeManager: dfs.block.invalidate.limit=1000
+18/10/12 09:36:23 INFO blockmanagement.DatanodeManager: dfs.namenode.datanode.registration.ip-hostname-check=true
+18/10/12 09:36:23 INFO blockmanagement.BlockManager: dfs.namenode.startup.delay.block.deletion.sec is set to 000:00:00:00.000
+18/10/12 09:36:23 INFO blockmanagement.BlockManager: The block deletion will start around 2018 十月 12 09:36:23
+18/10/12 09:36:23 INFO util.GSet: Computing capacity for map BlocksMap
+18/10/12 09:36:23 INFO util.GSet: VM type       = 64-bit
+18/10/12 09:36:23 INFO util.GSet: 2.0% max memory 966.7 MB = 19.3 MB
+18/10/12 09:36:23 INFO util.GSet: capacity      = 2^21 = 2097152 entries
+18/10/12 09:36:23 INFO blockmanagement.BlockManager: dfs.block.access.token.enable=false
+18/10/12 09:36:23 INFO blockmanagement.BlockManager: defaultReplication         = 3
+18/10/12 09:36:23 INFO blockmanagement.BlockManager: maxReplication             = 512
+18/10/12 09:36:23 INFO blockmanagement.BlockManager: minReplication             = 1
+18/10/12 09:36:23 INFO blockmanagement.BlockManager: maxReplicationStreams      = 2
+18/10/12 09:36:23 INFO blockmanagement.BlockManager: replicationRecheckInterval = 3000
+18/10/12 09:36:23 INFO blockmanagement.BlockManager: encryptDataTransfer        = false
+18/10/12 09:36:23 INFO blockmanagement.BlockManager: maxNumBlocksToLog          = 1000
+18/10/12 09:36:23 INFO namenode.FSNamesystem: fsOwner             = hadoop (auth:SIMPLE)
+18/10/12 09:36:23 INFO namenode.FSNamesystem: supergroup          = supergroup
+18/10/12 09:36:23 INFO namenode.FSNamesystem: isPermissionEnabled = false
+18/10/12 09:36:23 INFO namenode.FSNamesystem: Determined nameservice ID: mycluster
+18/10/12 09:36:23 INFO namenode.FSNamesystem: HA Enabled: true
+18/10/12 09:36:23 INFO namenode.FSNamesystem: Append Enabled: true
+18/10/12 09:36:23 INFO util.GSet: Computing capacity for map INodeMap
+18/10/12 09:36:23 INFO util.GSet: VM type       = 64-bit
+18/10/12 09:36:23 INFO util.GSet: 1.0% max memory 966.7 MB = 9.7 MB
+18/10/12 09:36:23 INFO util.GSet: capacity      = 2^20 = 1048576 entries
+18/10/12 09:36:23 INFO namenode.FSDirectory: ACLs enabled? false
+18/10/12 09:36:23 INFO namenode.FSDirectory: XAttrs enabled? true
+18/10/12 09:36:23 INFO namenode.FSDirectory: Maximum size of an xattr: 16384
+18/10/12 09:36:23 INFO namenode.NameNode: Caching file names occuring more than 10 times
+18/10/12 09:36:23 INFO util.GSet: Computing capacity for map cachedBlocks
+18/10/12 09:36:23 INFO util.GSet: VM type       = 64-bit
+18/10/12 09:36:23 INFO util.GSet: 0.25% max memory 966.7 MB = 2.4 MB
+18/10/12 09:36:23 INFO util.GSet: capacity      = 2^18 = 262144 entries
+18/10/12 09:36:23 INFO namenode.FSNamesystem: dfs.namenode.safemode.threshold-pct = 0.9990000128746033
+18/10/12 09:36:23 INFO namenode.FSNamesystem: dfs.namenode.safemode.min.datanodes = 0
+18/10/12 09:36:23 INFO namenode.FSNamesystem: dfs.namenode.safemode.extension     = 30000
+18/10/12 09:36:23 INFO metrics.TopMetrics: NNTop conf: dfs.namenode.top.window.num.buckets = 10
+18/10/12 09:36:23 INFO metrics.TopMetrics: NNTop conf: dfs.namenode.top.num.users = 10
+18/10/12 09:36:23 INFO metrics.TopMetrics: NNTop conf: dfs.namenode.top.windows.minutes = 1,5,25
+18/10/12 09:36:23 INFO namenode.FSNamesystem: Retry cache on namenode is enabled
+18/10/12 09:36:23 INFO namenode.FSNamesystem: Retry cache will use 0.03 of total heap and retry cache entry expiry time is 600000 millis
+18/10/12 09:36:23 INFO util.GSet: Computing capacity for map NameNodeRetryCache
+18/10/12 09:36:23 INFO util.GSet: VM type       = 64-bit
+18/10/12 09:36:23 INFO util.GSet: 0.029999999329447746% max memory 966.7 MB = 297.0 KB
+18/10/12 09:36:23 INFO util.GSet: capacity      = 2^15 = 32768 entries
+18/10/12 09:36:25 INFO namenode.FSImage: Allocated new BlockPoolId: BP-1162737530-192.168.33.200-1539308185287
+18/10/12 09:36:25 INFO common.Storage: Storage directory /usr/local/hadoopdata/namenode has been successfully formatted.
+18/10/12 09:36:25 INFO namenode.FSImageFormatProtobuf: Saving image file /usr/local/hadoopdata/namenode/current/fsimage.ckpt_0000000000000000000 using no compression
+18/10/12 09:36:25 INFO namenode.FSImageFormatProtobuf: Image file /usr/local/hadoopdata/namenode/current/fsimage.ckpt_0000000000000000000 of size 352 bytes saved in 0 seconds.
+18/10/12 09:36:25 INFO namenode.NNStorageRetentionManager: Going to retain 1 images with txid &gt;= 0
+18/10/12 09:36:25 INFO util.ExitUtil: Exiting with status 0
+18/10/12 09:36:25 INFO namenode.NameNode: SHUTDOWN_MSG:
+/</em></strong>*********************************************************
+SHUTDOWN_MSG: Shutting down NameNode at node200/192.168.33.200
+************************************************************/
+ 5、将格式化后node200节点hadoop工作目录中的元数据目录复制到node201节点</p>
+
+<p>[hadoop@node200 ~]$ scp -r /usr/local/hadoopdata node201:/usr/local/
+6、初始化完毕后可关闭journalnode（分别在node202、node203和node204上执行）</p>
+
+<p>hadoop-daemon.sh stop journalnode
+Hadoop集群的启动
+配置了好久，看到可以启动了是不是特别开心，下面就一步步启动我们的集群吧</p>
+
+<p>启动步骤：</p>
+
+<p>1、启动zookeeper集群（分别在node202、node203和node204上执行）</p>
+
+<p>zkServer.sh start
+在初始化过程中，如果启动了zookeeper没有关闭进程，在这里就不用重复启动了</p>
+
+<p>2、启动HDFS（在node200上执行）</p>
+
+<p>[hadoop@node200 ~]$ start-dfs.sh
+此命令分别在node200、node201节点启动了NameNode和ZKFC，分别在node202、node203、node204节点启动了DataNode和JournalNode，如下所示。</p>
+
+<p>[hadoop@node200 ~]$ start-dfs.sh
+Starting namenodes on [node200 node201]
+node200: starting namenode, logging to /usr/local/hadoop/logs/hadoop-hadoop-namenode-node200.out
+node201: starting namenode, logging to /usr/local/hadoop/logs/hadoop-hadoop-namenode-node201.out
+node204: starting datanode, logging to /usr/local/hadoop/logs/hadoop-hadoop-datanode-node204.out
+node202: starting datanode, logging to /usr/local/hadoop/logs/hadoop-hadoop-datanode-node202.out
+node203: starting datanode, logging to /usr/local/hadoop/logs/hadoop-hadoop-datanode-node203.out
+Starting journal nodes [node202 node203 node204]
+node202: starting journalnode, logging to /usr/local/hadoop/logs/hadoop-hadoop-journalnode-node202.out
+node204: starting journalnode, logging to /usr/local/hadoop/logs/hadoop-hadoop-journalnode-node204.out
+node203: starting journalnode, logging to /usr/local/hadoop/logs/hadoop-hadoop-journalnode-node203.out
+Starting ZK Failover Controllers on NN hosts [node200 node201]
+node200: starting zkfc, logging to /usr/local/hadoop/logs/hadoop-hadoop-zkfc-node200.out
+node201: starting zkfc, logging to /usr/local/hadoop/logs/hadoop-hadoop-zkfc-node201.out
+3、启动YARN（在node201上执行）</p>
+
+<p>[hadoop@node201 ~]$ start-yarn.sh
+此命令在node201节点启动了ResourceManager，分别在node202、node203、node204节点启动了NodeManager。</p>
+
+<p>[hadoop@node201 ~]$ start-yarn.sh
+starting yarn daemons
+starting resourcemanager, logging to /usr/local/hadoop/logs/yarn-hadoop-resourcemanager-node201.out
+node202: starting nodemanager, logging to /usr/local/hadoop/logs/yarn-hadoop-nodemanager-node202.out
+node203: starting nodemanager, logging to /usr/local/hadoop/logs/yarn-hadoop-nodemanager-node203.out
+node204: starting nodemanager, logging to /usr/local/hadoop/logs/yarn-hadoop-nodemanager-node204.out
+4、启动YARN的另一个ResourceManager（在node200执行，用于容灾）</p>
+
+<p>[hadoop@node200 ~]$ yarn-daemon.sh start resourcemanager</p>
+
+<p>#执行过程如下
+starting resourcemanager, logging to /usr/local/hadoop/logs/yarn-hadoop-resourcemanager-node200.out
+5、启动YARN的安全代理（在node201执行）</p>
+
+<p>[hadoop@node201 ~]$ yarn-daemon.sh start proxyserver</p>
+
+<p>#执行过程如下
+starting proxyserver, logging to /usr/local/hadoop/logs/yarn-hadoop-proxyserver-node201.out
+备注：proxyserver充当防火墙的角色，可以提高访问集群的安全性</p>
+
+<p>6、启动YARN的历史任务服务（在node200执行）</p>
+
+<p>#方法一：
+[hadoop@node200 ~]$ mr-jobhistory-daemon.sh start historyserver</p>
+
+<p>#执行过程如下
+starting historyserver, logging to /usr/local/hadoop/logs/mapred-hadoop-historyserver-node200.out</p>
+
+<p>#方法二：
+[hadoop@node200 ~]$ yarn-daemon.sh start historyserver
+备注：yarn-daemon.sh start historyserver已被弃用；CDH版本似乎有个问题，即mapred-site.xml配置的的mapreduce.jobhistory.address和mapreduce.jobhistory.webapp.address参数似乎不起作用，实际对应的端口号是10200和8188，而且部需要配置就可以在任意节点上开启历史任务服务。</p>
+
+<p>集群进程查看：</p>
+
+<p>[hadoop@node200 ~]$ jps
+5313 DFSZKFailoverController
+5842 ResourceManager
+7049 Jps
+5002 NameNode
+6733 JobHistoryServer
+[hadoop@node201 ~]$ jps
+4726 NameNode
+4839 DFSZKFailoverController
+6794 Jps
+5181 ResourceManager
+6110 WebAppProxyServer
+[hadoop@node202 ~]$ jps
+1508 QuorumPeerMain
+5111 NodeManager
+4696 DataNode
+4794 JournalNode
+6318 Jps
+[hadoop@node203 ~]$ jps
+5080 NodeManager
+1484 QuorumPeerMain
+4668 DataNode
+4767 JournalNode
+6303 Jps
+[hadoop@node204 ~]$ jps
+1490 QuorumPeerMain
+6307 Jps
+4647 DataNode
+5064 NodeManager
+4746 JournalNode
+Web界面截图：</p>
+
+<p>HDFS</p>
+
+<p>node200：<a href="http://192.168.33.200:50070，可看到NameNode为active状态">http://192.168.33.200:50070，可看到NameNode为active状态</a></p>
+
+<p>node201：<a href="http://192.168.33.201:50070，可看到NameNode为standby状态：">http://192.168.33.201:50070，可看到NameNode为standby状态：</a></p>
+
+<p>YARN</p>
+
+<p>node201:<a href="http://192.168.33.201:8088，可看到ResourceManager为active状态：">http://192.168.33.201:8088，可看到ResourceManager为active状态：</a></p>
+
+<p>node200:<a href="http://192.168.33.200:8088，此时ResourceManager为standby状态，">http://192.168.33.200:8088，此时ResourceManager为standby状态，</a></p>
+
+<p>网页无法直接访问，会自动跳转到node201的页面</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Wayne</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-10-07
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/english-interview/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">English interview</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+            <span class="next-text nav-default">Hadoop学习笔记</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="wayne.one.wang@outlook.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Wayne One Wang</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.d7b7ada643c9c1a983026e177f141f7363b4640d619caf01d8831a6718cd44ea.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
